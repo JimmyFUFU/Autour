@@ -1,0 +1,51 @@
+#Q1 {
+  display: block;
+}
+
+#Q2 {
+  display: none;
+}
+
+#Q3 {
+  display: none;
+}
+
+#Q4 {
+  display: none;
+}
+
+#Q5 {
+  display: none;
+}
+
+#Q6 {
+  display: none;
+}
+
+.mustgoblock {
+  display: flex;
+  flex-direction:row;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.NextBtn {
+
+}
+
+
+.deletemustgoplace {
+  background-image : url('/icon/X.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 30px;
+  width: 30px;
+}
+
+.mustgoplace {
+  border: 1px solid gray;
+  border-radius: 5px;
+  display: flex;
+  flex-direction:row;
+  align-items: center;
+}

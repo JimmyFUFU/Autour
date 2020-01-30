@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Question</title>
+  <link rel=stylesheet type="text/css" href="css/question.css">
+</head>
+<body>
+  <div class="Question" id="Q1">
+    <p>Hi , 你這次想去哪裡玩 ? *</p>
+    <input type="checkbox" class="citycheckbox" id="Taipei" value="台北">台北
+    <input type="checkbox" class="citycheckbox" id="New_Taipei" value="新北">新北
+    <input type="checkbox" class="citycheckbox" id="Keelung" value="基隆">基隆
+    <input type="checkbox" class="citycheckbox" id="Taoyuan" value="桃園">桃園
+    <input type="checkbox" class="citycheckbox" id="Hsinchu" value="新竹">新竹
+    <input type="checkbox" class="citycheckbox" id="Miaoli" value="苗栗">苗栗
+    <input type="checkbox" class="citycheckbox" id="Taichung" value="台中">台中
+    <input type="checkbox" class="citycheckbox" id="Changhua" value="彰化">彰化
+    <input type="checkbox" class="citycheckbox" id="Nantou" value="南投">南投
+    <input type="checkbox" class="citycheckbox" id="Yunlin" value="雲林">雲林
+    <input type="checkbox" class="citycheckbox" id="Chiayi" value="嘉義">嘉義
+    <input type="checkbox" class="citycheckbox" id="Tainan" value="台南">台南
+    <input type="checkbox" class="citycheckbox" id="Kaohsiung" value="高雄">高雄
+    <input type="checkbox" class="citycheckbox" id="Pingtung" value="屏東">屏東
+    <input type="checkbox" class="citycheckbox" id="Yilan" value="宜蘭">宜蘭
+    <input type="checkbox" class="citycheckbox" id="Hualien" value="花蓮">花蓮
+    <input type="checkbox" class="citycheckbox" id="Taitung" value="台東">台東
+    <input type="checkbox" class="citycheckbox" id="Lienchiang" value="馬祖">馬祖
+    <input type="checkbox" class="citycheckbox" id="Kinmen" value="金門">金門
+    <input type="checkbox" class="citycheckbox" id="Penghu" value="澎湖">澎湖
+    <br>
+    <button type="button"  class="NextBtn" id="confirmQ1" onclick="confirmQ1()">NEXT</button>
+  </div>
+  <div class="Question" id="Q2">
+    <p>偷偷告訴我你幾號幾點會從 ??? 的哪裡開始旅行 ?</p>
+    <input type="datetime-local" class="startdaytime" onchange="changeEndtime()" value="2020-01-22T18:00">
+    <input type="text" class="startpoint" value="台灣新竹市東區中華路二段新竹火車站">
+    <p>什麼時候結束 ? *</p>
+    <input type="datetime-local" class="enddaytime" value="2020-01-24T18:00">
+    <input type="text" class="endpoint" value="台灣新竹市東區中華路二段新竹火車站">
+    <input type="checkbox" onclick="SameAsStartPoint(this)">同出發點
+    <br>
+    <button type="button"  class="NextBtn" id="confirmQ2" onclick="confirmQ2()">NEXT</button>
+  </div>
+  <div class="Question" id="Q3">
+    <p>你的落角處 ? *</p>
+    <div id="hoteldiv"></div>
+    <br>
+    <button type="button" class="NextBtn" id="confirmQ3" onclick="confirmQ3()">NEXT</button>
+  </div>
+  <div class="Question" id="Q4">
+    <p>你喜歡你的行程包含甚麼呢 ?</p>
+    <input type="checkbox" class="prefercheckbox" id="" value="shopping">逛街
+    <input type="checkbox" class="prefercheckbox" id="" value="movie">看電影
+    <input type="checkbox" class="prefercheckbox" id="" value="animal">看動物
+    <input type="checkbox" class="prefercheckbox" id="" value="spirit">知性之旅
+    <input type="checkbox" class="prefercheckbox" id="" value="sport">運動
+    <input type="checkbox" class="prefercheckbox" id="" value="eighteen">我有 18 歲
+    <input type="checkbox" class="prefercheckbox" id="" value="Afternoon_tea">喝下午茶
+    <input type="checkbox" class="prefercheckbox" id="" value="other">其他更多
+    <br>
+    <button type="button" class="NextBtn" id="confirmQ4" onclick="confirmQ4()">NEXT</button>
+  </div>
+  <div class="Question" id="Q5">
+      <p>欸你過來一下 ! 你有沒有特別想去哪裡 ?</p>
+      <input type="text" value="" class="mustgoinput">
+      <button type="button" id="addMustGoBtn" onclick="addMustGo()">ADD</button>
+      <div class="mustgoblock"></div>
+      <br>
+      <button type="button" class="NextBtn" id="confirmQ5" onclick="confirmQ5()">NEXT</button>
+  </div>
+  <div class="Question" id="Q6">
+    <p>我們凡事求一個圓，再多告訴我一點 .. </p>
+    <p>你的交通工具 ?</p>
+      <input type="checkbox" class="transcheckbox" id="" value="car">汽車
+      <input type="checkbox" class="transcheckbox" id="" value="motor">機車
+      <input type="checkbox" class="transcheckbox" id="" value="publictrans">大眾交通
+      <input type="checkbox" class="transcheckbox" id="" value="foots">雙腳
+    <p>多玩一點 ?</p>
+      <input type="radio" name="timeradio" class="timeradio" id="" value="slow">不用，慢慢玩就好
+      <input type="radio" name="timeradio" class="timeradio" id="" value="fast">當然要，一定要很多地方
+      <br>
+      <button type="button" id="" onclick="submit()">submit</button>
+  </div>
+</body>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0nhFGgvV69aIZKr-owbq_OF8rlVsrJdM&libraries=places"></script>
+<script src="/js/question.js"></script>
+</html>
