@@ -52,7 +52,7 @@ var placedetail = function (placeid){
   })
 }
 
-var nearby = function (lat, lng, radius, type){
+var nearby = function (lat, lng, radius, type, n){
   return new Promise(function(resolve, reject) {
     let typelist = []
     for(let i in type){
@@ -89,7 +89,6 @@ var nearby = function (lat, lng, radius, type){
       }
     }
 
-    console.log(type);
     // type 一次只能指定一個 要跑loop
     var nearbylist = []
     for (let i = 0 ; i < typelist.length ; i++ ) {
@@ -97,7 +96,6 @@ var nearby = function (lat, lng, radius, type){
         body = JSON.parse(body)
         if(body.status === 'OK'){
           // 拿到要先找評分4分以上的 then sort by user_ratings_total  再拿前 n 個 (之後看天數決定)  S/O to 優質推薦
-          const n = 2 //拿兩個
           var ratingThanFour = body.results.filter((item, index, array)=>{return item.rating >= 4});
           sort.by(ratingThanFour,'user_ratings_total')
           for (let j = 0; j < n; j++) {nearbylist = [...nearbylist , ratingThanFour[j] ] }

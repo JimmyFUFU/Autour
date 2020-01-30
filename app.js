@@ -67,10 +67,11 @@ app.post('/newAutour' , async function (req,res){
 
   //prefer go ( nearby start place so I need to get geocode first )
   let startplace = await googlemap.findplace(req.body.start.place)
-  let nearbyplace = await googlemap.nearby(startplace.candidates[0].geometry.location.lat,startplace.candidates[0].geometry.location.lng,radius.getradius(req.body.transportation),req.body.prefertype)
+  let nearbyplace = await googlemap.nearby(startplace.candidates[0].geometry.location.lat,startplace.candidates[0].geometry.location.lng,radius.getradius(req.body.transportation),req.body.prefertype,2)
 
   // 加上系統自己推薦 tourist_attraction
-  let moreplace = await googlemap.nearby(startplace.candidates[0].geometry.location.lat,startplace.candidates[0].geometry.location.lng,radius.getradius(req.body.transportation),['tourist_attraction'])
+  let moreplace = await googlemap.nearby(startplace.candidates[0].geometry.location.lat,startplace.candidates[0].geometry.location.lng,radius.getradius(req.body.transportation),['tourist_attraction'],2)
+  res.send(moreplace)
 
   //給權重
 
