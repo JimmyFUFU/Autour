@@ -115,6 +115,26 @@ var nearby = function (lat, lng, radius, type, n){
   });
 }
 
+var distanceMatrix = function (origin , destination , type){
+  return new Promise(function(resolve, reject) {
+    googleMapsClient.distanceMatrix({
+      origins: origin,
+      destinations: destination,
+      language: 'zh-TW',
+      units: 'imperial',
+    } ,  (err,response) => {
+      if(err) {
+        console.log(err);
+        reject(new Error('Google Error') )
+      }
+      else {
+        resolve(response.json);
+      }
+    })
+  })
+}
+
 module.exports.findplace = findplace
 module.exports.placedetail = placedetail
 module.exports.nearby = nearby
+module.exports.distanceMatrix = distanceMatrix

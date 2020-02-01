@@ -10,7 +10,10 @@ const cst = require('./secret/constant.js')
 
 
 const app = express()
-
+const googleMapsClient = require('@google/maps').createClient({
+  key: cst.API_KEY,
+  Promise : Promise
+});
 
 const PORT = 5000
 
@@ -57,7 +60,6 @@ app.get('/geocode' , (req, res)  => {
 
 
 
-
 app.post('/newAutour' , async function (req,res){
   var quantity = 2
   var mustgolist = []
@@ -82,7 +84,6 @@ app.post('/newAutour' , async function (req,res){
   // sortby score
   sort.by(nearbyplace , 'score')
   for (var i in nearbyplace) {nearbyplace[i] = await googlemap.placedetail(nearbyplace[i].place_id)}
-  console.log(nearbyplace);
   // 放進最後的陣列 要把重複的去掉
   var finalPlaceList = []
   mustgolist.forEach((item, i) => {finalPlaceList = [...finalPlaceList , mustgolist[i]]});
@@ -92,7 +93,12 @@ app.post('/newAutour' , async function (req,res){
     if ( check == false ) finalPlaceList.push(nearbyplace[i].result)
   }
 
-  res.send(finalPlaceList)
+  //
+  let idarray =  [`place_id:${startplace.candidates[0].place_id}`]
+  finalPlaceList.forEach((item, i) => { idarray = [...idarray , `place_id:${finalPlaceList[i].place_id}` ]});
+  var getMoveCost = await googlemap.distanceMatrix(idarray , idarray , 'driving')
+  res.send(getMoveCost)
+
 
 
 })
