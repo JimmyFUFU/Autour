@@ -7,7 +7,6 @@ const googleMapsClient = require('@google/maps').createClient({
   Promise : Promise
 });
 
-
 var findplace = function (placename) {
   return new Promise(function(resolve, reject) {
     googleMapsClient.findPlace({
@@ -93,23 +92,29 @@ var nearby = function (lat, lng, radius, type, n){
     var nearbylist = []
     for (let i = 0 ; i < typelist.length ; i++ ) {
       request(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}+${lng}&radius=${radius}&types=${typelist[i]}&language='zh-TW'&key=${cst.API_KEY}` , (error, response, body)=>{
-        body = JSON.parse(body)
-        if(body.status === 'OK'){
+      body = JSON.parse(body)
+       if(body.status === 'OK'){
           // 拿到要先找評分4分以上的 then sort by user_ratings_total  再拿前 n 個 (之後看天數決定)  S/O to 優質推薦
           var ratingThanFour = body.results.filter((item, index, array)=>{return item.rating >= 4});
           sort.by(ratingThanFour,'user_ratings_total')
           for (let j = 0; j < n; j++) {nearbylist = [...nearbylist , ratingThanFour[j] ] }
-          if(nearbylist.length === typelist.length*n) resolve(nearbylist)
         }
-        else if (error) {
-          console.log('error:', error); // Print the error if one occurred
+        else if (error) {   //有其他錯都給空資料
+          console.log(`(${typelist[i]})request error:`, error); // Print the error if one occurred
+          empty = {user_ratings_total : -1 , rating : -1}
+          for (let j = 0; j < n; j++) {nearbylist = [...nearbylist , empty ] }
         }else{
-          console.log('No results or other error');
+          console.log(`(${typelist[i]})No results or other google error`);
+          empty = {user_ratings_total : -1 , rating : -1}
+          for (let j = 0; j < n; j++) {nearbylist = [...nearbylist , empty ] }
         }
+        // 蒐集完景點
+        if(nearbylist.length === typelist.length*n) {resolve(nearbylist)}
       })
     }
   });
 }
+
 module.exports.findplace = findplace
 module.exports.placedetail = placedetail
 module.exports.nearby = nearby
