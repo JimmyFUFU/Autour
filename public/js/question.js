@@ -67,8 +67,9 @@ function confirmQ2() {
     enddaytime = new Date(Date.parse(enddaytime));
     // 有按就要清空 #hoteldiv
     document.querySelector('#hoteldiv').innerHTML = "";
-    // 有幾天
-    for (let i = 0; i < enddaytime.getDate() - startdaytime.getDate(); i++) {
+    // 有幾天  //要改 跨越跨年會母湯
+    var days = (Date.parse(new Date(enddaytime.getFullYear(), enddaytime.getMonth(), enddaytime.getDate())) - Date.parse(new Date(startdaytime.getFullYear(), startdaytime.getMonth(), startdaytime.getDate())))/86400000
+    for (let i = 0; i < days; i++) {
       let div = document.createElement('div')
       let label = document.createElement('label')
       let hotelinput = document.createElement('input')
