@@ -182,6 +182,8 @@ function submit() {
     contentType: 'application/json',
     url: `${API_HOST}/newAutour`,
     success: function(data) {
+
+      document.write(JSON.stringify(data))
       console.log(data);
     }
   })

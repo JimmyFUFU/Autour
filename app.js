@@ -10,7 +10,6 @@ const period = require('./func/period.js')
 const algorithm = require('./func/algorithm.js')
 const cst = require('./secret/constant.js')
 
-
 const app = express()
 const googleMapsClient = require('@google/maps').createClient({
   key: cst.API_KEY,
@@ -26,38 +25,8 @@ app.use(bodyparser.urlencoded({
 app.use(bodyparser.json())
 
 app.get('/test' , (req, res)  => {
-
   res.send('START!!')
 })
-
-
-// request nearby
-/*app.get('/nearby' , (req,res)=>{
-  var radius = 30000
-  var type = ['department_store','shopping_mall','movie_theater']
-  var lat = 25.0407554
-  var lng = 121.5476781
-  request(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}+${lng}&radius=${radius}&types=${type}&key=${cst.API_KEY}` , (error, response, body)=>{
-    console.log('error:', error); // Print the error if one occurred
-    console.log('statusCode:', response && response.statusCode);
-    console.log('body:', body);
-    res.json(JSON.parse(body))
-  })
-})*/
-
-// npm geocode
-/*app.get('/geocode' , (req, res)  => {
-  googleMapsClient.geocode({
-    address: '110台北市信義區基隆路一段178號'
-  }, function(err, response) {
-    if(err) console.log(err);
-    else if (!err) {
-      console.log(response.json.results);
-      res.send(response.json.results)
-    }
-  });
-})*/
-
 
 
 app.post('/newAutour' , async function (req,res){
@@ -144,13 +113,13 @@ app.post('/newAutour' , async function (req,res){
     var moveCostMatrix = algorithm.toMatrix(getMoveCost)
     // 找到從起點到終點走過所有點的最短路徑
     var shortpath = algorithm.find2pointShortestPath(moveCostMatrix,0,idarray.length-1)
-    // 把名字放進去
+    // 依照最段路徑設置 把名字放進去
     for (let k = 0 ; k < periodarray[i].period.place.length ; k++) {
       periodarray[i].period.place[k].name = namearray[shortpath[k+1]]
     }
   }
 
-  res.send(periodarray)
+  res.status(200).send(periodarray)
 
 })
 

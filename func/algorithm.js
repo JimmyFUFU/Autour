@@ -63,6 +63,5 @@ var toMatrix = function(obj){
 }
 
 
-
 module.exports.find2pointShortestPath = find2pointShortestPath;
 module.exports.toMatrix = toMatrix;
