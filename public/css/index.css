@@ -1,0 +1,160 @@
+@import "header.css";
+@import "footer.css";
+@keyframes  swingX  {
+		15% { transform:  translateX(5px); }
+		40% { transform:  translateX(-5px); }
+		65% { transform:  translateX(2px); }
+		85% { transform:  translateX(-2px); }
+		100% { transform:  translateX(0px); }
+	}
+
+@keyframes  swingY  {
+  	15% { transform:  translateY(5px); }
+  	40% { transform:  translateY(-5px); }
+  	65% { transform:  translateY(2px); }
+  	85% { transform:  translateY(-2px); }
+  	100% { transform:  translateY(0px); }
+  }
+
+.bigflex{
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		min-height: calc(100vh - 135px);
+	}
+
+.question{
+	height: auto;
+	width: 0%;
+	transition : 0.5s;
+	padding: 5%;
+	/* border: 1px solid green; */
+}
+
+.index {
+	height: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content:space-around;
+  align-items: center;
+	transition : 0.5s;
+	/* border: 1px solid blue; */
+}
+
+.index .taiwan {
+  background-image: url('../icon/yvonnetaiwan.PNG');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 400px;
+  height: 500px;
+	position: relative;
+	transition : 0.5s;
+	/* border: 1px solid red; */
+}
+
+.pointcity {
+	width: 14%;
+	position: absolute;
+	display: none;
+}
+#pointTaipei {
+	top: -2%;
+	left: 70%;
+}
+#pointNew_Taipei {
+	top: 4%;
+	left: 70%;
+}
+#pointKeelung {
+	top: -3.5%;
+	left: 76.5%;
+}
+#pointTaoyuan {
+	top: 2%;
+	left: 60%;
+}
+#pointHsinchu {
+	top: 9%;
+	left: 56%;
+}
+#pointMiaoli {
+	top: 15%;
+	left: 47%;
+}
+#pointTaichung {
+	top: 24%;
+	left: 45%;
+}
+#pointChanghua {
+	top: 30%;
+	left: 32.5%;
+}
+#pointNantou {
+	top: 36%;
+	left: 51%;
+}
+#pointYunlin {
+	top: 37%;
+	left: 31%;
+}
+#pointChiayi {
+	top: 46%;
+	left: 37%;
+}
+#pointTainan {
+	top: 55%;
+	left: 28%;
+}
+#pointKaohsiung {
+	top: 57%;
+	left: 41%;
+}
+#pointPingtung {
+	top: 72%;
+	left: 38%;
+}
+#pointYilan {
+	top: 15%;
+	left: 73%;
+}
+#pointHualien {
+	top: 35%;
+	left: 68%;
+}
+#pointTaitung {
+	top: 62%;
+	left: 54%;
+}
+#pointLienchiang {
+	top: -5%;
+	left: 3%;
+}
+#pointKinmen {
+	top: 13%;
+	left: 8%;
+}
+#pointPenghu {
+	top: 35%;
+	left: 4%;
+}
+
+
+.index .letsGo {
+  background-image: url('../icon/letsautour.png');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 125px;
+  width: 175px;
+  align-self :flex-end;
+  transition : 0.5s;
+	cursor: pointer;
+	animation-duration: 0.5s;
+	/* border: 1px solid #feca57; */
+}
+
+.index .letsGo:hover {
+ animation : swingX 1s 1;
+}

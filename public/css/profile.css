@@ -1,0 +1,36 @@
+@import "header.css";
+@import "footer.css";
+@keyframes  updown  {
+	  20% { transform:  translateY(20px); }
+	 	60% { transform:  translateY(8px); }
+		100% { transform:  translateY(0px); }
+	}
+.profile {
+  min-height: calc(100vh - 135px);
+  width: auto;
+  position: relative;
+   text-align:center
+}
+
+#memberdiv {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  border : 1px solid green;
+  width: 100%;
+  height : 100%;
+}
+
+#signindiv {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  border : 2px solid #233D4D;;
+  width: 600px;
+  height : 400px;
+  top: 50%;
+  left: 50%;
+  margin: -200px 0 0 -300px;
+	border-radius: 5px;
+	background-color:rgba(236, 240, 241,0.5);
+}

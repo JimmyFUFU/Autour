@@ -1,0 +1,31 @@
+header {
+  width: auto;
+  height: 70px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #233D4D;
+  margin-bottom: 15px;
+}
+
+.memberdiv {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.hitext {
+  font-family: monospace , '微軟正黑體';
+  font-size: 30px;
+  margin-right: 5px;
+}
+
+.member {
+  transition : 0.5s;
+}
+
+.member:hover{
+  content : url('../icon/member-hover.png');
+  transform : scale(1.2);
+}

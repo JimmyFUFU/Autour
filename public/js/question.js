@@ -13,26 +13,37 @@ var API_HOST = location.origin;
 
 function addMustGo() {
   var mustgoinput = document.querySelector('.mustgoinput').value
-  var mustgoblock = document.querySelector('.mustgoblock')
-  let div = document.createElement("div")
-  let p = document.createElement("p")
-  let delbtn = document.createElement("div")
-  p.innerText = mustgoinput
-  delbtn.className = 'deletemustgoplace'
-  delbtn.onclick = function() {
-    deletemustgoplace(this)
-  };
-  div.appendChild(p);
-  div.appendChild(delbtn);
-  div.className = 'mustgoplace'
-  div.value = mustgoinput
-  mustgoblock.appendChild(div);
-  document.querySelector('.mustgoinput').value = ''
+  if(mustgoinput){
+    var mustgoblock = document.querySelector('.mustgoblock')
+    let div = document.createElement("div")
+    let p = document.createElement("p")
+    let delbtn = document.createElement("div")
+    p.innerText = mustgoinput
+    p.style.fontSize = '15px'
+    delbtn.className = 'deletemustgoplace'
+    delbtn.onclick = function() {deletemustgoplace(this)};
+    div.appendChild(p);
+    div.appendChild(delbtn);
+    div.className = 'mustgoplace'
+    div.value = mustgoinput
+    mustgoblock.appendChild(div);
+    document.querySelector('.mustgoinput').value = ''
+  }
 }
 
 function deletemustgoplace(thisobject) {
   var mustgoblock = document.querySelector('.mustgoblock')
   mustgoblock.removeChild(thisobject.parentNode)
+}
+
+
+function clickcity(thisbox) {
+  if (thisbox.checked){
+    document.querySelector(`#point${thisbox.id}`).style.display = "block"
+    animateCSS(`#point${thisbox.id}`,'bounceInDown')
+  }else{
+    animateCSS(`#point${thisbox.id}`,'bounceOutUp' , function(){document.querySelector(`#point${thisbox.id}`).style.display = "none"})
+  }
 }
 
 function confirmQ1() {
@@ -45,10 +56,15 @@ function confirmQ1() {
     }
   }
   if (cityarr.length > 0) {
-    document.querySelector("#Q2 > p").innerText = `偷偷告訴我你幾號幾點會從 ${cityarr} 的哪裡開始旅行 ? *`
+    document.querySelector("#Q2 > p > strong").innerText = `${cityarr}`
     document.querySelector('#Q2').style.display = 'block'
+    document.querySelector('#Q1').style.display = 'none'
+    document.querySelector(".letsGo").style.backgroundImage = "url('../icon/next.png')"
+    document.querySelector(".letsGo").onclick = function(){confirmQ2()};
   } else {
     console.log('Please select city');
+    document.querySelector('.Q1error').style.display = 'flex'
+    animateCSS(`.Q1error`,'shake')
   }
 }
 
@@ -60,14 +76,20 @@ function confirmQ2() {
 
   if (!startdaytime || !enddaytime || !startpoint || !endpoint) {
     console.log('Please check your info')
+    document.querySelector('.Q2error').style.display = 'flex'
+    document.querySelector('.Q2errortext').innerText = '你確定你都有填嗎 ?'
+    animateCSS(`.Q2error`,'shake')
   } else if (Date.parse(startdaytime).valueOf() >= Date.parse(enddaytime).valueOf()) {
-    console.log('Start time CAN NOT earlier than End time')
+    console.log('End time CAN NOT earlier than Start time')
+    document.querySelector('.Q2error').style.display = 'flex'
+    document.querySelector('.Q2errortext').innerText = '開始時間不能比結束時間晚哦 !'
+    animateCSS(`.Q2error`,'shake')
   } else {
     startdaytime = new Date(Date.parse(startdaytime));
     enddaytime = new Date(Date.parse(enddaytime));
     // 有按就要清空 #hoteldiv
     document.querySelector('#hoteldiv').innerHTML = "";
-    // 有幾天  //要改 跨越跨年會母湯
+    // 有幾天
     var days = (Date.parse(new Date(enddaytime.getFullYear(), enddaytime.getMonth(), enddaytime.getDate())) - Date.parse(new Date(startdaytime.getFullYear(), startdaytime.getMonth(), startdaytime.getDate())))/86400000
     for (let i = 0; i < days; i++) {
       let div = document.createElement('div')
@@ -88,31 +110,52 @@ function confirmQ2() {
       label.className = 'hoteldate'
       hotelinput.type = 'text'
       hotelinput.className = 'hotel'
+      hotelinput.value = '台灣新竹市北區西濱路一段168旅館-新竹館'
       div.appendChild(label)
       div.appendChild(hotelinput)
       new google.maps.places.Autocomplete(hotelinput);
       document.querySelector('#hoteldiv').appendChild(div)
     }
     document.querySelector('#Q3').style.display = 'block'
+    document.querySelector('#Q2').style.display = 'none'
+    document.querySelector(".letsGo").onclick = function(){confirmQ3()};
   }
 }
 
 function confirmQ3() {
-  document.querySelector('#Q4').style.display = 'block'
 
-  // 放進 hotelarray
-  hotelarray = [] // 清空
   for (let i = 0; i < $('.hoteldate').length; i++) {
-    hotelarray.push({
-      date: document.querySelectorAll('.hoteldate')[i].innerText,
-      hotel: document.querySelectorAll('.hotel')[i].value
-    })
+    if (!document.querySelectorAll('.hotel')[i].value) {
+      var checkhotel = false
+      break
+    }
+    if(i == document.querySelectorAll('.hotel').length-1) {
+      var checkhotel = true
+    }
+  }
+  if (checkhotel) {
+    document.querySelector('#Q4').style.display = 'block'
+    document.querySelector('#Q3').style.display = 'none'
+    document.querySelector(".letsGo").onclick = function(){confirmQ4()};
+    // 放進 hotelarray
+    hotelarray = [] // 清空
+    for (let i = 0; i < $('.hoteldate').length; i++) {
+      hotelarray.push({
+        date: document.querySelectorAll('.hoteldate')[i].innerText,
+        hotel: document.querySelectorAll('.hotel')[i].value
+      })
+    }
+  }else {
+    document.querySelector('.Q3error').style.display = 'flex'
+    document.querySelector('.Q3errortext').innerText = '你確定你都有填嗎 ?'
+    animateCSS(`.Q3error`,'shake')
   }
 }
 
 function confirmQ4() {
   document.querySelector('#Q5').style.display = 'block'
-
+  document.querySelector('#Q4').style.display = 'none'
+  document.querySelector(".letsGo").onclick = function(){confirmQ5()};
   // get prefer type
   var prefercheckbox = document.querySelectorAll('.prefercheckbox')
   prefertype = []
@@ -126,6 +169,9 @@ function confirmQ4() {
 
 function confirmQ5() {
   document.querySelector('#Q6').style.display = 'block'
+  document.querySelector('#Q5').style.display = 'none'
+  document.querySelector(".letsGo").onclick = function(){submit()};
+  document.querySelector(".letsGo").style.backgroundImage = "url('../icon/go.png')"
   mustgoarr = [] // 清空
   for (var i = 0; i < $('.mustgoplace > p').length; i++) {
     mustgoarr.push($('.mustgoplace > p')[i].innerText)
@@ -182,9 +228,13 @@ function submit() {
     contentType: 'application/json',
     url: `${API_HOST}/newAutour`,
     success: function(data) {
-
+      localStorage.setItem('tour', JSON.stringify(data));
       document.write(JSON.stringify(data))
       console.log(data);
+      window.location.href=`${API_HOST}/tourdetail.html`;
+    },
+    error: function(data){
+      alert('Something Error')
     }
   })
 }

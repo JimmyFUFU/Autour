@@ -53,7 +53,6 @@ var placedetail = function (placeid){
 
 var nearby = function (lat, lng, radius, type, n){
   return new Promise(function(resolve, reject) {
-
     let typelist = []
     for(let i in type){
       switch (type[i]) {
@@ -90,36 +89,33 @@ var nearby = function (lat, lng, radius, type, n){
     }
     // type 一次只能指定一個 要跑loop
     var nearbylist = []
-    if(n<=0) resolve(nearbylist)
+    if(n<=0 || typelist.length == 0) resolve(nearbylist)
     else {
       for (let i = 0 ; i < typelist.length ; i++ ) {
-      request(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}+${lng}&radius=${radius}&types=${typelist[i]}&language='zh-TW'&key=${cst.API_KEY}` , (error, response, body)=>{
-      body = JSON.parse(body)
-      empty = {user_ratings_total : -1 , rating : -1}
-       if(body.status === 'OK'){
-          // 拿到要先找評分 4 (??) 分以上的 then sort by user_ratings_total  再拿前 n 個 (之後看天數決定)  S/O to 優質推薦
-          var ratingThanFour = body.results.filter((item, index, array)=>{return item.rating >= 3.9});
-          sort.by(ratingThanFour,'user_ratings_total')
-          for (let j = 0; j < n; j++) {
-            if (ratingThanFour[j] == undefined) nearbylist = [...nearbylist , empty ]
-            else nearbylist = [...nearbylist , ratingThanFour[j] ]
+        request(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}+${lng}&radius=${radius}&types=${typelist[i]}&language='zh-TW'&key=${cst.API_KEY}` , (error, response, body)=>{
+        body = JSON.parse(body)
+        var empty = {user_ratings_total : -1 , rating : -1}
+         if(body.status === 'OK'){
+            // 拿到要先找評分 4 (??) 分以上的 then sort by user_ratings_total  再拿前 n 個 (之後看天數決定)  S/O to 優質推薦
+            var ratingThanFour = body.results.filter((item, index, array)=>{return item.rating >= 3.9});
+            sort.by(ratingThanFour,'user_ratings_total')
+            for (let j = 0; j < n; j++) {
+              if (ratingThanFour[j] == undefined) nearbylist = [...nearbylist , empty ]
+              else nearbylist = [...nearbylist , ratingThanFour[j] ]
+            }
           }
-        }
-        else if (error) {   //有其他錯都給空資料
-          console.log(`(${typelist[i]})request error:`, error); // Print the error if one occurred
-
-          for (let j = 0; j < n; j++) {nearbylist = [...nearbylist , empty ] }
-        }else{
-          console.log(`(${typelist[i]})No results or other google error`);
-          empty = {user_ratings_total : -1 , rating : -1}
-          for (let j = 0; j < n; j++) {nearbylist = [...nearbylist , empty ] }
-        }
-        // 蒐集完景點
-        if(nearbylist.length === typelist.length*n) {resolve(nearbylist)}
-      })
+          else if (error) {   //有其他錯都給空資料
+            console.log(`(${typelist[i]})request error:`, error); // Print the error if one occurred
+            for (let j = 0; j < n; j++) {nearbylist = [...nearbylist , empty ] }
+          }else{
+            console.log(`(${typelist[i]})No results or other google error`);
+            for (let j = 0; j < n; j++) {nearbylist = [...nearbylist , empty ] }
+          }
+          // 蒐集完景點
+          if(nearbylist.length === typelist.length*n) {resolve(nearbylist)}
+        })
+      }
     }
-    }
-
   });
 }
 

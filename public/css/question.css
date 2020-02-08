@@ -1,36 +1,168 @@
-#Q1 {
-  display: block;
+body{
+  font-family: '微軟正黑體';
 }
 
+#Q1 p , #Q2 p ,#Q3 p ,#Q4 p ,#Q5 p , #Q6 p {
+  font-size: 25px;
+}
+
+.Qicon {
+  height: 30px;
+  margin-right: 5px;
+}
+
+.erroricon {
+  height: 30px;
+  margin-right: 5px;
+}
+
+
+/* Q1 */
+#Q1 {
+  font-size: 20px;
+}
+
+.citycheck {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+.citycheckbox {
+  margin-right: 10px;
+}
+
+.citycheck label {
+  width: 25%;
+  margin-bottom: 10px;
+}
+
+.Q1error {
+  margin-top: 10px;
+  float: right;
+  display: flex;
+  align-items: center;
+  display: none;
+}
+.Q1errortext {
+  font-size: 15px;
+  color: #E74C3C;
+}
+
+
+/* Q2 */
 #Q2 {
   display: none;
 }
 
+.startdaytime , .startpoint , .enddaytime , .endpoint , .hotel , .mustgoinput{
+  border-radius: 5px;
+  border: 1px solid #8395a7;
+  height: 30px;
+  margin-left: 30px;
+}
+.startpoint , .endpoint {
+  width: 80%;
+  margin-top: 5px;
+}
+
+.Q2error {
+  margin-top: 10px;
+  float: right;
+  display: flex;
+  align-items: center;
+  display: none;
+}
+.Q2errortext {
+  font-size: 15px;
+  color: #E74C3C;
+}
+
+/* Q3 */
 #Q3 {
   display: none;
 }
 
+.hotel {
+  margin-bottom: 10px;
+  width: 60%;
+}
+
+.hoteldiv {
+  overflow:auto;
+  height: 240px;
+}
+
+.Q3error {
+  margin-top: 10px;
+  float: right;
+  display: flex;
+  align-items: center;
+  display: none;
+}
+.Q3errortext {
+  font-size: 15px;
+  color: #E74C3C;
+}
+
+
+/* Q4 */
 #Q4 {
   display: none;
 }
 
+.prefer {
+  height: 40vh;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-around;
+}
+
+.prefercheckbox {
+  margin-right: 10px;
+}
+
+.prefer label {
+  margin-bottom: 5px;
+  margin-left: 50px;
+  font-size: 20px;
+}
+
+
+
+/* Q5 */
 #Q5 {
   display: none;
 }
 
-#Q6 {
-  display: none;
+#addMustGoBtn {
+  border: 1px solid #ee5253;
+  margin-left: 5px;
+  padding: 5px;
+  font-family: monospace;
 }
 
-.mustgoblock {
+.mustgoinputblock {
   display: flex;
   flex-direction:row;
   align-items: center;
-  flex-wrap: wrap;
+  margin-bottom: 8px;
 }
 
-.NextBtn {
+.mustgoinput {
+  width: 80%;
+}
 
+
+.mustgoblock {
+  display: flex;
+  flex-direction:column;
+  align-items: center;
+  overflow:auto;
+  height: 240px;
 }
 
 
@@ -48,4 +180,9 @@
   display: flex;
   flex-direction:row;
   align-items: center;
+}
+/* Q6 */
+#Q6 {
+  display: none;
+  font-size: 20px;
 }

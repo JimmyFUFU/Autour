@@ -1,0 +1,46 @@
+<link rel=stylesheet type="text/css" href="../css/signindiv.css">
+<div class="signleft">
+  <div class="map"></div>
+  <div id="loginwelcomeword">Welcome back to <strong>Autour</strong>!</div>
+  <div id="signupwelcomeword"><strong>Autour</strong> is even better with an account.</div>
+</div>
+<div class="signright">
+
+  <div class="login" onclick="change2login()">Login</div>
+  <div class="signup" onclick="change2signup()">Signup</div>
+
+  <div class="changediv">
+    <div class="loginform">
+      <div class="">
+        <img src="../icon/mail.png" alt="">
+        <input type="text" id="inemail" value="" placeholder="Your Email" required="required">
+      </div>
+      <div class="">
+        <img src="../icon/lock.png" alt="">
+        <input type="password" id="inpassword" value="" placeholder="Your password" required="required">
+      </div>
+      <div class="loginerror" style="top:45%"></div>
+      <input type="hidden" id="inprovider" value="native">
+      <div class="nativelogin" onclick="loginAjax()">Login !</div>
+      <div class="fblogin" onclick="fblogin()">Connect with Facebook</div>
+    </div>
+    <div class="signupform">
+      <div class="">
+        <img src="../icon/user.png" alt="">
+        <input type="text" id="upname" value="" placeholder="Your name" required="required">
+      </div>
+      <div class="">
+        <img src="../icon/mail.png" alt="">
+        <input type="text" id="upemail" value="" placeholder="Your Email" required="required">
+      </div>
+      <div class="">
+        <img src="../icon/lock.png" alt="">
+        <input type="password" id="uppassword" value="" placeholder="Your password" required="required">
+      </div>
+      <div class="signuperror" style="top:69%"></div>
+      <div class="signupbtn" onclick="signupAjax()">Create an account !</div>
+    </div>
+  </div>
+
+</div>
+<script src="./js/signindiv.js"></script>

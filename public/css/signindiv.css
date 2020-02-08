@@ -1,0 +1,135 @@
+.signleft {
+  position: relative;
+  height: 100%;
+  width: 50%;
+  /* background-image: url(); */
+  border-right: 1px solid #233D4D;
+}
+
+.signleft .map {
+  background-image: url('../icon/map.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: absolute;
+  width: 25%;
+  height: 20%;
+  top : 50%;
+  left: 50%;
+  margin: -50px 0 0 -38px;
+}
+
+.signleft #loginwelcomeword , .signleft #signupwelcomeword {
+  font-family: monospace;
+  font-size: 20px;
+  position: absolute;
+  top : 60%;
+  width: 100%;
+  text-align: center;
+}
+.signleft #loginwelcomeword {
+
+}
+.signleft #signupwelcomeword {
+  display: none;
+}
+
+.signright {
+  height: 100%;
+  width: 50%;
+}
+
+.login , .signup {
+  font-family: monospace;
+  font-size: 25px;
+  width: 49.6%;
+  transition : 0.5s;
+  border-left: 1px solid #233D4D;
+  border-bottom: 1px solid #233D4D;
+  text-align: center;
+}
+
+.login {
+  border-bottom-width: 0px;
+}
+
+.login:hover , .signup:hover {
+  color: #e67e22;
+}
+
+.login {
+  float: left;
+  padding: 5px 0 ;
+  cursor: pointer;
+}
+
+.signup {
+  float: right;
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+.changediv {
+  width: 100%;
+  margin-top: 39px;
+  height: 90.5%;
+  position: relative;
+  border-left: 1px solid #233D4D;
+}
+
+.loginform , .signupform {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.signupform {
+  display: none;
+}
+
+.loginform div , .signupform div  {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.loginform div img , .signupform div img {
+  height: 30px;
+  margin-right: 5px;
+}
+
+.loginform div input , .signupform div input {
+  line-height: 30px;
+  font-family: monospace;
+  font-size: 15px;
+}
+
+.nativelogin , .signupbtn {
+  font-family: monospace;
+  font-size: 20px;
+  padding: 5px;
+  border: 2px solid #233D4D;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.fblogin {
+  font-family: monospace;
+  font-size: 20px;
+  height: 20px;
+  padding: 5px;
+  border: 2px solid #233D4D;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.loginerror , .signuperror {
+  font-family: monospace;
+  font-size: 12px;
+  color: red;
+  position: absolute;
+  display: none;
+}

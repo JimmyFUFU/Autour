@@ -1,0 +1,213 @@
+$(".header").load("header.html");
+$(".footer").load("footer.html");
+$("#signindiv").load("html/signindiv.html");
+
+var API_HOST = location.origin;
+function animateCSS(element, animationName, callback) {
+    const node = document.querySelector(element)
+    node.classList.add('animated', animationName)
+
+    function handleAnimationEnd() {
+        node.classList.remove('animated', animationName)
+        node.removeEventListener('animationend', handleAnimationEnd)
+
+        if (typeof callback === 'function') callback()
+    }
+
+    node.addEventListener('animationend', handleAnimationEnd)
+}
+var detail = document.querySelector('.detail')
+//localStorage 存在 tour
+var tourobj = JSON.parse(localStorage.tour);
+if(localStorage["tour"]){
+
+  var map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 15,
+    center: {
+      lat: tourobj[0].period.start.lat,
+      lng: tourobj[0].period.start.lng
+    }
+  })
+
+  for (var i = 0 ; i < tourobj.length ; i++){
+    let oneday = document.createElement('div')
+    oneday.className = 'oneday'
+    oneday.id = i
+    oneday.onclick = function(){daymarker(this)};
+
+    let thisdate = document.createElement('div')
+    thisdate.className = 'thisdate'
+    thisdate.innerText = `${tourobj[i].year}/${tourobj[i].month}/${tourobj[i].date}`
+    oneday.appendChild(thisdate)
+
+    //放起點
+    let startplace = document.createElement('div')
+    startplace.className = 'oneplace'
+
+    let startplaceimg = document.createElement('img')
+    startplaceimg.src = "../icon/point.png";
+    startplace.appendChild(startplaceimg)
+
+    let startplacetime = new Date (tourobj[i].period.start.time)
+    if (startplacetime.getHours()) {
+      let startplacep = document.createElement('p')
+      if(startplacetime.getMinutes().toString().length == 1){ startplacep.innerText = `${startplacetime.getHours()}:0${startplacetime.getMinutes()}`}
+      else{startplacep.innerText = `${startplacetime.getHours()}:${startplacetime.getMinutes()}`}
+      startplace.appendChild(startplacep)
+    }
+
+    let startplacestrong = document.createElement('strong')
+    startplacestrong.innerText = tourobj[i].period.start.name
+    startplace.appendChild(startplacestrong)
+
+    oneday.appendChild(startplace)
+
+    //放景點
+    for (var j = 0; j < tourobj[i].period.place.length; j++) {
+      let oneplace = document.createElement('div')
+      oneplace.className = 'oneplace'
+
+      let oneplaceimg = document.createElement('img')
+      oneplaceimg.src = "../icon/point.png";
+      oneplace.appendChild(oneplaceimg)
+
+      let placetime = new Date (tourobj[i].period.place[j].time)
+      let oneplacep = document.createElement('p')
+      if(placetime.getMinutes().toString().length == 1){ oneplacep.innerText = `${placetime.getUTCHours()}:0${placetime.getMinutes()}`}
+      else{oneplacep.innerText = `${placetime.getUTCHours()}:${placetime.getMinutes()}`}
+      oneplace.appendChild(oneplacep)
+
+      let oneplacestrong = document.createElement('strong')
+      oneplacestrong.innerText = tourobj[i].period.place[j].name
+      oneplace.appendChild(oneplacestrong)
+
+      oneday.appendChild(oneplace)
+
+    }
+
+    // 放終點
+    let endplace = document.createElement('div')
+    endplace.className = 'oneplace'
+
+    let endplaceimg = document.createElement('img')
+    endplaceimg.src = "../icon/point.png";
+    endplace.appendChild(endplaceimg)
+
+    let endplacetime = new Date (tourobj[i].period.end.time)
+    if (endplacetime.getHours()) {
+      let endplacep = document.createElement('p')
+      if(endplacetime.getMinutes().toString().length == 1){ endplacep.innerText = `${endplacetime.getHours()}:0${endplacetime.getMinutes()}`}
+      else{endplacep.innerText = `${endplacetime.getHours()}:${endplacetime.getMinutes()}`}
+      endplace.appendChild(endplacep)
+    }
+
+    let endplacestrong = document.createElement('strong')
+    endplacestrong.innerText = tourobj[i].period.end.name
+    endplace.appendChild(endplacestrong)
+
+    oneday.appendChild(endplace)
+
+    detail.appendChild(oneday)
+  }
+  document.querySelector('.memberstore').style.display = "block"
+
+}
+else{
+  let errortext = document.createElement('div')
+  errortext.className = 'errortext'
+  errortext.innerText = '這裡沒有行程哦 !'
+  detail.appendChild(errortext)
+}
+
+function memberstore(){
+  //判斷登入沒
+  if (localStorage.name){
+    //直接存進資料庫
+    var jsonobj = {
+      userid : localStorage.id,
+      tour : localStorage.tour
+    }
+    $.ajax({
+      type:'POST',
+      data:JSON.stringify(jsonobj),
+      contentType: 'application/json',
+      url : `${API_HOST}/storeAutour`,
+      success: function(data) {
+        alert('Success')
+        window.location.href=`${API_HOST}/profile.html`;
+      },error: function(data) {
+        alert('Fail')
+        window.location.href=`${API_HOST}/proflie.html`;
+      }
+    })
+
+  }else{
+    //先請登入再存
+    document.querySelector('#signindiv').style.display = 'flex'
+  }
+}
+
+var markers = []
+var polylines = []
+function deleteMarkers() {
+  markers.forEach(function(e) {
+    e.setMap(null);
+  });
+  markers = [];
+
+  polylines.forEach(function(e) {
+    e.setMap(null);
+  });
+  polylines = [];
+}
+function daymarker(thisobj){
+  document.querySelectorAll('.oneday').forEach((item, i) => {item.style.borderWidth = "1.5px"})
+  thisobj.style.borderWidth = "5px"
+  deleteMarkers()
+  var points = []
+  // 起點
+  points.push({lat: tourobj[thisobj.id].period.start.lat, lng: tourobj[thisobj.id].period.start.lng})
+  var marker = new google.maps.Marker({
+    position: {
+      lat: tourobj[thisobj.id].period.start.lat,
+      lng: tourobj[thisobj.id].period.start.lng
+    },
+    map: map,
+    animation: google.maps.Animation.DROP
+  })
+  markers.push(marker)
+  // 景點
+  for (var i = 0; i < tourobj[thisobj.id].period.place.length; i++) {
+    points.push({lat: tourobj[thisobj.id].period.place[i].lat, lng: tourobj[thisobj.id].period.place[i].lng})
+    var marker = new google.maps.Marker({
+      position: {
+        lat: tourobj[thisobj.id].period.place[i].lat,
+        lng: tourobj[thisobj.id].period.place[i].lng
+      },
+      map: map,
+      animation: google.maps.Animation.DROP
+    })
+    markers.push(marker)
+  }
+  // 終點
+  points.push({lat: tourobj[thisobj.id].period.end.lat, lng: tourobj[thisobj.id].period.end.lng})
+  var marker = new google.maps.Marker({
+    position: {
+      lat: tourobj[thisobj.id].period.end.lat,
+      lng: tourobj[thisobj.id].period.end.lng
+    },
+    map: map,
+    animation: google.maps.Animation.DROP
+  })
+  markers.push(marker)
+
+    var polyline = new google.maps.Polyline({
+        path: points,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+    });
+
+    polyline.setMap(map);
+    polylines.push(polyline)
+}

@@ -1,0 +1,114 @@
+@import "header.css";
+@import "footer.css";
+
+.bigflex {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  min-height: calc(100vh - 135px);
+}
+
+
+#signindiv {
+  position: absolute;
+  /* display: flex; */
+  flex-direction: row;
+  border : 2px solid #233D4D;
+  width: 600px;
+  height : 400px;
+  top: 50%;
+  left: 50%;
+  margin: -200px 0 0 -300px;
+  display: none;
+  border-radius: 5px;
+	background-color:rgba(236, 240, 241,0.9);
+}
+
+.memberstore {
+  position: absolute;
+  bottom: 10%;
+  left: 58%;
+  cursor: pointer;
+  display: none
+}
+
+.detail {
+  height: auto;
+	width: 65%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  overflow:auto;
+  position: relative;
+}
+
+.errortext {
+  position: absolute;
+  left: 30%;
+  top: 3%;
+  align-self: center;
+  font-family: '微軟正黑體';
+  font-size: 40px;
+  color: #7f8c8d;
+}
+
+
+.googlemap {
+  height: auto;
+  width: 35%;
+  margin-left: 5px;
+}
+
+.oneday {
+  border: 1.5px solid #FE7F2D;
+  border-radius: 5px;
+  margin : 10px 3% 0 3%;
+  height: 95%;
+  display: flex;
+  flex-direction: column;
+  justify-content:flex-start;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s
+}
+
+.oneday:hover {
+  border: 5px solid #FE7F2D;
+}
+
+.thisdate {
+  border-bottom: 1.5px solid #FE7F2D;
+  width: 300px;
+  font-family: monospace;
+  font-size:30px;
+  text-align: center;
+  padding: 5%;
+}
+
+.oneplace {
+  width: 300px;
+  border-bottom: 1px solid #FFBC42;
+  padding: 3px;
+  text-align: center;
+  margin: 2%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+}
+
+.oneplace img {
+  	width: 40px;
+}
+
+.oneplace p {
+  font-family: monospace;
+  color: #7f8c8d;
+  margin: 0 3%;
+}
+
+.oneplace strong {
+  font-family: '微軟正黑體';
+  font-size:20px;
+}
