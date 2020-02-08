@@ -157,6 +157,7 @@ app.post('/storeAutour' , async function (req,res){
       const inserttourpost = {
         id:moment(moment().valueOf()).format('YYYYMMDDHHmmss'),
         userid:req.body.userid,
+        tourtitle:req.body.tourtitle,
         tourdetail:req.body.tour
       }
       await mysql.insertdataSet('tour',inserttourpost)

@@ -156,6 +156,11 @@ body{
   width: 80%;
 }
 
+/* .mustgoinput:focus {
+  border-color: #FFBC42;
+  box-shadow: 0 0 8px 0 #FFBC42;
+} */
+
 
 .mustgoblock {
   display: flex;

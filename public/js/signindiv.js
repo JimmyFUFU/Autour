@@ -62,6 +62,7 @@ function loginAjax() {
       localStorage.setItem("access_token", data.data.access_token);
       localStorage.setItem("name", data.data.user.name);
       localStorage.setItem("id", data.data.user.id);
+      document.querySelector('.hitext strong').innerText = data.data.user.name
       animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
     },
     error: function(data) {
@@ -86,6 +87,7 @@ function signupAjax() {
       localStorage.setItem("access_token", data.data.access_token);
       localStorage.setItem("name", data.data.user.name);
       localStorage.setItem("id", data.data.user.id);
+      document.querySelector('.hitext strong').innerText = data.data.user.name
       animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
     },
     error: function(data) {

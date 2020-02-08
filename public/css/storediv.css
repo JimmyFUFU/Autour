@@ -1,0 +1,53 @@
+p {
+  font-family:  '微軟正黑體';
+  font-size: 25px;
+}
+
+.titlediv {
+  width: 70%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+.titlediv p {
+  margin-right: 5%;
+}
+.titleinput {
+  border: 2px solid #aaa;
+  border-radius: 4px;
+  margin: 8px 0 ;
+  outline: none;
+  padding: 8px;
+  box-sizing: border-box;
+  width: 60%;
+}
+.titleinput:focus {
+  border-color: #FFBC42;
+  box-shadow: 0 0 8px 0 #FFBC42;
+}
+
+.btndiv {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  height:  45%;
+  width: 100%;
+  align-self: flex-end;
+}
+
+.no {
+  font-family: '微軟正黑體';
+  border-bottom: 1px solid #233D4D;
+  cursor: pointer;
+}
+
+.yes {
+  font-family: '微軟正黑體';
+  font-size: 20px;
+  padding: 1% 5%;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 2px solid #233D4D;
+}

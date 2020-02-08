@@ -68,8 +68,8 @@ function confirmQ1() {
   }
 }
 
+var startdaytime = document.querySelector('.startdaytime').value
 function confirmQ2() {
-  var startdaytime = document.querySelector('.startdaytime').value
   var enddaytime = document.querySelector('.enddaytime').value
   var startpoint = document.querySelector('.startpoint').value
   var endpoint = document.querySelector('.endpoint').value
@@ -191,6 +191,8 @@ function SameAsStartPoint(thisobject) {
 }
 
 function submit() {
+
+  localStorage.setItem('titleplaceholder' , `${startdaytime.getFullYear()}/${startdaytime.getMonth()+1} ${cityarr}`)
 
   var transportation = []
   for (var i = 0; i < $('.transcheckbox').length; i++) {

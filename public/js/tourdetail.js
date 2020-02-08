@@ -1,6 +1,7 @@
 $(".header").load("header.html");
 $(".footer").load("footer.html");
 $("#signindiv").load("html/signindiv.html");
+$("#storediv").load("html/storediv.html");
 
 var API_HOST = location.origin;
 function animateCSS(element, animationName, callback) {
@@ -18,9 +19,8 @@ function animateCSS(element, animationName, callback) {
 }
 var detail = document.querySelector('.detail')
 //localStorage 存在 tour
-var tourobj = JSON.parse(localStorage.tour);
 if(localStorage["tour"]){
-
+  var tourobj = JSON.parse(localStorage.tour);
   var map = new google.maps.Map(document.getElementById('map'), {
     zoom: 15,
     center: {
@@ -109,22 +109,40 @@ if(localStorage["tour"]){
 
     detail.appendChild(oneday)
   }
-  document.querySelector('.memberstore').style.display = "block"
 
+  document.querySelector('.memberstore').style.display = "block"
 }
 else{
+  var map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 15,
+    center: {
+      lat: 25.053866,
+      lng: 121.617225
+    }
+  })
   let errortext = document.createElement('div')
   errortext.className = 'errortext'
   errortext.innerText = '這裡沒有行程哦 !'
   detail.appendChild(errortext)
 }
 
-function memberstore(){
-  //判斷登入沒
+function checkmember(){
   if (localStorage.name){
+    document.querySelector('#storediv').style.display = 'flex'
+    document.querySelector('.titleinput').value = `${localStorage.titleplaceholder}之旅`
+  }else{
+    //先請登入再存
+    document.querySelector('#signindiv').style.display = 'flex'
+  }
+}
+
+function memberstore(){
+  //判斷 title
+  if (document.querySelector('.titleinput').value) {
     //直接存進資料庫
     var jsonobj = {
       userid : localStorage.id,
+      tourtitle : document.querySelector('.titleinput').value,
       tour : localStorage.tour
     }
     $.ajax({
@@ -137,14 +155,20 @@ function memberstore(){
         window.location.href=`${API_HOST}/profile.html`;
       },error: function(data) {
         alert('Fail')
-        window.location.href=`${API_HOST}/proflie.html`;
+        window.location.href=`${API_HOST}/profile.html`;
       }
     })
-
+    localStorage.removeItem('titleplaceholder')
   }else{
-    //先請登入再存
-    document.querySelector('#signindiv').style.display = 'flex'
+    document.querySelector('.titleinput').style.boxShadow = "0 0 8px 0 #e84118"
+    document.querySelector('.titleinput').style.borderColor = "rgba(232, 65, 24,0.5)"
+    animateCSS('.titleinput' , 'shake')
   }
+}
+
+function nostore(){
+  localStorage.removeItem('tour');
+  window.location.href=`${API_HOST}/profile.html`;
 }
 
 var markers = []
@@ -161,6 +185,7 @@ function deleteMarkers() {
   polylines = [];
 }
 function daymarker(thisobj){
+  var tourobj = JSON.parse(localStorage.tour);
   document.querySelectorAll('.oneday').forEach((item, i) => {item.style.borderWidth = "1.5px"})
   thisobj.style.borderWidth = "5px"
   deleteMarkers()
