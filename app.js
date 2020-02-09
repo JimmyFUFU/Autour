@@ -40,11 +40,9 @@ app.get('/test' , (req, res)  => {
 
 app.post('/newAutour' , async function (req,res){
   // 先算有多少時段 才知道要拿多少個景點 // 順便放好 起點 住宿 終點資訊
-  let periodarray = period.getperiod(req.body.start.time , req.body.end.time , req.body.timetype , req.body)
+  let periodarray = period.getperiod(req.body)
   let periodnumber = 0
-  periodarray.forEach((item, i) => {
-    periodnumber += periodarray[i].period.place.length
-  });
+  periodarray.forEach((item, i) => { periodnumber += periodarray[i].period.place.length });
   var quantity = periodnumber - req.body.mustgo.length
 
   var mustgolist = []
@@ -55,14 +53,17 @@ app.post('/newAutour' , async function (req,res){
     mustgolist.push(mustgoplacedetail.result)
   }
   console.log('mustgolist finish !');
+
+
   //prefer go ( nearby start place so I need to get geocode first )
   let startplace = await googlemap.findplace(req.body.start.place)
   let endplace = await googlemap.findplace(req.body.end.place)
   let nearbyplace = await googlemap.nearby(startplace.candidates[0].geometry.location.lat,startplace.candidates[0].geometry.location.lng,radius.getradius(req.body.transportation),req.body.prefertype,quantity)
   nearbyplace = nearbyplace.filter((item, index, array)=>{return item.rating >= 0}); // 去掉空資料
 
+
   // 加上系統自己推薦 tourist_attraction
-  let moreplace = await googlemap.nearby(startplace.candidates[0].geometry.location.lat,startplace.candidates[0].geometry.location.lng,radius.getradius(req.body.transportation),['tourist_attraction'],quantity)
+  let moreplace = await googlemap.nearby(startplace.candidates[0].geometry.location.lat,startplace.candidates[0].geometry.location.lng,radius.getradius(req.body.transportation),['tourist_attraction'],quantity-nearbyplace.length)
   moreplace = moreplace.filter((item, index, array)=>{return item.rating >= 0}); // 去掉空資料
   console.log('moreplace finish !');
   //給權重 取得綜合分數
@@ -144,6 +145,7 @@ app.post('/newAutour' , async function (req,res){
     }
   }
   console.log('periodarray finish !');
+
   res.status(200).send(periodarray)
 
 })

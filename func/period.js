@@ -1,7 +1,8 @@
-var getperiod = function (start, end, type , body){
+var getperiod = function (body){
   var periodarray = []
-  let startms = Date.parse(start) + 8*60*60*1000// 加八小
-  let endms = Date.parse(end)+ 8*60*60*1000
+  let type = body.timetype
+  let startms = Date.parse(body.start.time) + 8*60*60*1000// 加八小
+  let endms = Date.parse(body.end.time)+ 8*60*60*1000
   start = new Date (startms)
   end = new Date (endms)
   let startyear = start.getUTCFullYear(),

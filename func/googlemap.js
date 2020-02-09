@@ -51,7 +51,7 @@ var placedetail = function (placeid){
   })
 }
 
-var nearby = function (lat, lng, radius, type, n){
+var nearby = function (lat, lng, radius, type, items){
   return new Promise(function(resolve, reject) {
     let typelist = []
     for(let i in type){
@@ -89,8 +89,11 @@ var nearby = function (lat, lng, radius, type, n){
     }
     // type 一次只能指定一個 要跑loop
     var nearbylist = []
-    if(n<=0 || typelist.length == 0) resolve(nearbylist)
+    if(items<=0 || typelist.length == 0) resolve(nearbylist)
     else {
+      // 某些type 不要太多 看 countitems ()
+      var nearbytotalitems = 0
+      typelist.forEach((item, i) => {nearbytotalitems += countitems(item , items)});
       for (let i = 0 ; i < typelist.length ; i++ ) {
         request(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}+${lng}&radius=${radius}&types=${typelist[i]}&language='zh-TW'&key=${cst.API_KEY}` , (error, response, body)=>{
         body = JSON.parse(body)
@@ -99,20 +102,20 @@ var nearby = function (lat, lng, radius, type, n){
             // 拿到要先找評分 4 (??) 分以上的 then sort by user_ratings_total  再拿前 n 個 (之後看天數決定)  S/O to 優質推薦
             var ratingThanFour = body.results.filter((item, index, array)=>{return item.rating >= 3.9});
             sort.by(ratingThanFour,'user_ratings_total')
-            for (let j = 0; j < n; j++) {
+            for (let j = 0; j < countitems(typelist[i] , items); j++) {
               if (ratingThanFour[j] == undefined) nearbylist = [...nearbylist , empty ]
               else nearbylist = [...nearbylist , ratingThanFour[j] ]
             }
           }
           else if (error) {   //有其他錯都給空資料
             console.log(`(${typelist[i]})request error:`, error); // Print the error if one occurred
-            for (let j = 0; j < n; j++) {nearbylist = [...nearbylist , empty ] }
+            for (let j = 0; j < countitems(typelist[i] , items); j++) {nearbylist = [...nearbylist , empty ] }
           }else{
             console.log(`(${typelist[i]})No results or other google error`);
-            for (let j = 0; j < n; j++) {nearbylist = [...nearbylist , empty ] }
+            for (let j = 0; j < countitems(typelist[i] , items); j++) {nearbylist = [...nearbylist , empty ] }
           }
           // 蒐集完景點
-          if(nearbylist.length === typelist.length*n) {resolve(nearbylist)}
+          if(nearbylist.length === nearbytotalitems) {resolve(nearbylist)}
         })
       }
     }
@@ -136,6 +139,46 @@ var distanceMatrix = function (origin , destination , type){
       }
     })
   })
+}
+
+function countitems(typename , items) {
+  switch (typename) {
+    case  'movie_theater' :
+      return Math.ceil(items*0.05)
+      break;
+    case 'bar':
+      return Math.ceil(items/4)
+      break;
+    case 'night_club':
+      return Math.ceil(items/4)
+      break;
+    case 'casino':
+      return Math.ceil(items/4)
+      break;
+    case 'cafe':
+      return Math.ceil(items/4)
+      break;
+    case 'aquarium':
+      return Math.ceil(items/5)
+      break;
+    case 'zoo':
+      return Math.ceil(items/5)
+      break;
+    case 'art_gallery':
+      return Math.ceil(items/2)
+      break;
+    case 'museum':
+      return Math.ceil(items/2)
+      break;
+    case 'library':
+      return Math.ceil(items/2)
+      break;
+    case 'church':
+      return Math.ceil(items/2)
+      break;
+    default:
+      return items
+  }
 }
 
 module.exports.findplace = findplace
