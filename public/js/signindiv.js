@@ -64,6 +64,7 @@ function loginAjax() {
       localStorage.setItem("id", data.data.user.id);
       document.querySelector('.hitext strong').innerText = data.data.user.name
       animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
+      window.location.reload();
     },
     error: function(data) {
       document.querySelector('.loginerror').innerText = data.responseJSON.error
@@ -89,6 +90,7 @@ function signupAjax() {
       localStorage.setItem("id", data.data.user.id);
       document.querySelector('.hitext strong').innerText = data.data.user.name
       animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
+      window.location.reload();
     },
     error: function(data) {
       document.querySelector('.signuperror').innerText = data.responseJSON.error
@@ -97,10 +99,7 @@ function signupAjax() {
   })
 }
 
-function logout(){
-  localStorage.removeItem("access_token");
-  location.reload();
-}
+
 
 
 // FB

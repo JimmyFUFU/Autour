@@ -28,7 +28,7 @@ for (var i = 0; i < 5; i++) {
 document.querySelector(".letsGo").onclick = function(){startquestion()};
 
 function startquestion() {
-  $("html, body").animate({scrollTop:$('.bigflex').offset().top-20},500)
+  // $("html, body").animate({scrollTop:$('.bigflex').offset().top-20},500)
   bouncepointid.forEach((item, i) => {animateCSS(`#${item}`,'bounceOutUp' ,function(){document.querySelector(`#${item}`).style.display = "none"})});
   document.querySelector('.index').style.width = '35%'
   document.querySelector('.index').style.flexDirection = 'column'

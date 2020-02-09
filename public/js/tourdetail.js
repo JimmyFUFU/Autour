@@ -4,6 +4,7 @@ $("#signindiv").load("html/signindiv.html");
 $("#storediv").load("html/storediv.html");
 
 var API_HOST = location.origin;
+
 function animateCSS(element, animationName, callback) {
     const node = document.querySelector(element)
     node.classList.add('animated', animationName)
@@ -17,10 +18,50 @@ function animateCSS(element, animationName, callback) {
 
     node.addEventListener('animationend', handleAnimationEnd)
 }
+
 var detail = document.querySelector('.detail')
+var getUrlString = location.href;
+var url = new URL(getUrlString);
+var id = url.searchParams.get('id');
 //localStorage 存在 tour
-if(localStorage["tour"]){
-  var tourobj = JSON.parse(localStorage.tour);
+if(localStorage["tour"] || id){
+  if(id){
+    $.ajax({
+      type : 'GET',
+      contentType : 'application/json' ,
+      url : `${location.origin}/getAutour?id=${id}`,
+      success :function(data){
+        rendertourdetail(JSON.parse(data[0].tourdetail))
+      },
+      error : function(data){
+        console.log('error');
+        rendererror()
+      }
+    })
+  } else if (localStorage["tour"]){
+    rendertourdetail(JSON.parse(localStorage.tour))
+    document.querySelector('.memberstore').style.display = "block"
+  }
+}else{
+  rendererror()
+}
+
+
+function rendererror(){
+  var map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 15,
+    center: {
+      lat: 25.053866,
+      lng: 121.617225
+    }
+  })
+  let errortext = document.createElement('div')
+  errortext.className = 'errortext'
+  errortext.innerText = '這裡沒有行程哦 !'
+  detail.appendChild(errortext)
+}
+
+function rendertourdetail(tourobj){
   var map = new google.maps.Map(document.getElementById('map'), {
     zoom: 15,
     center: {
@@ -33,7 +74,7 @@ if(localStorage["tour"]){
     let oneday = document.createElement('div')
     oneday.className = 'oneday'
     oneday.id = i
-    oneday.onclick = function(){daymarker(this)};
+    oneday.onclick = function(){daymarker(this , tourobj , map)};
 
     let thisdate = document.createElement('div')
     thisdate.className = 'thisdate'
@@ -82,7 +123,6 @@ if(localStorage["tour"]){
       oneplace.appendChild(oneplacestrong)
 
       oneday.appendChild(oneplace)
-
     }
 
     // 放終點
@@ -109,21 +149,6 @@ if(localStorage["tour"]){
 
     detail.appendChild(oneday)
   }
-
-  document.querySelector('.memberstore').style.display = "block"
-}
-else{
-  var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 15,
-    center: {
-      lat: 25.053866,
-      lng: 121.617225
-    }
-  })
-  let errortext = document.createElement('div')
-  errortext.className = 'errortext'
-  errortext.innerText = '這裡沒有行程哦 !'
-  detail.appendChild(errortext)
 }
 
 function checkmember(){
@@ -184,11 +209,13 @@ function deleteMarkers() {
   });
   polylines = [];
 }
-function daymarker(thisobj){
-  var tourobj = JSON.parse(localStorage.tour);
+
+function daymarker(thisobj , tourobj , map){
+
   document.querySelectorAll('.oneday').forEach((item, i) => {item.style.borderWidth = "1.5px"})
   thisobj.style.borderWidth = "5px"
   deleteMarkers()
+
   var points = []
   // 起點
   points.push({lat: tourobj[thisobj.id].period.start.lat, lng: tourobj[thisobj.id].period.start.lng})
@@ -198,9 +225,15 @@ function daymarker(thisobj){
       lng: tourobj[thisobj.id].period.start.lng
     },
     map: map,
-    animation: google.maps.Animation.DROP
+    animation: google.maps.Animation.DROP,
+    title:tourobj[thisobj.id].period.start.name
   })
+  map.panTo({
+    lat: tourobj[thisobj.id].period.start.lat,
+    lng: tourobj[thisobj.id].period.start.lng
+  });
   markers.push(marker)
+
   // 景點
   for (var i = 0; i < tourobj[thisobj.id].period.place.length; i++) {
     points.push({lat: tourobj[thisobj.id].period.place[i].lat, lng: tourobj[thisobj.id].period.place[i].lng})
@@ -210,7 +243,9 @@ function daymarker(thisobj){
         lng: tourobj[thisobj.id].period.place[i].lng
       },
       map: map,
-      animation: google.maps.Animation.DROP
+      label: `${i+1}`,
+      animation: google.maps.Animation.DROP,
+      title:tourobj[thisobj.id].period.place[i].name
     })
     markers.push(marker)
   }
@@ -222,7 +257,8 @@ function daymarker(thisobj){
       lng: tourobj[thisobj.id].period.end.lng
     },
     map: map,
-    animation: google.maps.Animation.DROP
+    animation: google.maps.Animation.DROP,
+    title:tourobj[thisobj.id].period.end.name
   })
   markers.push(marker)
 
@@ -235,4 +271,5 @@ function daymarker(thisobj){
 
     polyline.setMap(map);
     polylines.push(polyline)
+
 }

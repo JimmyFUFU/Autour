@@ -7,7 +7,8 @@ new google.maps.places.Autocomplete(document.querySelector('.mustgoinput'));
 var cityarr = [],
   hotelarray = [],
   prefertype = [],
-  mustgoarr = []
+  mustgoarr = [],
+  startdaytime
 
 var API_HOST = location.origin;
 
@@ -68,8 +69,8 @@ function confirmQ1() {
   }
 }
 
-var startdaytime = document.querySelector('.startdaytime').value
 function confirmQ2() {
+  startdaytime = document.querySelector('.startdaytime').value
   var enddaytime = document.querySelector('.enddaytime').value
   var startpoint = document.querySelector('.startpoint').value
   var endpoint = document.querySelector('.endpoint').value

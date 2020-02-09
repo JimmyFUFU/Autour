@@ -16,14 +16,13 @@
   position: absolute;
   display: flex;
   flex-direction: row;
-  border : 1px solid green;
   width: 100%;
   height : 100%;
 }
 
 #signindiv {
   position: absolute;
-  display: flex;
+  display: none;
   flex-direction: row;
   border : 2px solid #233D4D;;
   width: 600px;
@@ -33,4 +32,86 @@
   margin: -200px 0 0 -300px;
 	border-radius: 5px;
 	background-color:rgba(236, 240, 241,0.5);
+}
+
+/* memberdiv  */
+.tourlist {
+	 height: 100%;
+	 width: 70%;
+	 display: flex;
+	 flex-direction: column;
+	 justify-content: flex-start;
+	 align-items: center;
+	 overflow: auto;
+}
+
+.onetour {
+	border: 1.5px solid #FFBC42;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+	margin: 2% 0 ;
+	width: 80%;
+	cursor: pointer;
+	transition: 0.5s;
+	text-decoration: none;
+}
+
+.onetour:hover{
+	border: 4px solid #FFBC42;
+}
+
+.tourimg {
+	margin: 1%;
+}
+
+.tourtitle {
+	font-family: monospace , '微軟正黑體';
+	font-size: 30px;
+	color : #233D4D;
+}
+
+
+.memberdetail {
+	 height: 100%;
+	 width:30%;
+	 display: flex;
+	 flex-direction: column;
+	 align-items: center;
+	 justify-content: flex-start;
+	 font-family: monospace,'微軟正黑體';
+	 border-left: 2px solid rgba(116, 125, 140,1.0);
+}
+
+.memberprofile {
+	 max-width: 150px;
+	 max-height: 150px;
+	 margin-top: 40%;
+}
+
+.memberid {
+	 font-size:15px;
+	 color : rgba(113, 128, 147,1.0);
+	 margin : 4% 0;
+}
+
+.membername {
+ 	 font-size: 30px;
+	 color: #233D4D;
+}
+
+.memberemail {
+	 color : #233D4D;
+	 font-size:20px;
+	 margin : 2% 0;
+}
+
+.logout {
+	margin-top: 5%;
+	font-family: monospace , '微軟正黑體';
+	border-bottom: 1px solid #233D4D;
+	display: none;
+	cursor: pointer;
 }

@@ -123,9 +123,10 @@
   font-family: monospace;
   color: #7f8c8d;
   margin: 0 3%;
+  font-size: 15px;
 }
 
 .oneplace strong {
-  font-family: '微軟正黑體';
+  font-family:  '微軟正黑體' ,  monospace;
   font-size:20px;
 }

@@ -28,6 +28,7 @@ body{
   align-items: center;
   flex-wrap: wrap;
   justify-content:center;
+  cursor: pointer;
 }
 .citycheckbox {
   margin-right: 10px;
@@ -36,6 +37,8 @@ body{
 .citycheck label {
   width: 25%;
   margin-bottom: 10px;
+  cursor: pointer;
+  font-size: 25px;
 }
 
 .Q1error {
@@ -46,8 +49,8 @@ body{
   display: none;
 }
 .Q1errortext {
-  font-size: 15px;
-  color: #E74C3C;
+  font-size: 17px;
+  color: #c0392b;
 }
 
 
@@ -59,9 +62,12 @@ body{
 .startdaytime , .startpoint , .enddaytime , .endpoint , .hotel , .mustgoinput{
   border-radius: 5px;
   border: 1px solid #8395a7;
-  height: 30px;
+  height: 45px;
   margin-left: 30px;
+  font-size: 17px;
+  font-family: monospace , Microsoft JhengHei;
 }
+
 .startpoint , .endpoint {
   width: 80%;
   margin-top: 5px;
@@ -75,8 +81,8 @@ body{
   display: none;
 }
 .Q2errortext {
-  font-size: 15px;
-  color: #E74C3C;
+  font-size: 17px;
+  color: #c0392b;
 }
 
 /* Q3 */
@@ -89,9 +95,9 @@ body{
   width: 60%;
 }
 
-.hoteldiv {
-  overflow:auto;
-  height: 240px;
+#hoteldiv {
+  overflow-x : auto;
+  height: 400px;
 }
 
 .Q3error {
@@ -102,8 +108,8 @@ body{
   display: none;
 }
 .Q3errortext {
-  font-size: 15px;
-  color: #E74C3C;
+  font-size: 17px;
+  color: #c0392b;
 }
 
 
@@ -129,6 +135,7 @@ body{
   margin-bottom: 5px;
   margin-left: 50px;
   font-size: 20px;
+  cursor: pointer;
 }
 
 
@@ -139,10 +146,13 @@ body{
 }
 
 #addMustGoBtn {
-  border: 1px solid #ee5253;
+  border: 1px solid #2f3542;
+  border-radius: 5px;
   margin-left: 5px;
   padding: 5px;
   font-family: monospace;
+  font-size: 19px;
+  cursor: pointer;
 }
 
 .mustgoinputblock {
@@ -156,11 +166,6 @@ body{
   width: 80%;
 }
 
-/* .mustgoinput:focus {
-  border-color: #FFBC42;
-  box-shadow: 0 0 8px 0 #FFBC42;
-} */
-
 
 .mustgoblock {
   display: flex;
@@ -168,6 +173,7 @@ body{
   align-items: center;
   overflow:auto;
   height: 240px;
+  cursor: pointer;
 }
 
 
@@ -190,4 +196,8 @@ body{
 #Q6 {
   display: none;
   font-size: 20px;
+}
+
+#Q6 label {
+    cursor: pointer;
 }

@@ -31,6 +31,7 @@ app.use(bodyparser.urlencoded({
   extended: false
 }))
 app.use(bodyparser.json())
+app.use(bearerToken())
 
 app.get('/test' , (req, res)  => {
   res.send('START!!')
@@ -166,6 +167,18 @@ app.post('/storeAutour' , async function (req,res){
   } catch (e) {
     res.status(400).send({ error: 'DB error' })
   }
+})
+
+app.get('/getAutour' , async function(req,res){
+
+  var tourdetail = await mysql.selectdatafromWhere('tourdetail','tour' , `id = "${req.query.id}"`)
+  tourdetail = JSON.stringify(tourdetail)
+  tourdetail = JSON.parse(tourdetail)
+  res.send(tourdetail)
+})
+
+app.delete('/deleteAutour' , async function(req,res){
+
 })
 
 app.post('/user/login' , async function (req,res){
@@ -319,6 +332,25 @@ app.post('/user/signup' , async function (req,res){
     }
   }
 })
+
+app.get('/user/profile' , async function(req,res){
+  //先找使用者
+  var userdetail = await mysql.selectdatafromWhere('id , name , email , picture' , 'user' , `access_token = "${req.token}"`)
+  var userTour = await mysql.selectdatafromWhere('id , tourtitle' , 'tour' , `userid = "${userdetail[0].id}"`)
+  userTour = JSON.stringify(userTour)
+  userTour = JSON.parse(userTour)
+  var profileObj = {
+    user :{
+      id : userdetail[0].id,
+      name :　userdetail[0].name,
+      email : userdetail[0].email,
+      picture : userdetail[0].picture
+    },
+    tour : userTour
+  }
+  res.send(profileObj)
+})
+
 
 
 app.listen(PORT , ()=>{

@@ -15,10 +15,15 @@ header {
   align-items: center;
 }
 
+.memberdiv a {
+  text-decoration: none;
+}
+
 .hitext {
-  font-family: monospace , '微軟正黑體';
+  font-family: monospace , Microsoft JhengHei;
   font-size: 30px;
   margin-right: 5px;
+  color: rgba(47, 53, 66,1.0);
 }
 
 .member {
@@ -27,5 +32,5 @@ header {
 
 .member:hover{
   content : url('../icon/member-hover.png');
-  transform : scale(1.2);
+  transform : scale(1.1);
 }
