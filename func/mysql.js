@@ -49,7 +49,18 @@ var insertdataSet = function (object, set) {
   })
 }
 
+var deletefromwhere = function ( object, where ) {
+  let sql = `DELETE FROM ${object} WHERE ${where}`
+  return new Promise(function (resolve, reject) {
+    pool.query(sql , (err, results) => {
+      if (err) reject(new Error('deleteFail'))
+      resolve(results)
+    })
+  })
+}
+
 module.exports.selectdatafrom = selectdatafrom
 module.exports.selectdatafromWhere = selectdatafromWhere
 module.exports.updatedatafromWhere = updatedatafromWhere
 module.exports.insertdataSet = insertdataSet
+module.exports.deletefromwhere = deletefromwhere;

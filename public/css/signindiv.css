@@ -6,6 +6,20 @@
   border-right: 1px solid #233D4D;
 }
 
+.signleft::before {
+	background-image: url(../icon/taipei101.jpg);
+	background-repeat: no-repeat;
+	background-size:cover;
+	content:"";
+	width: 100%;
+  height: 100%;
+	position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;/*-1 可以當背景*/
+  opacity:0.4;
+}
+
 .signleft .map {
   background-image: url('../icon/map.png');
   background-repeat: no-repeat;

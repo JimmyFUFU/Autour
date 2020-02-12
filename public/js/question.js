@@ -48,6 +48,7 @@ function clickcity(thisbox) {
 }
 
 function confirmQ1() {
+
   // city
   cityarr = [] //清空重放
   var citycheckbox = document.querySelectorAll('.citycheckbox')
@@ -111,7 +112,7 @@ function confirmQ2() {
       label.className = 'hoteldate'
       hotelinput.type = 'text'
       hotelinput.className = 'hotel'
-      hotelinput.value = '台灣新竹市北區西濱路一段168旅館-新竹館'
+      // hotelinput.value = '台灣新竹市北區西濱路一段168旅館-新竹館'
       div.appendChild(label)
       div.appendChild(hotelinput)
       new google.maps.places.Autocomplete(hotelinput);
@@ -192,6 +193,10 @@ function SameAsStartPoint(thisobject) {
 }
 
 function submit() {
+
+  // loading
+  document.querySelector('.loading').style.display = 'flex'
+  document.styleSheets[0].addRule('.bigflex.bigflex::after','display: block;');
 
   localStorage.setItem('titleplaceholder' , `${startdaytime.getFullYear()}/${startdaytime.getMonth()+1} ${cityarr}`)
 

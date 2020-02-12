@@ -31,10 +31,15 @@ if(localStorage["tour"] || id){
       contentType : 'application/json' ,
       url : `${location.origin}/getAutour?id=${id}`,
       success :function(data){
-        rendertourdetail(JSON.parse(data[0].tourdetail))
+        if(!data[0].tourdetail) {
+          console.log('tourdetail error');
+          rendererror()
+        }else{
+          rendertourdetail(JSON.parse(data[0].tourdetail))
+        }
       },
       error : function(data){
-        console.log('error');
+        console.log('Ajax error');
         rendererror()
       }
     })
@@ -71,6 +76,7 @@ function rendertourdetail(tourobj){
   })
 
   for (var i = 0 ; i < tourobj.length ; i++){
+
     let oneday = document.createElement('div')
     oneday.className = 'oneday'
     oneday.id = i
@@ -105,24 +111,26 @@ function rendertourdetail(tourobj){
 
     //放景點
     for (var j = 0; j < tourobj[i].period.place.length; j++) {
-      let oneplace = document.createElement('div')
-      oneplace.className = 'oneplace'
+      if (tourobj[i].period.place[j].name != "") {
+        let oneplace = document.createElement('div')
+        oneplace.className = 'oneplace'
 
-      let oneplaceimg = document.createElement('img')
-      oneplaceimg.src = "../icon/point.png";
-      oneplace.appendChild(oneplaceimg)
+        let oneplaceimg = document.createElement('img')
+        oneplaceimg.src = "../icon/point.png";
+        oneplace.appendChild(oneplaceimg)
 
-      let placetime = new Date (tourobj[i].period.place[j].time)
-      let oneplacep = document.createElement('p')
-      if(placetime.getMinutes().toString().length == 1){ oneplacep.innerText = `${placetime.getUTCHours()}:0${placetime.getMinutes()}`}
-      else{oneplacep.innerText = `${placetime.getUTCHours()}:${placetime.getMinutes()}`}
-      oneplace.appendChild(oneplacep)
+        let placetime = new Date (tourobj[i].period.place[j].time)
+        let oneplacep = document.createElement('p')
+        if(placetime.getMinutes().toString().length == 1){ oneplacep.innerText = `${placetime.getUTCHours()}:0${placetime.getMinutes()}`}
+        else{oneplacep.innerText = `${placetime.getUTCHours()}:${placetime.getMinutes()}`}
+        oneplace.appendChild(oneplacep)
 
-      let oneplacestrong = document.createElement('strong')
-      oneplacestrong.innerText = tourobj[i].period.place[j].name
-      oneplace.appendChild(oneplacestrong)
+        let oneplacestrong = document.createElement('strong')
+        oneplacestrong.innerText = tourobj[i].period.place[j].name
+        oneplace.appendChild(oneplacestrong)
 
-      oneday.appendChild(oneplace)
+        oneday.appendChild(oneplace)
+      }
     }
 
     // 放終點
@@ -193,6 +201,7 @@ function memberstore(){
 
 function nostore(){
   localStorage.removeItem('tour');
+  localStorage.removeItem('titleplaceholder');
   window.location.href=`${API_HOST}/profile.html`;
 }
 
@@ -272,4 +281,8 @@ function daymarker(thisobj , tourobj , map){
     polyline.setMap(map);
     polylines.push(polyline)
 
+}
+
+function closethis(thisobj) {
+  thisobj.parentNode.style.display = 'none'
 }

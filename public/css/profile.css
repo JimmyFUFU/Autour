@@ -9,7 +9,7 @@
   min-height: calc(100vh - 135px);
   width: auto;
   position: relative;
-   text-align:center
+  text-align:center
 }
 
 #memberdiv {
@@ -33,6 +33,7 @@
 	border-radius: 5px;
 	background-color:rgba(236, 240, 241,0.5);
 }
+
 
 /* memberdiv  */
 .tourlist {
@@ -68,11 +69,27 @@
 }
 
 .tourtitle {
-	font-family: monospace , '微軟正黑體';
+	font-family: monospace , Microsoft JhengHei;
 	font-size: 30px;
 	color : #233D4D;
 }
 
+.tourId {
+	margin-left: auto;
+	font-family: monospace;
+	color: #ced6e0;
+}
+
+.deletetour {
+	width: 40px;
+	margin: 0 10px;
+	transition: 0.5s;
+	padding: 20px 0;
+}
+
+.deletetour:hover {
+	content : url('../icon/trashhover.png');
+}
 
 .memberdetail {
 	 height: 100%;
@@ -114,4 +131,42 @@
 	border-bottom: 1px solid #233D4D;
 	display: none;
 	cursor: pointer;
+}
+
+/* confirm delete div */
+#confirmdelete {
+	position: absolute;
+  display: none;
+  border : 2px solid #233D4D;
+  width: 450px;
+  height : 160px;
+  top: 50%;
+  left: 50%;
+  margin: -80px 0 0 -225px;
+	border-radius: 5px;
+	background-color:rgba(236, 240, 241,0.5);
+	font-family: monospace , Microsoft JhengHei;
+}
+
+#confirmdelete p {
+	font-size: 20px;
+	width: auto;
+}
+
+.confirmdeletebtndiv {
+	display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  height:  45%;
+  width: 100%;
+  align-self: flex-end;
+}
+
+.yes , .no {
+  font-size: 20px;
+  padding: 1% 5%;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 2px solid #233D4D;
 }

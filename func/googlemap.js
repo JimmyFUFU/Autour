@@ -95,7 +95,7 @@ var nearby = function (lat, lng, radius, type, items){
       var nearbytotalitems = 0
       typelist.forEach((item, i) => {nearbytotalitems += countitems(item , items)});
       for (let i = 0 ; i < typelist.length ; i++ ) {
-        request(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}+${lng}&radius=${radius}&types=${typelist[i]}&language='zh-TW'&key=${cst.API_KEY}` , (error, response, body)=>{
+        request(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}+${lng}&radius=${radius}&types=${typelist[i]}&language=zh-TW&key=${cst.API_KEY}` , (error, response, body)=>{
         body = JSON.parse(body)
         var empty = {user_ratings_total : -1 , rating : -1}
          if(body.status === 'OK'){
@@ -104,7 +104,9 @@ var nearby = function (lat, lng, radius, type, items){
             sort.by(ratingThanFour,'user_ratings_total')
             for (let j = 0; j < countitems(typelist[i] , items); j++) {
               if (ratingThanFour[j] == undefined) nearbylist = [...nearbylist , empty ]
-              else nearbylist = [...nearbylist , ratingThanFour[j] ]
+              else {
+                nearbylist = [...nearbylist , ratingThanFour[j] ]
+              }
             }
           }
           else if (error) {   //有其他錯都給空資料
@@ -144,25 +146,25 @@ var distanceMatrix = function (origin , destination , type){
 function countitems(typename , items) {
   switch (typename) {
     case  'movie_theater' :
-      return Math.ceil(items*0.05)
+      return Math.ceil(items/6)
       break;
     case 'bar':
-      return Math.ceil(items/4)
+      return Math.ceil(items/6)
       break;
     case 'night_club':
-      return Math.ceil(items/4)
+      return Math.ceil(items/6)
       break;
     case 'casino':
-      return Math.ceil(items/4)
+      return Math.ceil(items/6)
       break;
     case 'cafe':
-      return Math.ceil(items/4)
+      return Math.ceil(items/6)
       break;
     case 'aquarium':
-      return Math.ceil(items/5)
+      return Math.ceil(items/6)
       break;
     case 'zoo':
-      return Math.ceil(items/5)
+      return Math.ceil(items/6)
       break;
     case 'art_gallery':
       return Math.ceil(items/2)
@@ -174,6 +176,12 @@ function countitems(typename , items) {
       return Math.ceil(items/2)
       break;
     case 'church':
+      return Math.ceil(items/2)
+      break;
+    case 'department_store':
+      return Math.ceil(items/2)
+      break;
+    case 'shopping_mall':
       return Math.ceil(items/2)
       break;
     default:

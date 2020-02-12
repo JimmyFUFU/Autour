@@ -9,6 +9,11 @@ header {
   margin-bottom: 15px;
 }
 
+.logo {
+  height: 100px;
+  margin-left: 8%;
+}
+
 .memberdiv {
   display: flex;
   flex-direction: row;

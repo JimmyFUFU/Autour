@@ -11,6 +11,7 @@ const radius = require('./func/radius.js')
 const sort = require('./func/sort.js')
 const period = require('./func/period.js')
 const algorithm = require('./func/algorithm.js')
+const opening = require('./func/opening.js')
 const mysql = require('./func/mysql.js')
 const cst = require('./secret/constant.js')
 
@@ -33,120 +34,217 @@ app.use(bodyparser.urlencoded({
 app.use(bodyparser.json())
 app.use(bearerToken())
 
-app.get('/test' , (req, res)  => {
+app.post('/test' , async (req, res)  => {
+
   res.send('START!!')
 })
 
 
 app.post('/newAutour' , async function (req,res){
+
+//--------------------------------------------------------預備工作 先把時段放好--------------------------------------------------------//
   // 先算有多少時段 才知道要拿多少個景點 // 順便放好 起點 住宿 終點資訊
   let periodarray = period.getperiod(req.body)
-  let periodnumber = 0
-  periodarray.forEach((item, i) => { periodnumber += periodarray[i].period.place.length });
-  var quantity = periodnumber - req.body.mustgo.length
-
-  var mustgolist = []
-  // must go
-  for (var i in req.body.mustgo) {
-    let mustgoplace = await googlemap.findplace(req.body.mustgo[i])
-    let mustgoplacedetail = await googlemap.placedetail(mustgoplace.candidates[0].place_id) // candidates[0] 選第一個
-    mustgolist.push(mustgoplacedetail.result)
-  }
-  console.log('mustgolist finish !');
-
-
-  //prefer go ( nearby start place so I need to get geocode first )
-  let startplace = await googlemap.findplace(req.body.start.place)
-  let endplace = await googlemap.findplace(req.body.end.place)
-  let nearbyplace = await googlemap.nearby(startplace.candidates[0].geometry.location.lat,startplace.candidates[0].geometry.location.lng,radius.getradius(req.body.transportation),req.body.prefertype,quantity)
-  nearbyplace = nearbyplace.filter((item, index, array)=>{return item.rating >= 0}); // 去掉空資料
-
-
-  // 加上系統自己推薦 tourist_attraction
-  let moreplace = await googlemap.nearby(startplace.candidates[0].geometry.location.lat,startplace.candidates[0].geometry.location.lng,radius.getradius(req.body.transportation),['tourist_attraction'],quantity-nearbyplace.length)
-  moreplace = moreplace.filter((item, index, array)=>{return item.rating >= 0}); // 去掉空資料
-  console.log('moreplace finish !');
-  //給權重 取得綜合分數
-  weight.addscore(nearbyplace,0.8)
-  weight.addscore(moreplace,0.5)
-
-  // 合併 nearbyplace & moreplace
-  nearbyplace = [...nearbyplace , ...moreplace]
-  // sortby score
-  sort.by(nearbyplace , 'score')
-
-  // 全部放進最後的陣列 要把重複的去掉
-  var finalPlaceList = []
-  var placecount = 0
-  for (var i = 0; i < mustgolist.length; i++) {
-    finalPlaceList = [...finalPlaceList , mustgolist[i] ] // 如果有 mustgo 就先放
-    placecount++
-    if (placecount == periodnumber) break
-  }
-  for (let u = 0 ; u < nearbyplace.length ; u++) { // 剩下的補滿
-    if (placecount == periodnumber) break
-    let check = false
-    for (let j in finalPlaceList) {if (finalPlaceList[j].id === nearbyplace[u].id ) {  check = true }  }
-    if ( check == false ) {
-      let thisplace =  await googlemap.placedetail(nearbyplace[u].place_id)
-      finalPlaceList.push(thisplace.result)
-      placecount++
-    }
-    if (placecount == periodnumber) break
-  }
-  console.log('finalPlaceList finish !');
-
-  // 隨機打亂陣列 ( 先用這個 )
-  finalPlaceList.sort(function() {
-      return (0.5-Math.random());
-  });
-
-
-  // 安排每天的景點 ( 包括起點終點 ) 才能安排每天的順序
-  var count = 0
-  for (var i = 0; i < periodarray.length; i++) {
-    let start = await googlemap.findplace(periodarray[i].period.start.name) // 起點
-    let idarray = [`place_id:${start.candidates[0].place_id}`]
-    let namearray = [start.candidates[0].name]
-    let latarray = [0]
-    let lngarray = [0]
-    periodarray[i].period.start.lat = start.candidates[0].geometry.location.lat
-    periodarray[i].period.start.lng = start.candidates[0].geometry.location.lng
-    periodarray[i].period.start.place_id = start.candidates[0].place_id
-
-    for (let j = 0 ; j < periodarray[i].period.place.length ; j++) { // 景點們
-      idarray.push(`place_id:${finalPlaceList[count].place_id}`)
-      namearray.push(finalPlaceList[count].name)
-      latarray.push(finalPlaceList[count].geometry.location.lat)
-      lngarray.push(finalPlaceList[count].geometry.location.lng)
-      count++
+  
+  try {
+    // 找到每天起點、終點的資料
+    var startplacelist = new Array()
+    for (let k in periodarray) {
+      let startplace = await googlemap.findplace(periodarray[k].period.start.name)
+      startplacelist.push(startplace.candidates[0])
+      periodarray[k].period.start.place_id = startplace.candidates[0].place_id
+      periodarray[k].period.start.lat = startplace.candidates[0].geometry.location.lat
+      periodarray[k].period.start.lng = startplace.candidates[0].geometry.location.lng
+      let endplace = await googlemap.findplace(periodarray[k].period.end.name)
+      periodarray[k].period.end.place_id = endplace.candidates[0].place_id
+      periodarray[k].period.end.lat = endplace.candidates[0].geometry.location.lat
+      periodarray[k].period.end.lng = endplace.candidates[0].geometry.location.lng
     }
 
-    let end = await googlemap.findplace(periodarray[i].period.end.name) // 終點
-    idarray.push(`place_id:${end.candidates[0].place_id}`)
-    namearray.push(end.candidates[0].name)
-    periodarray[i].period.end.lat = end.candidates[0].geometry.location.lat
-    periodarray[i].period.end.lng = end.candidates[0].geometry.location.lng
-    periodarray[i].period.end.place_id = end.candidates[0].place_id
+    var AllTourPlaceIdlist = new Array()
 
 
+  //-------------------------------------------------------- must go --------------------------------------------------------//
 
-    var getMoveCost = await googlemap.distanceMatrix(idarray , idarray , 'driving')
-    // 轉成 Matrix
-    var moveCostMatrix = algorithm.toMatrix(getMoveCost)
-    // 找到從起點到終點走過所有點的最短路徑
-    var shortpath = algorithm.find2pointShortestPath(moveCostMatrix,0,idarray.length-1)
-    // 依照最段路徑設置 把名字放進去
-    for (let k = 0 ; k < periodarray[i].period.place.length ; k++) {
-      periodarray[i].period.place[k].name = namearray[shortpath[k+1]]
-      periodarray[i].period.place[k].lat = latarray[shortpath[k+1]]
-      periodarray[i].period.place[k].lng = lngarray[shortpath[k+1]]
-      periodarray[i].period.place[k].place_id = idarray[shortpath[k+1]].replace('place_id:', '')
+    var mustgolist = []
+    for (var i in req.body.mustgo) {
+      let mustgoplace = await googlemap.findplace(req.body.mustgo[i])
+      let mustgoplacedetail = await googlemap.placedetail(mustgoplace.candidates[0].place_id) // candidates[0] 選第一個
+      mustgolist.push(mustgoplacedetail.result)
     }
-  }
-  console.log('periodarray finish !');
+    console.log('mustgolist finish !');
+    // 放進適合的天的placelist
+    // 先找到每天起點的 place_id
+    var startplaceid = new Array()
+    for (let k in startplacelist) { startplaceid.push(`place_id:${startplacelist[k].place_id}`) }
 
-  res.status(200).send(periodarray)
+    for (let i in mustgolist) {
+      let getMoveCost = await googlemap.distanceMatrix(startplaceid , [`place_id:${mustgolist[i].place_id}`] , 'driving')
+      // 轉成 Matrix
+      let moveCostMatrix = algorithm.toMatrix(getMoveCost)
+      let theNearest = 0 , minweight = -1
+      for(let j = 0 ; j < moveCostMatrix.length ; j++){
+        if( opening.day( mustgolist[i] , periodarray[j].week ) ){
+          if (minweight == -1 || moveCostMatrix[j][0] < minweight) {
+            minweight = moveCostMatrix[j][0]
+            theNearest = j
+          }
+        }
+      }
+      // 如果是 amusement_park 放兩個 如果評論 > 9560 放三個
+      if(mustgolist[i].types.includes('amusement_park')) {
+        let n = 2
+        if (mustgolist[i].user_ratings_total >= 9560) { n = 3}
+        else if (mustgolist[i].user_ratings_total < 500) { n = 1}
+        for (var p = 0; p < n; p++) {
+           periodarray[theNearest].placelist.push({name : mustgolist[i].name ,
+                                                   place_id : mustgolist[i].place_id ,
+                                                   lat : mustgolist[i].geometry.location.lat ,
+                                                   lng : mustgolist[i].geometry.location.lng } )
+         }
+      }else{
+        periodarray[theNearest].placelist.push({name : mustgolist[i].name ,
+                                                place_id : mustgolist[i].place_id ,
+                                                lat : mustgolist[i].geometry.location.lat ,
+                                                lng : mustgolist[i].geometry.location.lng } )
+      }
+      AllTourPlaceIdlist.push(mustgolist[i].place_id)
+    }
+    console.log('mustgolist push in periodarray.placelist !');
+
+  //-------------------------------------------------------- must go --------------------------------------------------------//
+
+  // --------------------------------------------------排每天的景點進 placelist-----------------------------------------------//
+
+    for (let i in periodarray) {
+      let idarray = [`place_id:${periodarray[i].period.start.place_id}`]
+      let remain = periodarray[i].period.place.length - periodarray[i].placelist.length // 今天還剩多少時段
+      // 還有剩才需要給偏好跟推薦
+      if (remain > 0) {
+        //prefer go ( nearby start place so I need to get geocode first )
+        let nearbyplace = await googlemap.nearby(startplacelist[i].geometry.location.lat,
+          startplacelist[i].geometry.location.lng,
+          radius.getradius(req.body.transportation),
+          req.body.prefertype,
+          periodarray[i].period.place.length )
+          nearbyplace = nearbyplace.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
+          for (let o in nearbyplace) {
+            let check = await opening.idday(nearbyplace[o].place_id , periodarray[i].week)
+            nearbyplace[o].openingcheck = check
+          }
+          // 去掉今天完全沒開的 (有保留沒營業時間的)
+          nearbyplace = nearbyplace.filter((item, index, array)=>{return item.openingcheck == true });
+          console.log(`day${i} nearbyplace finish !`);
+
+          // 加上系統自己推薦 tourist_attraction
+          let moreplace = await googlemap.nearby(startplacelist[i].geometry.location.lat,
+            startplacelist[i].geometry.location.lng,
+            radius.getradius(req.body.transportation),
+            ['tourist_attraction'],
+            periodarray[i].period.place.length )
+            moreplace = moreplace.filter((item, index, array)=>{return item.rating >= 0}); // 去掉空資料
+            for (let o in moreplace) {
+              let check = await opening.idday(moreplace[o].place_id , periodarray[i].week)
+              moreplace[o].openingcheck = check
+            }
+            // 去掉今天完全沒開的 (有保留沒營業時間的)
+            moreplace = moreplace.filter((item, index, array)=>{return item.openingcheck == true });
+            console.log(`day${i} moreplace finish !`);
+
+            //給權重 取得綜合分數
+            weight.addscore(nearbyplace,0.8)
+            weight.addscore(moreplace,0.5)
+
+            // 合併 nearbyplace & moreplace 去掉重複
+            var finalPlaceList = new Array()
+
+            for (let u in nearbyplace) {
+              let check = false
+              for (let j in finalPlaceList) {
+                if (finalPlaceList[j].id === nearbyplace[u].id ) {
+                  check = true
+                }
+              }
+              for (let k in AllTourPlaceIdlist) {
+                if (AllTourPlaceIdlist[k] === nearbyplace[u].place_id ) {
+                  check = true
+                }
+              }
+              if ( check == false ) {
+                finalPlaceList.push(nearbyplace[u])
+                AllTourPlaceIdlist.push(nearbyplace[u].place_id)
+              }
+            }
+
+            for (let u in moreplace) {
+              let check = false
+              for (let j in finalPlaceList) {
+                if (finalPlaceList[j].id === moreplace[u].id ) {
+                  check = true
+                }
+              }
+              for (let k in AllTourPlaceIdlist) {
+                if (AllTourPlaceIdlist[k] === moreplace[u].place_id ) {
+                  check = true
+                }
+              }
+              if ( check == false ) {
+                finalPlaceList.push(moreplace[u])
+                AllTourPlaceIdlist.push(moreplace[u].place_id)
+              }
+            }
+
+            // sortby score
+            sort.by(finalPlaceList , 'score')
+
+            let count = 0
+            for (var p in finalPlaceList) {
+              if (count == remain) break
+              let check = false
+              for (let j in periodarray[i].placelist) {if (periodarray[i].placelist[j].id === finalPlaceList[p].place_id ) {  check = true }  }
+              if ( check == false ) {
+                periodarray[i].placelist.push({name:finalPlaceList[p].name ,
+                  place_id:finalPlaceList[p].place_id ,
+                  lat : finalPlaceList[p].geometry.location.lat,
+                  lng : finalPlaceList[p].geometry.location.lng });
+                  count++;
+                }
+              }
+      }
+
+      var placelistdetail = new Array() // 等等用來看營業時間
+      for (let y in periodarray[i].placelist) {
+        idarray.push(`place_id:${periodarray[i].placelist[y].place_id}`)
+        let thisPlaceDetail = await googlemap.placedetail(periodarray[i].placelist[y].place_id)
+        placelistdetail.push(thisPlaceDetail.result)
+      }
+
+      idarray.push(`place_id:${periodarray[i].period.end.place_id}`)
+
+      let getMoveCost = await googlemap.distanceMatrix(idarray , idarray , 'driving')
+      let moveCostMatrix = algorithm.toMatrix(getMoveCost)
+
+      let allpath = algorithm.find2pointAllPath(moveCostMatrix,0,idarray.length-1)
+      sort.bysmall2big(allpath , "weight")
+
+      let placeopeningMatrix = algorithm.openingMatrix( placelistdetail , periodarray[i].period.place )
+
+      var shortpath = algorithm.findShortestPath(allpath ,placeopeningMatrix )
+      console.log(`day${i} shortpath` , shortpath);
+
+      for (let k = 1 ; k < shortpath.length-1 ; k++) {
+        periodarray[i].period.place[k-1].name = periodarray[i].placelist[shortpath[k]-1].name
+        periodarray[i].period.place[k-1].lat = periodarray[i].placelist[shortpath[k]-1].lat
+        periodarray[i].period.place[k-1].lng = periodarray[i].placelist[shortpath[k]-1].lng
+        periodarray[i].period.place[k-1].place_id = periodarray[i].placelist[shortpath[k]-1].place_id
+      }
+    }
+    console.log('periodarray finish !');
+    res.status(200).send(periodarray)
+  } catch (e) {
+    console.log(e);
+    res.status(400)
+  }
 
 })
 
@@ -173,13 +271,24 @@ app.post('/storeAutour' , async function (req,res){
 
 app.get('/getAutour' , async function(req,res){
 
-  var tourdetail = await mysql.selectdatafromWhere('tourdetail','tour' , `id = "${req.query.id}"`)
+  var tourdetail = await mysql.selectdatafromWhere('tourdetail , tourtitle','tour' , `id = "${req.query.id}"`)
   tourdetail = JSON.stringify(tourdetail)
   tourdetail = JSON.parse(tourdetail)
-  res.send(tourdetail)
+  res.status(200).send(tourdetail)
 })
 
 app.delete('/deleteAutour' , async function(req,res){
+  try {
+    var userdetail = await mysql.selectdatafromWhere('id', 'user' , `access_token = "${req.token}"`)
+    await mysql.deletefromwhere( 'tour' , `userid = "${userdetail[0].id}" && id = "${req.headers.id}"`)
+    res.status(200).send({success : true})
+  } catch (e) {
+    console.log(e);
+    res.status(400).send({success : false})
+  }
+})
+
+app.put('/revisetitle' , async function(req,res){
 
 })
 
