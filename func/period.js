@@ -2,6 +2,8 @@ var getperiod = function (body){
   var periodarray = []
   let type = body.timetype
 
+  console.log(body.start.time);
+
   let startms = Date.parse(body.start.time)
   let endms = Date.parse(body.end.time)
   start = new Date (startms)
@@ -16,6 +18,9 @@ var getperiod = function (body){
   enddate = end.getDate(),
   endweek = end.getDay(),
   endhour = end.getHours()
+
+  console.log( new Date(Date.UTC(startyear , startmonth , startdate , starthour)));
+  console.log( new Date(Date.UTC(endyear , endmonth , enddate , endhour)));
 
   var days = ((Date.parse(new Date(endyear, endmonth, enddate)) - Date.parse(new Date(startyear, startmonth, startdate)))/86400000)+1 ;
   if (days == 1){
