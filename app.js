@@ -311,7 +311,7 @@ app.post('/user/login' , async function (req,res){
     if (req.body.email === '' || req.body.password === '') {
       res.status(400).send({error : 'Email and password are required'})
     } else {
-      var userdetails = await mysql.selectdatafromWhere('*', 'user', `email = '${req.body.email}' && password = '${req.body.password}'`)
+      var userdetails = await mysql.selectdatafromWhere('*', 'user', `email = '${req.body.email}' && password = '${req.body.password}' AND provider = "${req.body.provider}"`)
       if (Object.keys(userdetails).length === 0) {
         console.log('User Not found')
         res.status(400).send({ error: 'Log In Error' })
@@ -377,7 +377,7 @@ app.post('/user/login' , async function (req,res){
             let fbsignupdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
             await mysql.insertdataSetUpdate( 'user' , fbsignInpost , fbsignupdate)
             console.log('FB signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
-            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', `email = "${userdata.email}"`)
+            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', `email = "${userdata.email}" AND provider = "${req.body.provider}"`)
             var outputUser = {
               data : {
                 access_token : `${userdatafromMysql[0].access_token}` ,
@@ -431,7 +431,7 @@ app.post('/user/login' , async function (req,res){
             let googleupdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
             await mysql.insertdataSetUpdate( 'user' , googlepost , googleupdate)
             console.log('Google signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
-            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', `email = "${userdata.email}"`)
+            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', `email = "${userdata.email}" AND provider = "${req.body.provider}"`)
             var outputUser = {
               data : {
                 access_token : `${userdatafromMysql[0].access_token}` ,

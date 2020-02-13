@@ -198,8 +198,6 @@ function onSignIn() {
       contentType: 'application/json',
       url: `${API_HOST}/user/login`,
       success: function(data) {
-        console.log(data.responseJSON);
-        console.log(data.data);
         localStorage.setItem("access_token", data.data.access_token);
         localStorage.setItem("name", data.data.user.name);
         localStorage.setItem("id", data.data.user.id);
