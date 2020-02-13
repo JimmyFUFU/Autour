@@ -50,7 +50,7 @@ var insertdataSet = function (object, set) {
 }
 
 var insertdataSetUpdate = function (object, set , update ) {
-  var sql = `INSERT INTO ${object} SET ? ON DUPLICATE KEY UPDATE SET ${update} `
+  var sql = `INSERT INTO ${object} SET ? ON DUPLICATE KEY UPDATE ${update} `
   return new Promise(function (resolve, reject) {
     pool.query(sql, set, (err, results) => {
       if (err) {
