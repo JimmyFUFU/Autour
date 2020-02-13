@@ -42,12 +42,12 @@ app.post('/test' , async (req, res)  => {
 
 app.post('/newAutour' , async function (req,res){
 
-  console.log(req.body);
-
 //--------------------------------------------------------預備工作 先把時段放好--------------------------------------------------------//
   // 先算有多少時段 才知道要拿多少個景點 // 順便放好 起點 住宿 終點資訊
   let periodarray = period.getperiod(req.body)
 
+
+/*
   try {
     // 找到每天起點、終點的資料
     var startplacelist = new Array()
@@ -259,7 +259,9 @@ app.post('/newAutour' , async function (req,res){
     console.log(e);
     res.status(400).send({error:error})
   }
+*/
 
+res.status(200).send(periodarray)
 })
 
 app.post('/storeAutour' , async function (req,res){

@@ -1,20 +1,22 @@
 var getperiod = function (body){
   var periodarray = []
   let type = body.timetype
-  let startms = Date.parse(body.start.time) + 8*60*60*1000// 加八小
-  let endms = Date.parse(body.end.time)+ 8*60*60*1000
+
+  let startms = Date.parse(body.start.time)
+  let endms = Date.parse(body.end.time)
   start = new Date (startms)
   end = new Date (endms)
-  let startyear = start.getUTCFullYear(),
-  startmonth = start.getUTCMonth(),
-  startdate = start.getUTCDate(),
-  startweek = start.getUTCDay(),
-  starthour = start.getUTCHours(),
-  endyear = end.getUTCFullYear(),
-  endmonth = end.getUTCMonth(),
-  enddate = end.getUTCDate(),
-  endweek = end.getUTCDay(),
-  endhour = end.getUTCHours()
+  let startyear = start.getFullYear(),
+  startmonth = start.getMonth(),
+  startdate = start.getDate(),
+  startweek = start.getDay(),
+  starthour = start.getHours(),
+  endyear = end.getFullYear(),
+  endmonth = end.getMonth(),
+  enddate = end.getDate(),
+  endweek = end.getDay(),
+  endhour = end.getHours()
+
   var days = ((Date.parse(new Date(endyear, endmonth, enddate)) - Date.parse(new Date(startyear, startmonth, startdate)))/86400000)+1 ;
   if (days == 1){
     periodarray.push( { year:startyear, month:startmonth+1 , date:startdate , week:startweek , period:oneDayPeriod(start , endhour , type) } )
@@ -44,6 +46,7 @@ var getperiod = function (body){
     periodarray[days-1].placelist = new Array()
     return periodarray
   }
+  
 }
 
 function oneDayPeriod(today , endhour , type){
