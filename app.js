@@ -311,7 +311,7 @@ app.post('/user/login' , async function (req,res){
     if (req.body.email === '' || req.body.password === '') {
       res.status(400).send({error : 'Email and password are required'})
     } else {
-      var userdetails = await mysql.selectdatafromWhere('*', 'user', `email = '${req.body.email}' && password = '${req.body.password}' AND provider = "${req.body.provider}"`)
+      var userdetails = await mysql.selectdatafromWhere('*', 'user', `email = '${req.body.email}' AND password = '${req.body.password}' AND provider = "${req.body.provider}"`)
       if (Object.keys(userdetails).length === 0) {
         console.log('User Not found')
         res.status(400).send({ error: 'Log In Error' })
@@ -325,7 +325,7 @@ app.post('/user/login' , async function (req,res){
         let expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss') // 一小時過期
         // let expiredtime = moment(time).add(30, "s").format('YYYY-MM-DD HH:mm:ss');//30s過期
 
-        var updateTokenExpired = await mysql.updatedatafromWhere('user', `provider = '${req.body.provider}' , access_token = '${token}', access_expired = '${expiredtime}'`, `email = '${req.body.email}'`)
+        var updateTokenExpired = await mysql.updatedatafromWhere('user', `provider = '${req.body.provider}' , access_token = '${token}', access_expired = '${expiredtime}'`, `email = '${req.body.email}' AND provider = "${req.body.provider}"`)
         console.log('NEW Log In !! UPDATE provider and token and expired successfully ~ ')
         let signInOutputUser = {
           data : {
