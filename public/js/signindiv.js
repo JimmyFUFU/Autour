@@ -126,6 +126,8 @@ function fblogin(){
     // Handle the response object,
     // like in statusChangeCallback() in our demo
     // code.
+    console.log('log in !');
+    console.log(response);
   });
 
   // FB.getLoginStatus(function(response) {
