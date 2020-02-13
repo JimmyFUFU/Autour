@@ -306,101 +306,102 @@ app.put('/revisetitle' , async function(req,res){
 
 app.post('/user/login' , async function (req,res){
   if (req.body.provider === 'native') {
-  if (req.body.email === '' || req.body.password === '') {
-    res.status(400).send({error : 'Email and password are required'})
-  } else {
-    var userdetails = await mysql.selectdatafromWhere('*', 'user', `email = '${req.body.email}' && password = '${req.body.password}'`)
-    if (Object.keys(userdetails).length === 0) {
-      console.log('User Not found')
-      res.status(400).send({ error: 'Log In Error' })
+    if (req.body.email === '' || req.body.password === '') {
+      res.status(400).send({error : 'Email and password are required'})
     } else {
-      // Give a new access_token and new access_expired everytime the user Signin
-      let time = moment().valueOf()
-      // produce a new access_token by email + time Now
-      let nowTime = moment(time).format('YYYYMMDDHHmmss')
-      let token = md5(`${req.body.email}` + `${nowTime}`)
-      // get the time One hour later as new access_expired
-      let expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss') // 一小時過期
-      // let expiredtime = moment(time).add(30, "s").format('YYYY-MM-DD HH:mm:ss');//30s過期
-
-      var updateTokenExpired = await mysql.updatedatafromWhere('user', `provider = '${req.body.provider}' , access_token = '${token}', access_expired = '${expiredtime}'`, `email = '${req.body.email}'`)
-      console.log('NEW Log In !! UPDATE provider and token and expired successfully ~ ')
-      let signInOutputUser = {
-        data : {
-          access_token: token,
-          access_expired: expiredtime,
-          user : {
-            id : userdetails[0].id ,
-            provider : userdetails[0].provider,
-            name :userdetails[0].name ,
-            email : userdetails[0].email,
-            picture :userdetails[0].picture
-          }
-        }
-      }
-      res.send(signInOutputUser)
-      console.log('User is found')
-    }
-  }
-  } else if (req.body.provider === 'facebook') {
-  if (req.body.access_token == null) {
-    res.status(400).send({error : 'Request Error: access token is required.'})
-  } else {
-    // if FB access_token exists  // get information from Facebook API
-    request(`https://graph.facebook.com/v5.0/me?fields=email%2Cname%2Cpicture&access_token=${req.body.access_token}`, async (error, response, body) => {
-      if (error) console.log(error)
-      var userdata = JSON.parse(body)
-
-      if (userdata.error == null) {
+      var userdetails = await mysql.selectdatafromWhere('*', 'user', `email = '${req.body.email}' && password = '${req.body.password}'`)
+      if (Object.keys(userdetails).length === 0) {
+        console.log('User Not found')
+        res.status(400).send({ error: 'Log In Error' })
+      } else {
+        // Give a new access_token and new access_expired everytime the user Signin
         let time = moment().valueOf()
-        // produce access_token by email + time Now
+        // produce a new access_token by email + time Now
         let nowTime = moment(time).format('YYYYMMDDHHmmss')
-        let token = md5(`${userdata.email}` + `${nowTime}`)
+        let token = md5(`${req.body.email}` + `${nowTime}`)
+        // get the time One hour later as new access_expired
+        let expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss') // 一小時過期
+        // let expiredtime = moment(time).add(30, "s").format('YYYY-MM-DD HH:mm:ss');//30s過期
 
-        // get the time One hour later as access_expired
-        let expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss')
-
-        let fbsignInpost = {
-          provider: req.body.provider,
-          name: userdata.name,
-          email: userdata.email,
-          picture : userdata.picture.data.url,
-          access_token: token,
-          access_expired: expiredtime,
-          fb_id: userdata.id,
-          fb_access_token: req.body.access_token
-        }
-
-        let fbsignupdate = `name = VALUES(name),
-                            email = VALUES(email),
-                            picture = VALUES(picture),
-                            access_token = VALUES(access_token),
-                            access_expired = VALUES(access_expired),
-                            fb_access_token = VALUES(fb_access_token)` // 如果FB的ID有重複 就更新使用者資料
-
-        await mysql.insertdataSetUpdate( 'user' , fbsignInpost , fbsignupdate)
-        console.log('FB signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
-        let userdatafromMysql = await mysql.selectdatafromWhere('id ,access_token ,access_expired', 'user_object', `email = "${userdata.email}"`)
-        var outputUser = {
+        var updateTokenExpired = await mysql.updatedatafromWhere('user', `provider = '${req.body.provider}' , access_token = '${token}', access_expired = '${expiredtime}'`, `email = '${req.body.email}'`)
+        console.log('NEW Log In !! UPDATE provider and token and expired successfully ~ ')
+        let signInOutputUser = {
           data : {
-            access_token : `${userdatafromMysql[0].access_token}` ,
-            access_expired : `${userdatafromMysql[0].access_expired}` ,
+            access_token: token,
+            access_expired: expiredtime,
             user : {
-              id : userdatafromMysql[0].id,
-              provider: facebook,
-              name:  `${userdata.name}`,
-              email: `${userdata.email}`,
-              picture : `${userdata.picture.data.url}`
+              id : userdetails[0].id ,
+              provider : userdetails[0].provider,
+              name :userdetails[0].name ,
+              email : userdetails[0].email,
+              picture :userdetails[0].picture
             }
           }
         }
-      res.send(outputUser)
-
-      } else {
-        res.status(400).send(userdata)
+        res.send(signInOutputUser)
+        console.log('User is found')
       }
-    })
-  }
+    }
+  } else if (req.body.provider === 'facebook') {
+    if (req.body.access_token == null) {
+      res.status(400).send({error : 'Request Error: access token is required.'})
+    } else {
+      // if FB access_token exists  // get information from Facebook API
+      request(`https://graph.facebook.com/v5.0/me?fields=email%2Cname%2Cpicture&access_token=${req.body.access_token}`, async (error, response, body) => {
+        if (error) console.log(error)
+        var userdata = JSON.parse(body)
+        try {
+          if (userdata.error == null) {
+            let time = moment().valueOf()
+            // produce access_token by email + time Now
+            let nowTime = moment(time).format('YYYYMMDDHHmmss')
+            let token = md5(`${userdata.email}` + `${nowTime}`)
+
+            // get the time One hour later as access_expired
+            let expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss')
+
+            let fbsignInpost = {
+              provider: req.body.provider,
+              name: userdata.name,
+              email: userdata.email,
+              picture : userdata.picture.data.url,
+              access_token: token,
+              access_expired: expiredtime,
+              fb_id: userdata.id,
+              fb_access_token: req.body.access_token
+            }
+
+            let fbsignupdate = `name = VALUES(name),
+            email = VALUES(email),
+            picture = VALUES(picture),
+            access_token = VALUES(access_token),
+            access_expired = VALUES(access_expired),
+            fb_access_token = VALUES(fb_access_token)` // 如果FB的ID有重複 就更新使用者資料
+
+            await mysql.insertdataSetUpdate( 'user' , fbsignInpost , fbsignupdate)
+            console.log('FB signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
+            let userdatafromMysql = await mysql.selectdatafromWhere('id ,access_token ,access_expired', 'user_object', `email = "${userdata.email}"`)
+            var outputUser = {
+              data : {
+                access_token : `${userdatafromMysql[0].access_token}` ,
+                access_expired : `${userdatafromMysql[0].access_expired}` ,
+                user : {
+                  id : userdatafromMysql[0].id,
+                  provider: facebook,
+                  name:  `${userdata.name}`,
+                  email: `${userdata.email}`,
+                  picture : `${userdata.picture.data.url}`
+                }
+              }
+            }
+            res.status(200).send(outputUser)
+          }
+        }catch (e) {
+          console.log(e);
+          res.status(400).send({ error: 'Wrong Request' })
+        }
+      })
+    }
   } else {
   res.status(400).send({ error: 'Wrong Request' })
 }
