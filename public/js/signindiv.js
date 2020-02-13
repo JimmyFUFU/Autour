@@ -174,7 +174,7 @@ function fblogin(){
 
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
-  var auth = GoogleUser.reloadAuthResponse()
+  var auth = googleUser.reloadAuthResponse()
   console.log(auth);
   console.log('ID: ' + profile.getId());
   console.log('Name: ' + profile.getName());
