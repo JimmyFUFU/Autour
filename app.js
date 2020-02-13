@@ -36,12 +36,15 @@ app.use(bearerToken())
 
 app.post('/test' , async (req, res)  => {
 
-  var mustgolist = []
-  for (var i in req.body.mustgo) {
-    let mustgoplace = await googlemap.findplace(req.body.mustgo[i])
-    let mustgoplacedetail = await googlemap.placedetail(mustgoplace.candidates[0].place_id) // candidates[0] 選第一個
-    mustgolist.push(mustgoplacedetail.result)
-  }
+  let periodarray = period.getperiod(req.body)
+
+
+  // var mustgolist = []
+  // for (var i in req.body.mustgo) {
+  //   let mustgoplace = await googlemap.findplace(req.body.mustgo[i])
+  //   let mustgoplacedetail = await googlemap.placedetail(mustgoplace.candidates[0].place_id) // candidates[0] 選第一個
+  //   mustgolist.push(mustgoplacedetail.result)
+  // }
 
 
   res.send(mustgolist)

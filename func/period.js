@@ -46,15 +46,15 @@ var getperiod = function (body){
     periodarray[days-1].placelist = new Array()
     return periodarray
   }
-  
+
 }
 
 function oneDayPeriod(today , endhour , type){
   let returnobj = {place:[]} , hourarr =[]
-  let todayyear = today.getUTCFullYear(),
-  todaymonth = today.getUTCMonth(),
-  todaydate = today.getUTCDate(),
-  todayhour = today.getUTCHours()
+  let todayyear = today.getFullYear(),
+  todaymonth = today.getMonth(),
+  todaydate = today.getDate(),
+  todayhour = today.getHours()
 
     switch (type) {
       case 'slow':
@@ -68,9 +68,9 @@ function oneDayPeriod(today , endhour , type){
     }
     for (var i in hourarr) {
       if (hourarr[i] < endhour && hourarr[i] >= todayhour) {
-        if(hourarr[i] === 12) returnobj.lunch = {name:'',time: new Date(todayyear, todaymonth, todaydate , hourarr[i]+8)}
-        else if (hourarr[i] === 18) returnobj.dinner = {name:'',time: new Date(todayyear, todaymonth, todaydate , hourarr[i]+8)}
-        else returnobj.place.push(  {name:'',time: new Date(todayyear, todaymonth, todaydate , hourarr[i]+8)} )
+        if(hourarr[i] === 12) returnobj.lunch = {name:'',time: new Date(todayyear, todaymonth, todaydate , hourarr[i])}
+        else if (hourarr[i] === 18) returnobj.dinner = {name:'',time: new Date(todayyear, todaymonth, todaydate , hourarr[i])}
+        else returnobj.place.push(  {name:'',time: new Date(todayyear, todaymonth, todaydate , hourarr[i])} )
       }
     }
     return returnobj
