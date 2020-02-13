@@ -171,15 +171,20 @@ function fblogin(){
 //     // Person is now logged out
 // });
 
+// function GoogleSigninInit() {
+// 	gapi.load('auth2', function () {
+// 		gapi.auth2.init({
+// 			client_id: "903784164097-u7rf60ibbveqda2u45le12806qquv2i8" //必填，記得開發時期要開啟 Chrome開發人員工具 查看有沒有403錯誤(Javascript來源被禁止)
+// 		});
+// 	});
+// }//end GoogleSigninInit function
 
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
-  var auth = googleUser.reloadAuthResponse()
-  console.log(auth.Nf.id_token);
-  console.log('ID: ' + profile.getId());
-  console.log('Name: ' + profile.getName());
-  console.log('Given Name: ' + profile.getGivenName());
-  console.log('Family Name: ' + profile.getFamilyName());
-  console.log('Image URL: ' + profile.getImageUrl());
-  console.log('Email: ' + profile.getEmail());
+  let id_token = googleUser.getAuthResponse().id_token;
+		console.log("ID Token: " + id_token);
+		const data = {
+			provider: "google",
+			access_token: id_token
+		};
 }
