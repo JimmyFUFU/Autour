@@ -305,6 +305,9 @@ app.put('/revisetitle' , async function(req,res){
 })
 
 app.post('/user/login' , async function (req,res){
+
+  console.log(req.body);
+
   if (req.body.provider === 'native') {
     if (req.body.email === '' || req.body.password === '') {
       res.status(400).send({error : 'Email and password are required'})
@@ -421,7 +424,6 @@ app.post('/user/login' , async function (req,res){
               picture : userdata.picture,
               access_token: token,
               access_expired: expiredtime,
-              three_rd_id: userdata.id,
               three_rd_access_token: req.body.access_token
             }
 
