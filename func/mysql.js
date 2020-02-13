@@ -49,6 +49,16 @@ var insertdataSet = function (object, set) {
   })
 }
 
+var insertdataSetUpdate = function (object, set , update ) {
+  var sql = `INSERT INTO ${object} SET ? ON DUPLICATE KEY UPDATE SET ${update} `
+  return new Promise(function (resolve, reject) {
+    pool.query(sql, set, (err, results) => {
+      if (err) reject(new Error('insertUpdateFail'))
+      resolve(results)
+    })
+  })
+}
+
 var deletefromwhere = function ( object, where ) {
   let sql = `DELETE FROM ${object} WHERE ${where}`
   return new Promise(function (resolve, reject) {
@@ -63,4 +73,5 @@ module.exports.selectdatafrom = selectdatafrom
 module.exports.selectdatafromWhere = selectdatafromWhere
 module.exports.updatedatafromWhere = updatedatafromWhere
 module.exports.insertdataSet = insertdataSet
+module.exports.insertdataSetUpdate = insertdataSetUpdate;
 module.exports.deletefromwhere = deletefromwhere;

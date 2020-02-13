@@ -344,11 +344,10 @@ app.post('/user/login' , async function (req,res){
   }
   } else if (req.body.provider === 'facebook') {
   if (req.body.access_token == null) {
-    signInNULLOutputUser['error'] = 'Request Error: access token is required.'
-    res.status(400).send(signInNULLOutputUser)
+    res.status(400).send({error : 'Request Error: access token is required.'})
   } else {
     // if FB access_token exists  // get information from Facebook API
-    request(`https://graph.facebook.com/v5.0/me?fields=id%2Cname%2Cemail&access_token=${req.body.access_token}`, (error, response, body) => {
+    request(`https://graph.facebook.com/v5.0/me?fields=email%2Cname%2Cpicture&access_token=${req.body.access_token}`, async (error, response, body) => {
       if (error) console.log(error)
       var userdata = JSON.parse(body)
 
@@ -362,42 +361,41 @@ app.post('/user/login' , async function (req,res){
         let expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss')
 
         let fbsignInpost = {
-          provider: 'facebook',
+          provider: req.body.provider,
           name: userdata.name,
           email: userdata.email,
+          picture : userdata.picture.data.url,
           access_token: token,
           access_expired: expiredtime,
           fb_id: userdata.id,
           fb_access_token: req.body.access_token
         }
-        let fbsignInsql = `INSERT INTO user_object SET ?
-                            ON DUPLICATE KEY UPDATE name = VALUES(name),
-                                                   email = VALUES(email),
-                                            access_token = VALUES(access_token),
-                                          access_expired = VALUES(access_expired),
-                                         fb_access_token = VALUES(fb_access_token)` // 如果FB的ID有重複 就更新使用者資料
-        pool.query(fbsignInsql, fbsignInpost, async (err, results) => {
-          if (err) console.log(err)
-          else {
-            console.log('FB signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
-            let userdatafromMysql = await fromMysql.selectdatafromWhere(pool, 'id ,access_token ,access_expired', 'user_object', `email = "${userdata.email}"`)
-            var outputUser = {}
-            var data = {}
-            var user = {}
-            user['id'] = `${userdatafromMysql[0].id}`
-            user['provider'] = 'facebook'
-            user['name'] = `${userdata.name}`
-            user['email'] = `${userdata.email}`
-            user['picture'] = 'null'
 
-            data['access_token'] = `${userdatafromMysql[0].access_token}`
-            data['access_expired'] = `${userdatafromMysql[0].access_expired}`
-            data['user'] = user
+        let fbsignupdate = `name = VALUES(name),
+                            email = VALUES(email),
+                            picture = VALUES(picture),
+                            access_token = VALUES(access_token),
+                            access_expired = VALUES(access_expired),
+                            fb_access_token = VALUES(fb_access_token)` // 如果FB的ID有重複 就更新使用者資料
 
-            outputUser['data'] = data
-            res.send(outputUser)
+        await mysql.insertdataSetUpdate( 'user' , fbsignInpost , fbsignupdate)
+        console.log('FB signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
+        let userdatafromMysql = await mysql.selectdatafromWhere('id ,access_token ,access_expired', 'user_object', `email = "${userdata.email}"`)
+        var outputUser = {
+          data : {
+            access_token : `${userdatafromMysql[0].access_token}` ,
+            access_expired : `${userdatafromMysql[0].access_expired}` ,
+            user : {
+              id : userdatafromMysql[0].id,
+              provider: facebook,
+              name:  `${userdata.name}`,
+              email: `${userdata.email}`,
+              picture : `${userdata.picture.data.url}`
+            }
           }
-        })
+        }
+      res.send(outputUser)
+
       } else {
         res.status(400).send(userdata)
       }
