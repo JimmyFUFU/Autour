@@ -2,8 +2,6 @@ var getperiod = function (body){
   var periodarray = []
   let type = body.timetype
 
-  console.log(body.start.time);
-
   let startms = Date.parse(body.start.time)
   let endms = Date.parse(body.end.time)
   start = new Date (startms)
@@ -18,9 +16,6 @@ var getperiod = function (body){
   enddate = end.getDate(),
   endweek = end.getDay(),
   endhour = end.getHours()
-
-  console.log( new Date(Date.UTC(startyear , startmonth , startdate , starthour)));
-  console.log( new Date(Date.UTC(endyear , endmonth , enddate , endhour)));
 
   var days = ((Date.parse(new Date(endyear, endmonth, enddate)) - Date.parse(new Date(startyear, startmonth, startdate)))/86400000)+1 ;
   if (days == 1){
@@ -37,7 +32,7 @@ var getperiod = function (body){
     periodarray[0].placelist = new Array()
     // 中間的天數 // 去頭尾
     for (var i = 1; i <= days-2; i++) {
-      var today = new Date(startyear , startmonth , startdate+i , 08)
+      var today = new Date(Date.UTC(startyear , startmonth , startdate+i ))
       periodarray.push( { year:today.getFullYear(), month:today.getMonth()+1 , date:today.getDate() , week:today.getDay() , period:oneDayPeriod(today , 22 , type) } )
       periodarray[i].period.start = { name : body.hotelarray[i-1].hotel }
       periodarray[i].period.end = { name : body.hotelarray[i].hotel }
@@ -45,7 +40,7 @@ var getperiod = function (body){
     }
 
     // 最後一天
-    periodarray.push( { year:endyear, month:endmonth+1 , date:enddate , week:endweek , period:oneDayPeriod(new Date(endyear, endmonth, enddate , 8) , endhour , type) } )
+    periodarray.push( { year:endyear, month:endmonth+1 , date:enddate , week:endweek , period:oneDayPeriod(new Date(Date.UTC(endyear, endmonth, enddate )) , endhour , type) } )
     periodarray[days-1].period.start = { name : body.hotelarray[body.hotelarray.length-1].hotel }
     periodarray[days-1].period.end = { name : body.end.place , time : body.end.time }
     periodarray[days-1].placelist = new Array()
@@ -73,9 +68,9 @@ function oneDayPeriod(today , endhour , type){
     }
     for (var i in hourarr) {
       if (hourarr[i] < endhour && hourarr[i] >= todayhour) {
-        if(hourarr[i] === 12) returnobj.lunch = {name:'',time: new Date(todayyear, todaymonth, todaydate , hourarr[i])}
-        else if (hourarr[i] === 18) returnobj.dinner = {name:'',time: new Date(todayyear, todaymonth, todaydate , hourarr[i])}
-        else returnobj.place.push(  {name:'',time: new Date(todayyear, todaymonth, todaydate , hourarr[i])} )
+        if(hourarr[i] === 12) returnobj.lunch = {name:'',time: new Date(Date.UTC(todayyear, todaymonth, todaydate , hourarr[i]))}
+        else if (hourarr[i] === 18) returnobj.dinner = {name:'',time: new Date(Date.UTC(todayyear, todaymonth, todaydate , hourarr[i]))}
+        else returnobj.place.push(  {name:'',time: new Date(Date.UTC(todayyear, todaymonth, todaydate , hourarr[i]))} )
       }
     }
     return returnobj
