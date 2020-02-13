@@ -11,19 +11,19 @@
 
   <div class="changediv">
     <div class="loginform">
-      <div class="">
+      <div>
         <img src="../icon/mail.png" alt="">
         <input type="text" id="inemail" value="" placeholder="Your Email" required="required">
       </div>
-      <div class="">
+      <div>
         <img src="../icon/lock.png" alt="">
         <input type="password" id="inpassword" value="" placeholder="Your password" required="required">
       </div>
-      <div class="loginerror" style="top:45%"></div>
+      <div class="loginerror" style="top:35%"></div>
       <input type="hidden" id="inprovider" value="native">
       <div class="nativelogin" onclick="loginAjax()">Login !</div>
       <div class="fblogin" onclick="fblogin()"><img src="../icon/facebook.png" alt="FB">Connect with Facebook</div>
-      <div class="g-signin2" data-onsuccess="onSignIn"></div>
+      <div class="googlelogin" onclick="onSignIn()"><img src="../icon/google.png" alt="Google" style="margin-left:4%;">Connect with Google</div>
     </div>
     <div class="signupform">
       <div class="">
@@ -45,5 +45,5 @@
 
 </div>
 <script src="./js/signindiv.js"></script>
-<script src="https://apis.google.com/js/platform.js" async defer></script>
-<meta name="google-signin-client_id" content="903784164097-u7rf60ibbveqda2u45le12806qquv2i8.apps.googleusercontent.com">
+<script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+<!-- <meta name="google-signin-client_id" content="903784164097-u7rf60ibbveqda2u45le12806qquv2i8.apps.googleusercontent.com"> -->

@@ -129,14 +129,16 @@
   cursor: pointer;
 }
 
-.fblogin {
+.fblogin , .googlelogin {
   font-family: monospace;
-  font-size: 20px;
+  font-size: 18px;
   height: 30px;
+  width: 243px;
   padding: 5px;
   border: 2px solid #233D4D;
   border-radius: 5px;
   cursor: pointer;
+  text-align: center;
 }
 
 .loginerror , .signuperror {
@@ -144,5 +146,5 @@
   font-size: 12px;
   color: red;
   position: absolute;
-  display: none;
+  /* display: none; */
 }
