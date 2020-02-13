@@ -68,7 +68,8 @@ if(localStorage["access_token"]){
       }
     },
     error : function(data) {
-
+      document.querySelector('#signindiv').style.display = "flex"
+      console.log(data.responseJSON.error)
     }
   })
 }else{

@@ -37,6 +37,26 @@
   opacity:0.4;
 }
 
+.progresscontainer {
+	border: 1.5px solid #233D4D;
+	border-radius: 20px ;
+	position: absolute;
+	top:110px;
+	left: 141px;
+	height: 20px;
+	width: 50%;
+	display: none;
+}
+
+.progressbar {
+	background-color: #233D4D ;
+	border-radius: 20px ;
+	height: 20px;
+	width: 16.6%;
+	transition: 0.5s;
+}
+
+
 /* for loading*/
 .bigflex::after {
 	background-color:rgba(47, 53, 66,0.6) ;
@@ -149,14 +169,23 @@
   }
 }
 /* for loading*/
+.backicon {
+	height: 50px;
+	margin-left: 1%;
+	display: none;
+	cursor: pointer;
+	transition: 0.5s;
+}
 
+.backicon:hover {
+	content : url('../icon/backhover.png');
+}
 
 .question{
 	height: auto;
 	width: 0%;
-	transition : 0.5s;
+	transition : 0.4s;
 	padding: 5%;
-	/* border: 1px solid green; */
 }
 
 .index {
@@ -166,7 +195,7 @@
   flex-direction: row;
   justify-content:space-around;
   align-items: center;
-	transition : 0.5s;
+	transition : 0.8s;
 }
 
 .index .taiwan {

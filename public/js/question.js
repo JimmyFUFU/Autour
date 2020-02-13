@@ -37,7 +37,6 @@ function deletemustgoplace(thisobject) {
   mustgoblock.removeChild(thisobject.parentNode)
 }
 
-
 function clickcity(thisbox) {
   if (thisbox.checked){
     document.querySelector(`#point${thisbox.id}`).style.display = "block"
@@ -62,7 +61,10 @@ function confirmQ1() {
     document.querySelector('#Q2').style.display = 'block'
     document.querySelector('#Q1').style.display = 'none'
     document.querySelector(".letsGo").style.backgroundImage = "url('../icon/next.png')"
-    document.querySelector(".letsGo").onclick = function(){confirmQ2()};
+    document.querySelector(".letsGo").onclick = function(){confirmQ2()}
+    document.querySelector(".backicon").style.display = 'block'
+    document.querySelector(".backicon").onclick = function(){back2Q1()}
+    document.querySelector(".progressbar").style.width = '33.3%'
   } else {
     console.log('Please select city');
     document.querySelector('.Q1error').style.display = 'flex'
@@ -86,59 +88,65 @@ function confirmQ2() {
     document.querySelector('.Q2error').style.display = 'flex'
     document.querySelector('.Q2errortext').innerText = '開始時間不能比結束時間晚哦 !'
     animateCSS(`.Q2error`,'shake')
-  } else {
-    startdaytime = new Date(Date.parse(startdaytime));
-    enddaytime = new Date(Date.parse(enddaytime));
-    // 有按就要清空 #hoteldiv
-    document.querySelector('#hoteldiv').innerHTML = "";
+  }else{
     // 有幾天
+    startdaytime = new Date(startdaytime)
+    var enddaytime = new Date(enddaytime)
     var days = (Date.parse(new Date(enddaytime.getFullYear(), enddaytime.getMonth(), enddaytime.getDate())) - Date.parse(new Date(startdaytime.getFullYear(), startdaytime.getMonth(), startdaytime.getDate())))/86400000
-    for (let i = 0; i < days; i++) {
-      let div = document.createElement('div')
-      let label = document.createElement('label')
-      let hotelinput = document.createElement('input')
-      // 都住同一個地方的按鈕
-      /*if (i === 0) {
-        let allSameHotelBtn = document.createElement('input')
-        allSameHotelBtn.type = 'button'
-        allSameHotelBtn.value = '都住同一個地方'
-        allSameHotelBtn.onclick = function(){allSameHotel()};
-        document.querySelector('#hoteldiv').appendChild(allSameHotelBtn)
-      }*/
 
-      //算天數 每天都要給住宿框框
-      let getdate = new Date(startdaytime.valueOf() + 1000 * 60 * 60 * 24 * i)
-      label.innerText = `${getdate.getFullYear()} / ${getdate.getMonth()+1} / ${getdate.getDate()}`
-      label.className = 'hoteldate'
-      hotelinput.type = 'text'
-      hotelinput.className = 'hotel'
-      // hotelinput.value = '台灣新竹市北區西濱路一段168旅館-新竹館'
-      div.appendChild(label)
-      div.appendChild(hotelinput)
-      new google.maps.places.Autocomplete(hotelinput);
-      document.querySelector('#hoteldiv').appendChild(div)
-    }
-    document.querySelector('#Q3').style.display = 'block'
-    document.querySelector('#Q2').style.display = 'none'
-    document.querySelector(".letsGo").onclick = function(){confirmQ3()};
+      // 有按就要清空 #hoteldiv
+      document.querySelector('#hoteldiv').innerHTML = "";
+      for (let i = 0; i < days; i++) {
+        let div = document.createElement('div')
+        let label = document.createElement('label')
+        let hotelinput = document.createElement('input')
+        // 都住同一個地方的按鈕
+        /*if (i === 0) {
+          let allSameHotelBtn = document.createElement('input')
+          allSameHotelBtn.type = 'button'
+          allSameHotelBtn.value = '都住同一個地方'
+          allSameHotelBtn.onclick = function(){allSameHotel()};
+          document.querySelector('#hoteldiv').appendChild(allSameHotelBtn)
+        }*/
+
+        //算天數 每天都要給住宿框框
+        let getdate = new Date(startdaytime.valueOf() + 1000 * 60 * 60 * 24 * i)
+        label.innerText = `${getdate.getFullYear()} / ${getdate.getMonth()+1} / ${getdate.getDate()}`
+        label.className = 'hoteldate'
+        hotelinput.type = 'text'
+        hotelinput.className = 'hotel'
+        // hotelinput.value = '台灣新竹市北區西濱路一段168旅館-新竹館'
+        div.appendChild(label)
+        div.appendChild(hotelinput)
+        new google.maps.places.Autocomplete(hotelinput);
+        document.querySelector('#hoteldiv').appendChild(div)
+      }
+      document.querySelector('#Q3').style.display = 'block'
+      document.querySelector('#Q2').style.display = 'none'
+      document.querySelector('.Q2error').style.display = 'none'
+      document.querySelector(".letsGo").onclick = function(){confirmQ3()};
+      document.querySelector(".backicon").style.display = 'block'
+      document.querySelector(".backicon").onclick = function(){back2Q2()}
+      document.querySelector(".progressbar").style.width = '50%'
   }
 }
 
 function confirmQ3() {
-
+  var checkhotel = true
   for (let i = 0; i < $('.hoteldate').length; i++) {
     if (!document.querySelectorAll('.hotel')[i].value) {
-      var checkhotel = false
+      checkhotel = false
       break
-    }
-    if(i == document.querySelectorAll('.hotel').length-1) {
-      var checkhotel = true
     }
   }
   if (checkhotel) {
     document.querySelector('#Q4').style.display = 'block'
     document.querySelector('#Q3').style.display = 'none'
+    document.querySelector('.Q3error').style.display = 'none'
     document.querySelector(".letsGo").onclick = function(){confirmQ4()};
+    document.querySelector(".backicon").style.display = 'block'
+    document.querySelector(".backicon").onclick = function(){back2Q3()}
+    document.querySelector(".progressbar").style.width = '66.6%'
     // 放進 hotelarray
     hotelarray = [] // 清空
     for (let i = 0; i < $('.hoteldate').length; i++) {
@@ -158,6 +166,9 @@ function confirmQ4() {
   document.querySelector('#Q5').style.display = 'block'
   document.querySelector('#Q4').style.display = 'none'
   document.querySelector(".letsGo").onclick = function(){confirmQ5()};
+  document.querySelector(".backicon").style.display = 'block'
+  document.querySelector(".backicon").onclick = function(){back2Q4()}
+  document.querySelector(".progressbar").style.width = '83.3%'
   // get prefer type
   var prefercheckbox = document.querySelectorAll('.prefercheckbox')
   prefertype = []
@@ -174,6 +185,9 @@ function confirmQ5() {
   document.querySelector('#Q5').style.display = 'none'
   document.querySelector(".letsGo").onclick = function(){submit()};
   document.querySelector(".letsGo").style.backgroundImage = "url('../icon/go.png')"
+  document.querySelector(".backicon").style.display = 'block'
+  document.querySelector(".backicon").onclick = function(){back2Q5()}
+  document.querySelector(".progressbar").style.width = '99.9%'
   mustgoarr = [] // 清空
   for (var i = 0; i < $('.mustgoplace > p').length; i++) {
     mustgoarr.push($('.mustgoplace > p')[i].innerText)
@@ -245,4 +259,45 @@ function submit() {
       alert('Something Error')
     }
   })
+}
+
+function back2Q1() {
+  document.querySelector('#Q1').style.display = 'block'
+  document.querySelector('#Q2').style.display = 'none'
+  document.querySelector(".letsGo").onclick = function(){confirmQ1()}
+  document.querySelector(".backicon").onclick = function(){window.location.href =`${API_HOST}/index.html`}
+  document.querySelector(".progressbar").style.width = '16.6%'
+}
+
+function back2Q2() {
+  document.querySelector('#Q2').style.display = 'block'
+  document.querySelector('#Q3').style.display = 'none'
+  document.querySelector(".letsGo").onclick = function(){confirmQ2()}
+  document.querySelector(".backicon").onclick = function(){back2Q1()}
+  document.querySelector(".progressbar").style.width = '33.3%'
+}
+
+function back2Q3() {
+  document.querySelector('#Q3').style.display = 'block'
+  document.querySelector('#Q4').style.display = 'none'
+  document.querySelector(".letsGo").onclick = function(){confirmQ3()}
+  document.querySelector(".backicon").onclick = function(){back2Q2()}
+  document.querySelector(".progressbar").style.width = '50%'
+}
+
+function back2Q4() {
+  document.querySelector('#Q4').style.display = 'block'
+  document.querySelector('#Q5').style.display = 'none'
+  document.querySelector(".letsGo").onclick = function(){confirmQ4()}
+  document.querySelector(".backicon").onclick = function(){back2Q3()}
+  document.querySelector(".progressbar").style.width = '66.6%'
+}
+
+function back2Q5() {
+  document.querySelector('#Q5').style.display = 'block'
+  document.querySelector('#Q6').style.display = 'none'
+  document.querySelector(".letsGo").style.backgroundImage = "url('../icon/next.png')"
+  document.querySelector(".letsGo").onclick = function(){confirmQ5()}
+  document.querySelector(".backicon").onclick = function(){back2Q4()}
+  document.querySelector(".progressbar").style.width = '83.3%'
 }

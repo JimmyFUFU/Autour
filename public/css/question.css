@@ -6,7 +6,6 @@ body{
   font-size: 25px;
 }
 
-
 .Qicon {
   height: 30px;
   margin-right: 5px;
@@ -192,7 +191,7 @@ body{
   display: flex;
   flex-direction:row;
   align-items: center;
-  margin: 2% 0 ;
+  margin: 1% 0 ;
 }
 /* Q6 */
 #Q6 {

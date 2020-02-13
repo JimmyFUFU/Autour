@@ -45,7 +45,7 @@ app.post('/newAutour' , async function (req,res){
 //--------------------------------------------------------預備工作 先把時段放好--------------------------------------------------------//
   // 先算有多少時段 才知道要拿多少個景點 // 順便放好 起點 住宿 終點資訊
   let periodarray = period.getperiod(req.body)
-  
+
   try {
     // 找到每天起點、終點的資料
     var startplacelist = new Array()
@@ -445,21 +445,35 @@ app.post('/user/signup' , async function (req,res){
 })
 
 app.get('/user/profile' , async function(req,res){
-  //先找使用者
-  var userdetail = await mysql.selectdatafromWhere('id , name , email , picture' , 'user' , `access_token = "${req.token}"`)
-  var userTour = await mysql.selectdatafromWhere('id , tourtitle' , 'tour' , `userid = "${userdetail[0].id}"`)
-  userTour = JSON.stringify(userTour)
-  userTour = JSON.parse(userTour)
-  var profileObj = {
-    user :{
-      id : userdetail[0].id,
-      name :　userdetail[0].name,
-      email : userdetail[0].email,
-      picture : userdetail[0].picture
-    },
-    tour : userTour
+  if (!req.headers.authorization) {
+    res.status(403).send({ error: 'Wrong Request: authorization is required.' })
+  }else{
+    //先找使用者
+    var userdetail = await mysql.selectdatafromWhere('*' , 'user' , `access_token = "${req.token}"`)
+    if (Object.keys(userdetail).length === 0) {
+      res.status(403).send( { error: 'Invalid Access Token' })
+    }else{
+      var time = moment().valueOf()
+      var expiredtime = userdetail[0].access_expired
+      if (moment(expiredtime).isBefore(time) === false) {
+        var userTour = await mysql.selectdatafromWhere('id , tourtitle' , 'tour' , `userid = "${userdetail[0].id}"`)
+        userTour = JSON.stringify(userTour)
+        userTour = JSON.parse(userTour)
+        var profileObj = {
+          user :{
+            id : userdetail[0].id,
+            name :　userdetail[0].name,
+            email : userdetail[0].email,
+            picture : userdetail[0].picture
+          },
+          tour : userTour
+        }
+        res.status(200).send(profileObj)
+      }else {
+        res.status(403).send({ error: 'The token is expired , Please log in again' })
+      }
+    }
   }
-  res.send(profileObj)
 })
 
 

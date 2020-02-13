@@ -37,7 +37,10 @@ function startquestion() {
   document.querySelector('.taiwan').style.height = '500px'
   $(".question").load("question.html");
   document.querySelector(".letsGo").onclick = function(){confirmQ1()};
-  document.querySelector(".letsGo").style.width = '100px'
-  document.querySelector(".letsGo").style.height = '100px'
+  document.querySelector(".letsGo").style.width = '80px'
+  document.querySelector(".letsGo").style.height = '80px'
   document.querySelector(".letsGo").style.backgroundImage = "url('../icon/next.png')"
+  document.querySelector(".backicon").style.display = 'block'
+  document.querySelector(".backicon").onclick = function(){window.location.href =`${API_HOST}/index.html`}
+  document.querySelector(".progresscontainer").style.display = 'block'
 }

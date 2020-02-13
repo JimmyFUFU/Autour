@@ -5,6 +5,8 @@
 	 	60% { transform:  translateY(8px); }
 		100% { transform:  translateY(0px); }
 	}
+
+
 .profile {
   min-height: calc(100vh - 135px);
   width: auto;

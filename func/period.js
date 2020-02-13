@@ -58,7 +58,7 @@ function oneDayPeriod(today , endhour , type){
           hourarr = [10 , 12 , 14 , 16 , 18 , 20]
         break;
       case 'fast':
-          hourarr = [08 , 10 , 12 , 14 , 16 , 18 , 19 , 21]
+          hourarr = [09 , 10 , 12 , 14 , 16 , 18 , 19 , 21]
         break;
       default:
         return [{error:'get Period Error'}]
