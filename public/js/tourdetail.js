@@ -185,13 +185,15 @@ function memberstore(){
       url : `${API_HOST}/storeAutour`,
       success: function(data) {
         alert('Success')
+        localStorage.removeItem('titleplaceholder')
+        localStorage.removeItem('tour')
         window.location.href=`${API_HOST}/profile.html`;
       },error: function(data) {
-        alert('Fail')
-        window.location.href=`${API_HOST}/profile.html`;
+        alert('Please try again later')
+        window.location.href=`${API_HOST}/tourdetail.html`;
       }
     })
-    localStorage.removeItem('titleplaceholder')
+
   }else{
     document.querySelector('.titleinput').style.boxShadow = "0 0 8px 0 #e84118"
     document.querySelector('.titleinput').style.borderColor = "rgba(232, 65, 24,0.5)"

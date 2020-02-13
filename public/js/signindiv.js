@@ -132,21 +132,22 @@ function fblogin(){
      statusChangeCallback(response);
   });
 }
-// function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
-//     console.log('statusChangeCallback');
-//     console.log(response);                   // The current login status of the person.
-//     if (response.status === 'connected') {   // Logged into your webpage and Facebook.
-//       testAPI();
-//     } else {                                 // Not logged into your webpage or we are unable to tell.
-//       document.getElementById('status').innerHTML = 'Please log ' +
-//         'into this webpage.';
-//     }
-//   }
 
-// FB.getLoginStatus(function(response) {
-//    statusChangeCallback(response);
-// });
+function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
+    console.log('statusChangeCallback');
+    console.log(response);                   // The current login status of the person.
+    if (response.status === 'connected') {   // Logged into your webpage and Facebook.
+      testAPI();
+    } else {                                 // Not logged into your webpage or we are unable to tell.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into this webpage.';
+    }
+  }
 
-// FB.logout(function(response) {
-//     // Person is now logged out
-// });
+FB.getLoginStatus(function(response) {
+   statusChangeCallback(response);
+});
+
+FB.logout(function(response) {
+    // Person is now logged out
+});
