@@ -306,7 +306,6 @@ app.put('/revisetitle' , async function(req,res){
 
 app.post('/user/login' , async function (req,res){
 
-  console.log(req.body);
 
   if (req.body.provider === 'native') {
     if (req.body.email === '' || req.body.password === '') {
@@ -439,9 +438,9 @@ app.post('/user/login' , async function (req,res){
                 user : {
                   id : userdatafromMysql[0].id,
                   provider: userdatafromMysql[0].provider,
-                  name:  `${userdatafromMysql[0].name}`,
-                  email: `${userdatafromMysql[0].email}`,
-                  picture : `${userdatafromMysql[0].picture}`
+                  name:  userdatafromMysql[0].name,
+                  email: userdatafromMysql[0].email,
+                  picture : userdatafromMysql[0].picture
                 }
               }
             }
