@@ -382,7 +382,7 @@ app.post('/user/login' , async function (req,res){
                 access_expired : `${userdatafromMysql[0].access_expired}` ,
                 user : {
                   id : userdatafromMysql[0].id,
-                  provider: facebook,
+                  provider: userdatafromMysql[0].provider,
                   name:  `${userdata.name}`,
                   email: `${userdata.email}`,
                   picture : `${userdata.picture.data.url}`
