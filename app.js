@@ -367,12 +367,12 @@ app.post('/user/login' , async function (req,res){
               picture : userdata.picture.data.url,
               access_token: token,
               access_expired: expiredtime,
-              fb_id: userdata.id,
-              fb_access_token: req.body.access_token
+              three_rd_id: userdata.id,
+              three_rd_access_token: req.body.access_token
             }
 
              // 如果FB的ID有重複 就更新使用者資料
-            let fbsignupdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),fb_access_token = VALUES(fb_access_token)`
+            let fbsignupdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
             await mysql.insertdataSetUpdate( 'user' , fbsignInpost , fbsignupdate)
             console.log('FB signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
             let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', `email = "${userdata.email}"`)
@@ -397,7 +397,61 @@ app.post('/user/login' , async function (req,res){
         }
       })
     }
-  } else {
+  } else if (req.body.provider === 'google'){
+    if (req.body.access_token == null) {
+      res.status(400).send({error : 'Request Error: access token is required.'})
+    } else {
+      request(`https://oauth2.googleapis.com/tokeninfo?id_token=${req.body.access_token}` , async (error , response , body) => {
+        if (error) console.log(error)
+        var userdata = JSON.parse(body)
+        try {
+          if (userdata.error == null) {
+            let time = moment().valueOf()
+            // produce access_token by email + time Now
+            let nowTime = moment(time).format('YYYYMMDDHHmmss')
+            let token = md5(`${userdata.email}` + `${nowTime}`)
+
+            // get the time One hour later as access_expired
+            let expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss')
+
+            let googlepost = {
+              provider: req.body.provider,
+              name: userdata.name,
+              email: userdata.email,
+              picture : userdata.picture,
+              access_token: token,
+              access_expired: expiredtime,
+              three_rd_id: userdata.id,
+              three_rd_access_token: req.body.access_token
+            }
+
+             // 如果FB的ID有重複 就更新使用者資料
+            let googleupdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
+            await mysql.insertdataSetUpdate( 'user' , googlepost , googleupdate)
+            console.log('Google signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
+            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', `email = "${userdata.email}"`)
+            var outputUser = {
+              data : {
+                access_token : `${userdatafromMysql[0].access_token}` ,
+                access_expired : `${userdatafromMysql[0].access_expired}` ,
+                user : {
+                  id : userdatafromMysql[0].id,
+                  provider: userdatafromMysql[0].provider,
+                  name:  `${userdatafromMysql[0].name}`,
+                  email: `${userdatafromMysql[0].email}`,
+                  picture : `${userdatafromMysql[0].picture}`
+                }
+              }
+            }
+            res.status(200).send(outputUser)
+          }
+        }catch (e) {
+          console.log(e);
+          res.status(400).send({ error: 'Wrong Request' })
+        }
+      })
+    }
+  }else {
   res.status(400).send({ error: 'Wrong Request' })
 }
 })

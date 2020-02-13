@@ -187,24 +187,28 @@ function onSignIn() {
 		console.log('ID: ' + GoogleUser.getId()); // Do not send to your backend! Use an ID token instead.
 		// The ID token you need to pass to your backend:
 		let id_token = GoogleUser.getAuthResponse().id_token;
-		console.log("ID Token: " + id_token);
-		const data = {
+		const jsonobj = {
 			provider: "google",
 			access_token: id_token
 		};
-		console.log(data);
-
-		// 把登入資料拿去打後端 signin api, 再轉址到 member.html 顯示用戶資料
-		// app.ajax("post", app.cst.API_HOST + "/user/signin", data, {}, function (res) {
-		// 	if (res.readyState === 4 && res.status === 200) {
-		// 		console.log(res);
-		// 		google_res = res;
-		// 		document.cookie = `token=${JSON.parse(res.response).data.access_token}`;
-		// 		window.location = "./member.html";
-		// 	} else {
-		// 		alert(res.responseText);
-		// 	}
-		// });
+    $.ajax({
+      type: 'POST',
+      data: JSON.stringify(jsonobj),
+      contentType: 'application/json',
+      url: `${API_HOST}/user/login`,
+      success: function(data) {
+        localStorage.setItem("access_token", data.data.access_token);
+        localStorage.setItem("name", data.data.user.name);
+        localStorage.setItem("id", data.data.user.id);
+        document.querySelector('.hitext strong').innerText = data.data.user.name
+        animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
+        window.location.reload();
+      },
+      error: function(data) {
+        document.querySelector('.loginerror').innerText = data.responseJSON.error
+        document.querySelector('.loginerror').style.display = 'block'
+      }
+    })
 
 	})
 }
