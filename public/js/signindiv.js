@@ -143,10 +143,10 @@ function statusChangeCallback(response) {  // Called with the results from FB.ge
     }
   }
 
-FB.getLoginStatus(function(response) {
-   statusChangeCallback(response);
-});
-
-FB.logout(function(response) {
-    // Person is now logged out
-});
+// FB.getLoginStatus(function(response) {
+//    statusChangeCallback(response);
+// });
+//
+// FB.logout(function(response) {
+//     // Person is now logged out
+// });
