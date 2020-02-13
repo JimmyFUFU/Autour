@@ -82,11 +82,15 @@ var openingMatrix = function(placelistdetail , periodarray){
     var onePeriodOpeningArray = new Array()
 
     for (var j in placelistdetail) {
+
       if(placelistdetail[j].opening_hours){
 
         for (let z in placelistdetail[j].opening_hours.periods) {
 
-          if (placelistdetail[j].opening_hours.periods[z].open.day == time.getUTCDay() ) {
+          //24 小時營業 給 true
+          if (placelistdetail[j].opening_hours.periods.length == 1 && placelistdetail[j].opening_hours.periods[0].open.day == 0 && placelistdetail[j].opening_hours.periods[0].open.time == "0000") {
+            onePeriodOpeningArray.push(true)
+          }else if (placelistdetail[j].opening_hours.periods[z].open.day == time.getUTCDay() ) {
 
             // 算出開始營業時間
             let googleopentime = placelistdetail[j].opening_hours.periods[z].open.time
@@ -108,16 +112,20 @@ var openingMatrix = function(placelistdetail , periodarray){
               var thisdayClosetime = new Date(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate()+1 , 8 , Number(closeminute))
             }
             // 判斷如果這個時段有在這個地點的營業時間內
-            if( time > thisdayOpentime && time < thisdayClosetime){
+            if( time >= thisdayOpentime && time < thisdayClosetime){
               onePeriodOpeningArray.push(true)
             }else{
               onePeriodOpeningArray.push(false)
             }
           }
+
         }
+      }else {
+        onePeriodOpeningArray.push(true) //沒營業時間 給 true
       }
-      else {onePeriodOpeningArray.push(true)}
+
     }
+
     returnMatrix.push(onePeriodOpeningArray)
   }
   return returnMatrix
@@ -127,11 +135,12 @@ var findShortestPath = function(allpath , placeopeningMatrix){
   for (let r in allpath) {
     let truecount = 0
     for (let q = 1 ; q < allpath[r].path.length-1 ; q++) {
-    if(placeopeningMatrix[q-1][allpath[r].path[q]-1]){truecount++ }
+      if(placeopeningMatrix[q-1][allpath[r].path[q]-1]){truecount++ }
     }
     allpath[r].truecount = truecount
   }
   sort.by(allpath , 'truecount')
+  console.log("Matrix",placeopeningMatrix);
   return allpath[0].path
 }
 

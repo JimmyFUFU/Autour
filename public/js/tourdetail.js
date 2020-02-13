@@ -245,18 +245,20 @@ function daymarker(thisobj , tourobj , map){
 
   // 景點
   for (var i = 0; i < tourobj[thisobj.id].period.place.length; i++) {
-    points.push({lat: tourobj[thisobj.id].period.place[i].lat, lng: tourobj[thisobj.id].period.place[i].lng})
-    var marker = new google.maps.Marker({
-      position: {
-        lat: tourobj[thisobj.id].period.place[i].lat,
-        lng: tourobj[thisobj.id].period.place[i].lng
-      },
-      map: map,
-      label: `${i+1}`,
-      animation: google.maps.Animation.DROP,
-      title:tourobj[thisobj.id].period.place[i].name
-    })
-    markers.push(marker)
+    if (tourobj[thisobj.id].period.place[i].name !== "") {
+      points.push({lat: tourobj[thisobj.id].period.place[i].lat, lng: tourobj[thisobj.id].period.place[i].lng})
+      var marker = new google.maps.Marker({
+        position: {
+          lat: tourobj[thisobj.id].period.place[i].lat,
+          lng: tourobj[thisobj.id].period.place[i].lng
+        },
+        map: map,
+        label: `${i+1}`,
+        animation: google.maps.Animation.DROP,
+        title:tourobj[thisobj.id].period.place[i].name
+      })
+      markers.push(marker)
+    }
   }
   // 終點
   points.push({lat: tourobj[thisobj.id].period.end.lat, lng: tourobj[thisobj.id].period.end.lng})

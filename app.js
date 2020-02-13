@@ -42,6 +42,8 @@ app.post('/test' , async (req, res)  => {
 
 app.post('/newAutour' , async function (req,res){
 
+  console.log(req.body);
+
 //--------------------------------------------------------預備工作 先把時段放好--------------------------------------------------------//
   // 先算有多少時段 才知道要拿多少個景點 // 順便放好 起點 住宿 終點資訊
   let periodarray = period.getperiod(req.body)
@@ -119,6 +121,10 @@ app.post('/newAutour' , async function (req,res){
     for (let i in periodarray) {
       let idarray = [`place_id:${periodarray[i].period.start.place_id}`]
       let remain = periodarray[i].period.place.length - periodarray[i].placelist.length // 今天還剩多少時段
+
+      // console.log(`day${i} 原本有 ${periodarray[i].period.place.length} 已經有 ${periodarray[i].placelist.length} 個時段`);
+      // console.log(`day${i} 還剩 ${remain}個時段`);
+
       // 還有剩才需要給偏好跟推薦
       if (remain > 0) {
         //prefer go ( nearby start place so I need to get geocode first )
@@ -136,6 +142,8 @@ app.post('/newAutour' , async function (req,res){
           nearbyplace = nearbyplace.filter((item, index, array)=>{return item.openingcheck == true });
           console.log(`day${i} nearbyplace finish !`);
 
+          // console.log(`day${i} 找到 ${nearbyplace.length} 個 nearbyplace `);
+
           // 加上系統自己推薦 tourist_attraction
           let moreplace = await googlemap.nearby(startplacelist[i].geometry.location.lat,
             startplacelist[i].geometry.location.lng,
@@ -150,6 +158,8 @@ app.post('/newAutour' , async function (req,res){
             // 去掉今天完全沒開的 (有保留沒營業時間的)
             moreplace = moreplace.filter((item, index, array)=>{return item.openingcheck == true });
             console.log(`day${i} moreplace finish !`);
+
+            // console.log(`day${i} 找到 ${moreplace.length} 個 moreplace `);
 
             //給權重 取得綜合分數
             weight.addscore(nearbyplace,0.8)
@@ -197,6 +207,8 @@ app.post('/newAutour' , async function (req,res){
             // sortby score
             sort.by(finalPlaceList , 'score')
 
+            // console.log(`day${i} 最後有 ${finalPlaceList.length} 個 finalPlaceList `);
+
             let count = 0
             for (var p in finalPlaceList) {
               if (count == remain) break
@@ -227,6 +239,8 @@ app.post('/newAutour' , async function (req,res){
       let allpath = algorithm.find2pointAllPath(moveCostMatrix,0,idarray.length-1)
       sort.bysmall2big(allpath , "weight")
 
+      // console.log('placelist' , periodarray[i].placelist);
+
       let placeopeningMatrix = algorithm.openingMatrix( placelistdetail , periodarray[i].period.place )
 
       var shortpath = algorithm.findShortestPath(allpath ,placeopeningMatrix )
@@ -243,7 +257,7 @@ app.post('/newAutour' , async function (req,res){
     res.status(200).send(periodarray)
   } catch (e) {
     console.log(e);
-    res.status(400)
+    res.status(400).send({error:error})
   }
 
 })

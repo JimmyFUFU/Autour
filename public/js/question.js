@@ -65,6 +65,8 @@ function confirmQ1() {
     document.querySelector(".backicon").style.display = 'block'
     document.querySelector(".backicon").onclick = function(){back2Q1()}
     document.querySelector(".progressbar").style.width = '33.3%'
+    // let curtime = new Date()
+    // document.querySelector('.startdaytime').value = `"${curtime.getFullYear()}-${curtime.getMonth()+1}-${curtime.getDate()}T09:00"`;
   } else {
     console.log('Please select city');
     document.querySelector('.Q1error').style.display = 'flex'
@@ -257,6 +259,7 @@ function submit() {
     },
     error: function(data){
       alert('Something Error')
+      window.location.href=`${API_HOST}/index.html`;
     }
   })
 }
