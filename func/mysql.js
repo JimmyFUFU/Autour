@@ -51,10 +51,12 @@ var insertdataSet = function (object, set) {
 
 var insertdataSetUpdate = function (object, set , update ) {
   var sql = `INSERT INTO ${object} SET ? ON DUPLICATE KEY UPDATE SET ${update} `
-  console.log(sql);
   return new Promise(function (resolve, reject) {
     pool.query(sql, set, (err, results) => {
-      if (err) reject(new Error('insertUpdateFail'))
+      if (err) {
+        console.log(err);
+        reject(new Error('insertUpdateFail'))
+      }
       resolve(results)
     })
   })
