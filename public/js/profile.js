@@ -29,7 +29,7 @@ if(localStorage["access_token"]){
     url : `${location.origin}/user/profile`,
     success :function(data){
       // 照片
-      document.querySelector('.memberprofile').src = data.user.picture
+      if (data.user.picture) {document.querySelector('.memberprofile').src = data.user.picture}
       document.querySelector('.memberid').innerText = `ID : ${data.user.id}`
       document.querySelector('.membername').innerText = data.user.name
       document.querySelector('.memberemail').innerText = data.user.email
