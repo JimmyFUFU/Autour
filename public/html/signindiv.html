@@ -22,7 +22,8 @@
       <div class="loginerror" style="top:45%"></div>
       <input type="hidden" id="inprovider" value="native">
       <div class="nativelogin" onclick="loginAjax()">Login !</div>
-      <div class="fblogin" onclick="fblogin()">Connect with Facebook</div>
+      <div class="fblogin" onclick="fblogin()"><img src="../icon/facebook.png" alt="FB">Connect with Facebook</div>
+      <div class="g-signin2" data-onsuccess="onSignIn"></div>
     </div>
     <div class="signupform">
       <div class="">
@@ -44,3 +45,5 @@
 
 </div>
 <script src="./js/signindiv.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<meta name="google-signin-client_id" content="FEP2iJqf6iA7RErCeKGq_5KY.apps.googleusercontent.com">
