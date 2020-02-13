@@ -38,7 +38,7 @@ app.post('/test' , async (req, res)  => {
 
   let periodarray = period.getperiod(req.body)
 
-
+  let placeopeningMatrix = algorithm.openingMatrix( [] , periodarray[0].period.place )
   // var mustgolist = []
   // for (var i in req.body.mustgo) {
   //   let mustgoplace = await googlemap.findplace(req.body.mustgo[i])
