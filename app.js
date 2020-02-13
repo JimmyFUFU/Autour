@@ -35,19 +35,7 @@ app.use(bodyparser.json())
 app.use(bearerToken())
 
 app.post('/test' , async (req, res)  => {
-
-  let periodarray = period.getperiod(req.body)
-
-  let placeopeningMatrix = algorithm.openingMatrix( [] , periodarray[0].period.place )
-  // var mustgolist = []
-  // for (var i in req.body.mustgo) {
-  //   let mustgoplace = await googlemap.findplace(req.body.mustgo[i])
-  //   let mustgoplacedetail = await googlemap.placedetail(mustgoplace.candidates[0].place_id) // candidates[0] 選第一個
-  //   mustgolist.push(mustgoplacedetail.result)
-  // }
-
-
-  res.send(periodarray)
+  res.send('213')
 })
 
 
@@ -58,7 +46,6 @@ app.post('/newAutour' , async function (req,res){
   let periodarray = period.getperiod(req.body)
 
 
-/*
   try {
     // 找到每天起點、終點的資料
     var startplacelist = new Array()
@@ -270,9 +257,7 @@ app.post('/newAutour' , async function (req,res){
     console.log(e);
     res.status(400).send({error:error})
   }
-*/
 
-res.status(200).send(periodarray)
 })
 
 app.post('/storeAutour' , async function (req,res){
