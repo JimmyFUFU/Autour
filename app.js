@@ -47,7 +47,7 @@ app.post('/test' , async (req, res)  => {
   // }
 
 
-  res.send(mustgolist)
+  res.send(periodarray)
 })
 
 
