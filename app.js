@@ -423,7 +423,8 @@ app.post('/user/login' , async function (req,res){
               picture : userdata.picture,
               access_token: token,
               access_expired: expiredtime,
-              three_rd_access_token: req.body.access_token
+              three_rd_access_token: req.body.access_token,
+              three_rd_id : req.body.google_Id
             }
 
              // 如果FB的ID有重複 就更新使用者資料

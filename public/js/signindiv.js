@@ -189,6 +189,7 @@ function onSignIn() {
 		let id_token = GoogleUser.getAuthResponse().id_token;
 		const jsonobj = {
 			provider: "google",
+      google_Id : GoogleUser.getId(),
 			access_token: id_token
 		};
     $.ajax({
