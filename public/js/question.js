@@ -33,7 +33,7 @@ function addMustGo() {
 }
 
 function deletemustgoplace(thisobject) {
-  var mustgoblock = document.querySelector('.mustgoblock')
+  let mustgoblock = document.querySelector('.mustgoblock')
   mustgoblock.removeChild(thisobject.parentNode)
 }
 
@@ -253,8 +253,8 @@ function submit() {
     url: `${API_HOST}/newAutour`,
     success: function(data) {
       localStorage.setItem('tour', JSON.stringify(data));
-      document.write(JSON.stringify(data))
-      console.log(data);
+      // document.write(JSON.stringify(data))
+      // console.log(data);
       window.location.href=`${API_HOST}/tourdetail.html`;
     },
     error: function(data){

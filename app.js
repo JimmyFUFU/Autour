@@ -250,6 +250,7 @@ app.post('/newAutour' , async function (req,res){
         periodarray[i].period.place[k-1].lng = periodarray[i].placelist[shortpath[k]-1].lng
         periodarray[i].period.place[k-1].place_id = periodarray[i].placelist[shortpath[k]-1].place_id
       }
+
     }
     console.log('periodarray finish !');
     res.status(200).send(periodarray)
@@ -305,7 +306,6 @@ app.put('/revisetitle' , async function(req,res){
 })
 
 app.post('/user/login' , async function (req,res){
-
 
   if (req.body.provider === 'native') {
     if (req.body.email === '' || req.body.password === '') {
