@@ -479,8 +479,7 @@ app.post('/user/login' , async function (req,res){
             let fbsignupdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
             await mysql.insertdataSetUpdate( 'user' , fbsignInpost , fbsignupdate)
             console.log('FB signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
-            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', `email = "${userdata.email}" AND provider = "${req.body.provider}"`)
-            console.log(userdatafromMysql[0]);
+            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', `three_rd_id = "${userdata.id}" AND provider = "${req.body.provider}"`)
             var outputUser = {
               data : {
                 access_token : `${userdatafromMysql[0].access_token}` ,
