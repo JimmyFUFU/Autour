@@ -43,7 +43,7 @@ app.post('/test' , async (req, res)  => {
       console.log(periodarray[i].period.place[q].time);
       console.log(new Date(periodarray[i].period.place[q].time));
       let hour = new Date(Date.UTC(periodarray[i].period.place[q].time)).getHours()
-      console.log(hours);
+      console.log(hour);
     }
 
   }
