@@ -35,6 +35,21 @@ app.use(bodyparser.json())
 app.use(bearerToken())
 
 app.post('/test' , async (req, res)  => {
+  let periodarray = req.body.periodarray
+
+  for (let i in periodarray) {
+
+    for (let q = 0; q < periodarray[i].period.place.length; q++) {
+      console.log(periodarray[i].period.place[q].time);
+      console.log(new Date(periodarray[i].period.place[q].time));
+      let hour = new Date(Date.UTC(periodarray[i].period.place[q].time)).getHours()
+      console.log(hours);
+    }
+
+  }
+
+
+
   res.send('213')
 })
 
@@ -250,6 +265,10 @@ app.post('/newAutour' , async function (req,res){
         periodarray[i].period.place[k-1].lng = periodarray[i].placelist[shortpath[k]-1].lng
         periodarray[i].period.place[k-1].place_id = periodarray[i].placelist[shortpath[k]-1].place_id
       }
+
+      // for (let q = 0; q < periodarray[i].period.place.length; q++) {
+      //
+      // }
 
     }
     console.log('periodarray finish !');
