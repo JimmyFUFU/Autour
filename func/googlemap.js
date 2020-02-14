@@ -166,6 +166,15 @@ function countitems(typename , items) {
     case 'zoo':
       return Math.ceil(items/6)
       break;
+    case 'gym':
+      return Math.ceil(items/2)
+      break;
+    case 'bowling_alley':
+      return Math.ceil(items/2)
+      break;
+    case 'stadium':
+      return Math.ceil(items/2)
+      break;
     case 'art_gallery':
       return Math.ceil(items/2)
       break;

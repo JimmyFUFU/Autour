@@ -82,12 +82,14 @@
   border-radius: 5px;
   margin : 10px 3% 0 3%;
   height: 95%;
+  width: 35%;
   display: flex;
   flex-direction: column;
   justify-content:flex-start;
   align-items: center;
   cursor: pointer;
-  transition: 0.3s
+  transition: 0.3s;
+  overflow-y: auto;
 }
 
 .oneday:hover {
@@ -96,19 +98,19 @@
 
 .thisdate {
   border-bottom: 1.5px solid #FE7F2D;
-  width: 300px;
+  width: 100%;
   font-family: monospace;
   font-size:30px;
   text-align: center;
-  padding: 5%;
+  padding: 5% 0 ;
 }
 
 .oneplace {
-  width: 300px;
+  width: 92%;
   border-bottom: 1px solid #FFBC42;
   padding: 3px;
   text-align: center;
-  margin: 2%;
+  margin: 2% 0 ;
   display: flex;
   flex-direction: row;
   align-items: center;

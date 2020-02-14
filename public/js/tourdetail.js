@@ -130,6 +130,48 @@ function rendertourdetail(tourobj){
         oneplace.appendChild(oneplacestrong)
 
         oneday.appendChild(oneplace)
+
+        // 放午餐
+        if (tourobj[i].period.lunch.name != "" && placetime.getUTCHours() == 10) {
+          let lunchplace = document.createElement('div')
+          lunchplace.className = 'oneplace'
+
+          let lunchplaceimg = document.createElement('img')
+          lunchplaceimg.src = "../icon/meal.png";
+          lunchplace.appendChild(lunchplaceimg)
+
+
+          let lunchplacep = document.createElement('p')
+          lunchplacep.innerText = `12:00`
+          lunchplace.appendChild(lunchplacep)
+
+          let lunchplacestrong = document.createElement('strong')
+          lunchplacestrong.innerText = tourobj[i].period.lunch.name
+          lunchplace.appendChild(lunchplacestrong)
+
+          oneday.appendChild(lunchplace)
+        }
+        //放晚餐
+        if (tourobj[i].period.dinner.name != "" && placetime.getUTCHours() == 16) {
+          let dinnerplace = document.createElement('div')
+          dinnerplace.className = 'oneplace'
+
+          let dinnerplaceimg = document.createElement('img')
+          dinnerplaceimg.src = "../icon/meal.png";
+          dinnerplace.appendChild(dinnerplaceimg)
+
+
+          let dinnerplacep = document.createElement('p')
+          dinnerplacep.innerText = `18:00`
+          dinnerplace.appendChild(dinnerplacep)
+
+          let dinnerplacestrong = document.createElement('strong')
+          dinnerplacestrong.innerText = tourobj[i].period.dinner.name
+          dinnerplace.appendChild(dinnerplacestrong)
+
+          oneday.appendChild(dinnerplace)
+        }
+
       }
     }
 
@@ -261,6 +303,35 @@ function daymarker(thisobj , tourobj , map){
       })
       markers.push(marker)
     }
+
+    if (tourobj[thisobj.id].period.place[i].time[11]==1 && tourobj[thisobj.id].period.place[i].time[12]==0 && tourobj[thisobj.id].period.lunch.name != "" ) {
+      // 午餐
+      points.push({lat: tourobj[thisobj.id].period.lunch.lat, lng: tourobj[thisobj.id].period.lunch.lng})
+      var marker = new google.maps.Marker({
+        position: {
+          lat: tourobj[thisobj.id].period.lunch.lat,
+          lng: tourobj[thisobj.id].period.lunch.lng
+        },
+        map: map,
+        animation: google.maps.Animation.DROP,
+        title:tourobj[thisobj.id].period.lunch.name
+      })
+      markers.push(marker)
+    }
+    if (tourobj[thisobj.id].period.place[i].time[11]==1 && tourobj[thisobj.id].period.place[i].time[12]==6 && tourobj[thisobj.id].period.dinner.name != "" ) {
+      //晚餐
+      points.push({lat: tourobj[thisobj.id].period.dinner.lat, lng: tourobj[thisobj.id].period.dinner.lng})
+      var marker = new google.maps.Marker({
+        position: {
+          lat: tourobj[thisobj.id].period.dinner.lat,
+          lng: tourobj[thisobj.id].period.dinner.lng
+        },
+        map: map,
+        animation: google.maps.Animation.DROP,
+        title:tourobj[thisobj.id].period.dinner.name
+      })
+      markers.push(marker)
+    }
   }
   // 終點
   points.push({lat: tourobj[thisobj.id].period.end.lat, lng: tourobj[thisobj.id].period.end.lng})
@@ -274,6 +345,9 @@ function daymarker(thisobj , tourobj , map){
     title:tourobj[thisobj.id].period.end.name
   })
   markers.push(marker)
+
+
+
 
     var polyline = new google.maps.Polyline({
         path: points,
