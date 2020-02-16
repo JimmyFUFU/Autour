@@ -97,7 +97,7 @@ function deletetourfunc(id) {
   $.ajax({
     type : 'DELETE',
     contentType : 'application/json' ,
-    headers : { 'authorization' : `Bearer ${localStorage.access_token}` , 'id' : id},
+    headers : { 'authorization' : `Bearer ${sessionStorage.access_token}` , 'id' : id},
     url : `${location.origin}/deleteAutour`,
     success :function(data){
       window.location.reload();
