@@ -16,6 +16,8 @@ const mysql = require('./func/mysql.js')
 const cst = require('./secret/constant.js')
 
 const app = express()
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 const googleMapsClient = require('@google/maps').createClient({
   key: cst.API_KEY,
   Promise : Promise
@@ -35,7 +37,7 @@ app.use(bodyparser.json())
 app.use(bearerToken())
 
 app.post('/test' , async (req, res)  => {
-  /*var AllTourPlaceIdlist = new Array()
+  var AllTourPlaceIdlist = new Array()
   let periodarray = req.body.periodarray
   for (let i in periodarray) {
 
@@ -49,6 +51,9 @@ app.post('/test' , async (req, res)  => {
       if (utchour == 10 || utchour == 14) {
         let lunch = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'] , 5 )
         lunch = lunch.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
+        console.log(`day ${i} ${utchour}點的餐廳 去掉空資料 ${lunch.length}`);
+        lunch = lunch.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1});
+        console.log(`day ${i} ${utchour}點的餐廳 去掉 lodging ${lunch.length}`);
         for (let u in lunch) {
           let check = false
           for (let k in AllTourPlaceIdlist) {
@@ -57,6 +62,7 @@ app.post('/test' , async (req, res)  => {
           if (!check) {
             let lunchdetail = await googlemap.placedetail(lunch[u].place_id)
             if (algorithm.openingMatrix([lunchdetail.result] , [periodarray[i].period.lunch])[0]) {  // 去掉中午沒開的
+              console.log(`${lunchdetail.result.name} 中午有開而且沒重複`);
               lunchdetailarr.push(lunchdetail.result)
               AllTourPlaceIdlist.push(lunch[u].place_id)
             }
@@ -68,7 +74,9 @@ app.post('/test' , async (req, res)  => {
       if (utchour == 16 || utchour == 19 || utchour == 20) {
         let dinner = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'], 5 )
         dinner = dinner.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
-
+        console.log(`day ${i} ${utchour}點的餐廳 去掉空資料 ${dinner.length}`);
+        dinner = dinner.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1})
+        console.log(`day ${i} ${utchour}點的餐廳 去掉 lodging ${dinner.length}`);
         for (let o in dinner) { // 去掉今天沒開的
           let check = false
           for (let k in AllTourPlaceIdlist) {
@@ -77,6 +85,7 @@ app.post('/test' , async (req, res)  => {
           if (!check) {
             let dinnerdetail = await googlemap.placedetail(dinner[o].place_id)
             if (algorithm.openingMatrix([dinnerdetail.result] , [periodarray[i].period.dinner])[0]) {
+              console.log(`${dinnerdetail.result.name} 晚上有開而且沒重複`);
               dinnerdetailarr.push(dinnerdetail.result)
               AllTourPlaceIdlist.push(dinner[o].place_id)
             }
@@ -85,7 +94,9 @@ app.post('/test' , async (req, res)  => {
       }
 
       if (q == periodarray[i].period.place.length-1) {
-        sort.by(lunchdetailarr , 'user_ratings_total')
+        console.log(`day ${i} 這天的午餐推薦`+ lunchdetailarr.length);
+        console.log(`day ${i} 這天的晚餐推薦`+ dinnerdetailarr.length);
+        /*sort.by(lunchdetailarr , 'user_ratings_total')
         periodarray[i].period.lunch.name = lunchdetailarr[0].name
         periodarray[i].period.lunch.place_id = lunchdetailarr[0].place_id
         periodarray[i].period.lunch.lat = lunchdetailarr[0].geometry.location.lat
@@ -97,14 +108,14 @@ app.post('/test' , async (req, res)  => {
         periodarray[i].period.dinner.place_id = dinnerdetailarr[0].place_id
         periodarray[i].period.dinner.lat = dinnerdetailarr[0].geometry.location.lat
         periodarray[i].period.dinner.lng = dinnerdetailarr[0].geometry.location.lng
-        periodarray[i].dinnerREC = dinnerdetailarr // 10 個左右
+        periodarray[i].dinnerREC = dinnerdetailarr // 10 個左右*/
       }
     }
 
 
 
   }
-  res.send(periodarray)*/
+  res.send(periodarray)
 })
 
 
@@ -113,7 +124,6 @@ app.post('/newAutour' , async function (req,res){
 //--------------------------------------------------------預備工作 先把時段放好--------------------------------------------------------//
   // 先算有多少時段 才知道要拿多少個景點 // 順便放好 起點 住宿 終點資訊
   let periodarray = period.getperiod(req.body)
-
 
 
   try {
@@ -187,6 +197,7 @@ app.post('/newAutour' , async function (req,res){
   // --------------------------------------------------排每天的景點進 placelist-----------------------------------------------//
 
     for (let i in periodarray) {
+      io.emit('server message', {day: Number(i)+1 , msg: `day ${i+1} start`})
       let idarray = [`place_id:${periodarray[i].period.start.place_id}`]
       let remain = periodarray[i].period.place.length - periodarray[i].placelist.length // 今天還剩多少時段
 
@@ -331,6 +342,7 @@ app.post('/newAutour' , async function (req,res){
         if (utchour == 10 || utchour == 14) {
           let lunch = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'] , 5 )
           lunch = lunch.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
+          lunch = lunch.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1});
           for (let u in lunch) {
             let check = false
             for (let k in AllTourPlaceIdlist) {
@@ -350,7 +362,7 @@ app.post('/newAutour' , async function (req,res){
         if (utchour == 16 || utchour == 19 || utchour == 20) {
           let dinner = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'], 5 )
           dinner = dinner.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
-
+          dinner = dinner.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1})
           for (let o in dinner) { // 去掉今天沒開的
             let check = false
             for (let k in AllTourPlaceIdlist) {
@@ -386,7 +398,7 @@ app.post('/newAutour' , async function (req,res){
         }
       }
       console.log(`day ${i} lunch & dinner are OK !`);
-
+      io.emit('server message', {day:Number(i)+1 , msg: `day ${i+1} finish`})
     }
     console.log('periodarray finish !');
     var responseobj = {
@@ -398,6 +410,7 @@ app.post('/newAutour' , async function (req,res){
     res.status(400).send({error:e})
   }
 
+  //res.status(400).send({periodarray: periodarray})
 })
 
 app.post('/storeAutour' , async function (req,res){
@@ -411,7 +424,9 @@ app.post('/storeAutour' , async function (req,res){
         id:moment(moment().valueOf()).format('YYYYMMDDHHmmss'),
         userid:req.body.userid,
         tourtitle:req.body.tourtitle,
-        tourdetail:req.body.tour
+        tourdetail:req.body.tour,
+        prefertype:req.body.prefertype,
+        timetype :req.body.timetype
       }
       await mysql.insertdataSet('tour',inserttourpost)
       res.status(200).send({ success: true })
@@ -423,7 +438,7 @@ app.post('/storeAutour' , async function (req,res){
 
 app.get('/getAutour' , async function(req,res){
 
-  var tourdetail = await mysql.selectdatafromWhere('tourdetail , tourtitle','tour' , `id = "${req.query.id}"`)
+  var tourdetail = await mysql.selectdatafromWhere('*','tour' , `id = "${req.query.id}"`)
   tourdetail = JSON.stringify(tourdetail)
   tourdetail = JSON.parse(tourdetail)
   res.status(200).send(tourdetail)
@@ -679,6 +694,6 @@ app.get('/user/profile' , async function(req,res){
 
 
 
-app.listen(PORT , ()=>{
+server.listen(PORT , ()=>{
   console.log(`App is running on port ${PORT}!`)
 })

@@ -77,6 +77,7 @@ var openingMatrix = function(placelistdetail , periodarray){
   var returnMatrix = new Array()
   for (let i in periodarray) {
     let time = new Date(periodarray[i].time)
+
     // 這個時段是否在每個 place 的營業時間內
     var onePeriodOpeningArray = new Array()
     for (var j in placelistdetail) {
@@ -95,7 +96,6 @@ var openingMatrix = function(placelistdetail , periodarray){
               let openhour = `${googleopentime[0]}${googleopentime[1]}`
               let openminute = `${googleopentime[2]}${googleopentime[3]}`
               let thisdayOpentime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() ,Number(openhour) , Number(openminute)));
-
               // 結束營業時間
               if (placelistdetail[j].opening_hours.periods[z].close) {
                 let googleclosetime = placelistdetail[j].opening_hours.periods[z].close.time
@@ -136,7 +136,6 @@ var findShortestPath = function(allpath , placeopeningMatrix){
   console.log("Matrix",placeopeningMatrix);
   return allpath[0].path
 }
-
 
 
 module.exports.find2pointAllPath = find2pointAllPath;

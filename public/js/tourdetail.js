@@ -35,6 +35,7 @@ if(localStorage["tour"] || id){
           console.log('tourdetail error');
           rendererror()
         }else{
+          // renderFirstCard(data[0].prefertype , data[0].timetype)
           rendertourdetail(JSON.parse(data[0].tourdetail))
         }
       },
@@ -201,6 +202,16 @@ function rendertourdetail(tourobj){
   }
 }
 
+function renderFirstCard(prefertype ,timetype){
+  prefertype = prefertype.split(',')
+
+  let oneday = document.createElement('div')
+  oneday.className = 'oneday'
+
+
+  detail.appendChild(oneday)
+}
+
 function checkmember(){
   if (sessionStorage.name){
     document.querySelector('#storediv').style.display = 'flex'
@@ -250,6 +261,8 @@ function memberstore(){
 function nostore(){
   localStorage.removeItem('tour');
   localStorage.removeItem('titleplaceholder');
+  localStorage.removeItem('prefertype')
+  localStorage.removeItem('timetype')
   window.location.href=`${API_HOST}/profile.html`;
 }
 

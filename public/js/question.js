@@ -212,6 +212,12 @@ function SameAsStartPoint(thisobject) {
 
 function submit() {
 
+  var socket = io();
+  socket.on('server message', (data) => {
+    console.log(data.msg); // Hello Client
+    document.querySelector('#loadingtext').innerText = `正在幫您完成第 ${data.day} 天的行程 ...`
+  });
+
   // loading
   document.querySelector('.loading').style.display = 'flex'
   document.styleSheets[0].addRule('.bigflex.bigflex::after','display: block;');
