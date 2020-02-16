@@ -367,19 +367,22 @@ app.post('/newAutour' , async function (req,res){
         }
 
         if (q == periodarray[i].period.place.length-1) {
-          sort.by(lunchdetailarr , 'user_ratings_total')
-          periodarray[i].period.lunch.name = lunchdetailarr[0].name
-          periodarray[i].period.lunch.place_id = lunchdetailarr[0].place_id
-          periodarray[i].period.lunch.lat = lunchdetailarr[0].geometry.location.lat
-          periodarray[i].period.lunch.lng = lunchdetailarr[0].geometry.location.lng
-          //periodarray[i].lunchREC = lunchdetailarr // 10 個左右
-
-          sort.by(dinnerdetailarr , 'user_ratings_total')
-          periodarray[i].period.dinner.name = dinnerdetailarr[0].name
-          periodarray[i].period.dinner.place_id = dinnerdetailarr[0].place_id
-          periodarray[i].period.dinner.lat = dinnerdetailarr[0].geometry.location.lat
-          periodarray[i].period.dinner.lng = dinnerdetailarr[0].geometry.location.lng
-          //periodarray[i].dinnerREC = dinnerdetailarr // 10 個左右
+          if (lunchdetailarr.length != 0) {
+            sort.by(lunchdetailarr , 'user_ratings_total')
+            periodarray[i].period.lunch.name = lunchdetailarr[0].name
+            periodarray[i].period.lunch.place_id = lunchdetailarr[0].place_id
+            periodarray[i].period.lunch.lat = lunchdetailarr[0].geometry.location.lat
+            periodarray[i].period.lunch.lng = lunchdetailarr[0].geometry.location.lng
+            //periodarray[i].lunchREC = lunchdetailarr // 10 個左右
+          }
+          if (dinnerdetailarr.length != 0) {
+            sort.by(dinnerdetailarr , 'user_ratings_total')
+            periodarray[i].period.dinner.name = dinnerdetailarr[0].name
+            periodarray[i].period.dinner.place_id = dinnerdetailarr[0].place_id
+            periodarray[i].period.dinner.lat = dinnerdetailarr[0].geometry.location.lat
+            periodarray[i].period.dinner.lng = dinnerdetailarr[0].geometry.location.lng
+            //periodarray[i].dinnerREC = dinnerdetailarr // 10 個左右
+          }
         }
       }
       console.log(`day ${i} lunch & dinner are OK !`);
