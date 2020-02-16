@@ -37,7 +37,7 @@ app.use(bodyparser.json())
 app.use(bearerToken())
 
 app.post('/test' , async (req, res)  => {
-  var AllTourPlaceIdlist = new Array()
+  /*var AllTourPlaceIdlist = new Array()
   let periodarray = req.body.periodarray
   for (let i in periodarray) {
 
@@ -108,14 +108,14 @@ app.post('/test' , async (req, res)  => {
         periodarray[i].period.dinner.place_id = dinnerdetailarr[0].place_id
         periodarray[i].period.dinner.lat = dinnerdetailarr[0].geometry.location.lat
         periodarray[i].period.dinner.lng = dinnerdetailarr[0].geometry.location.lng
-        periodarray[i].dinnerREC = dinnerdetailarr // 10 個左右*/
+        periodarray[i].dinnerREC = dinnerdetailarr // 10 個左右
       }
     }
 
 
 
   }
-  res.send(periodarray)
+  res.send(periodarray)*/
 })
 
 

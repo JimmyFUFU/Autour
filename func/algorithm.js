@@ -74,13 +74,22 @@ var toMatrix = function(obj){
 }
 
 var openingMatrix = function(placelistdetail , periodarray){
-  var returnMatrix = new Array()
-  for (let i in periodarray) {
-    let time = new Date(periodarray[i].time)
 
+  var returnMatrix = new Array()
+
+  for (let i in periodarray) {
+    console.log(periodarray[i].time);
+    let time = new Date(periodarray[i].time)
+    console.log(`時間 ${i} new Date 的 ${time}`);
+    /*console.log(time.getUTCFullYear());
+    console.log(time.getUTCMonth());
+    console.log(time.getUTCDate());
+    console.log(time.getUTCDay());
+    console.log(time.getUTCHours());
+    console.log(new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() , 8 )));*/
     // 這個時段是否在每個 place 的營業時間內
     var onePeriodOpeningArray = new Array()
-    for (var j in placelistdetail) {
+    /*for (var j in placelistdetail) {
       if(placelistdetail[j].opening_hours){
         //24 小時營業 給 true
         if (placelistdetail[j].opening_hours.periods.length == 1 && placelistdetail[j].opening_hours.periods[0].open.day == 0 && placelistdetail[j].opening_hours.periods[0].open.time == "0000") {
@@ -118,10 +127,13 @@ var openingMatrix = function(placelistdetail , periodarray){
       }else {
         onePeriodOpeningArray.push(true) //沒營業時間給 true
       }
-    }
-    returnMatrix.push(onePeriodOpeningArray)
+    }*/
+    //returnMatrix.push(onePeriodOpeningArray)
   }
+
   return returnMatrix
+
+
 }
 
 var findShortestPath = function(allpath , placeopeningMatrix){
