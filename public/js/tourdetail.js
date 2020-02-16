@@ -202,7 +202,7 @@ function rendertourdetail(tourobj){
 }
 
 function checkmember(){
-  if (localStorage.name){
+  if (sessionStorage.name){
     document.querySelector('#storediv').style.display = 'flex'
     document.querySelector('.titleinput').value = `${localStorage.titleplaceholder}之旅`
   }else{
