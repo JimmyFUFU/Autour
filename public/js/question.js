@@ -269,6 +269,7 @@ function submit() {
       window.location.href=`${API_HOST}/tourdetail.html`;
     },
     error: function(data){
+      console.log(data);
       alert('Something Error')
       window.location.href=`${API_HOST}/index.html`;
     }

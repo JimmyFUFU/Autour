@@ -196,7 +196,7 @@ app.post('/newAutour' , async function (req,res){
   // --------------------------------------------------排每天的景點進 placelist-----------------------------------------------//
 
     for (let i in periodarray) {
-      io.emit('server message', {day: Number(i)+1 , msg: `day ${i+1} start`})
+      io.emit('server message', {day: Number(i)+1 , msg: `day ${Number(i)+1} start`})
       let idarray = [`place_id:${periodarray[i].period.start.place_id}`]
       let remain = periodarray[i].period.place.length - periodarray[i].placelist.length // 今天還剩多少時段
 
@@ -397,7 +397,7 @@ app.post('/newAutour' , async function (req,res){
         }
       }
       console.log(`day ${i} lunch & dinner are OK !`);
-      io.emit('server message', {day:Number(i)+1 , msg: `day ${i+1} finish`})
+      io.emit('server message', {day:Number(i)+1 , msg: `day ${Number(i)+1} finish`})
     }
     console.log('periodarray finish !');
     var responseobj = {
@@ -406,6 +406,7 @@ app.post('/newAutour' , async function (req,res){
 
     res.status(200).send(responseobj)
   } catch (e) {
+    console.log(e);
     res.status(400).send({error:e})
   }
 
