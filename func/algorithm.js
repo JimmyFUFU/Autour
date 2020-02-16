@@ -79,11 +79,11 @@ var openingMatrix = function(placelistdetail , periodarray){
   for (let i in periodarray) {
     let time = new Date(periodarray[i].time)
     console.log(time);
-    console.log(time.getFullYear());
-    console.log( time.getMonth());
-    console.log(time.getDate());
-    console.log(time.getDay());
-    console.log( new Date(Date.UTC( time.getFullYear() , time.getMonth() , time.getDate() )));
+    console.log(time.getUTCFullYear());
+    console.log(time.getUTCMonth());
+    console.log(time.getUTCDate());
+    console.log(time.getUTCDay());
+    console.log( new Date(Date.UTC( time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() , 10 )));
 
     // 這個時段是否在每個 place 的營業時間內
     var onePeriodOpeningArray = new Array()
