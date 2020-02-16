@@ -78,28 +78,17 @@ var openingMatrix = function(placelistdetail , periodarray){
   var returnMatrix = new Array()
 
   for (let i in periodarray) {
-    console.log(periodarray[i].time);
-    let time = new Date(periodarray[i].time)
-    console.log(`時間 ${i} new Date 的 ${time}`);
-    /*console.log(time.getUTCFullYear());
-    console.log(time.getUTCMonth());
-    console.log(time.getUTCDate());
-    console.log(time.getUTCDay());
-    console.log(time.getUTCHours());
-    console.log(new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() , 8 )));*/
+    let time = periodarray[i].time
     // 這個時段是否在每個 place 的營業時間內
     var onePeriodOpeningArray = new Array()
-    /*for (var j in placelistdetail) {
+    for (var j in placelistdetail) {
       if(placelistdetail[j].opening_hours){
         //24 小時營業 給 true
         if (placelistdetail[j].opening_hours.periods.length == 1 && placelistdetail[j].opening_hours.periods[0].open.day == 0 && placelistdetail[j].opening_hours.periods[0].open.time == "0000") {
           onePeriodOpeningArray.push(true)
-        }else if (placelistdetail[j].opening_hours.periods.indexOf(time.getUTCDay()) == -1) { //星期 X 沒開
-          onePeriodOpeningArray.push(false)
         }else{
           for (let z in placelistdetail[j].opening_hours.periods) {
             if (placelistdetail[j].opening_hours.periods[z].open.day == time.getUTCDay() ) {
-
               // 算出開始營業時間
               let googleopentime = placelistdetail[j].opening_hours.periods[z].open.time
               let openhour = `${googleopentime[0]}${googleopentime[1]}`
@@ -119,21 +108,23 @@ var openingMatrix = function(placelistdetail , periodarray){
                 var thisdayClosetime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate()+1 , Number(closehour) , Number(closeminute)))
               }
               // 判斷如果這個時段有在這個地點的營業時間內
-              if( time >= thisdayOpentime && time < thisdayClosetime){  onePeriodOpeningArray.push(true) }
-              else{ onePeriodOpeningArray.push(false) }
+              if( time >= thisdayOpentime && time < thisdayClosetime){
+                onePeriodOpeningArray.push(true)
+                break
+              }
+            }
+            if (z == placelistdetail[j].opening_hours.periods.length-1) {
+              onePeriodOpeningArray.push(false)
             }
           }
         }
       }else {
         onePeriodOpeningArray.push(true) //沒營業時間給 true
       }
-    }*/
-    //returnMatrix.push(onePeriodOpeningArray)
+    }
+    returnMatrix.push(onePeriodOpeningArray)
   }
-
   return returnMatrix
-
-
 }
 
 var findShortestPath = function(allpath , placeopeningMatrix){
