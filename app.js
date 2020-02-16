@@ -35,7 +35,7 @@ app.use(bodyparser.json())
 app.use(bearerToken())
 
 app.get('/array' , (req,res)=>{
-  console.log( algorithm.openingMatrix([req.body.lunchdetail] , [{name:'' , time: "2020-02-01T18:00:00.000Z"}]) );
+  console.log( algorithm.openingMatrix([req.body.lunchdetail] , [req.body.lunch]) );
   res.send('123')
 })
 
