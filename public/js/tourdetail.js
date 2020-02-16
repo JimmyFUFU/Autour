@@ -132,7 +132,7 @@ function rendertourdetail(tourobj){
         oneday.appendChild(oneplace)
 
         // 放午餐
-        if (tourobj[i].period.lunch && placetime.getUTCHours() == 10) {
+        if (tourobj[i].period.lunch && tourobj[i].period.lunch.name != "" && placetime.getUTCHours() == 10) {
           let lunchplace = document.createElement('div')
           lunchplace.className = 'oneplace'
 
@@ -152,7 +152,7 @@ function rendertourdetail(tourobj){
           oneday.appendChild(lunchplace)
         }
         //放晚餐
-        if (tourobj[i].period.dinner && placetime.getUTCHours() == 16) {
+        if (tourobj[i].period.dinner && tourobj[i].period.dinner.name != ""  && placetime.getUTCHours() == 16) {
           let dinnerplace = document.createElement('div')
           dinnerplace.className = 'oneplace'
 
@@ -216,9 +216,11 @@ function memberstore(){
   if (document.querySelector('.titleinput').value) {
     //直接存進資料庫
     var jsonobj = {
-      userid : localStorage.id,
+      userid : sessionStorage.id,
       tourtitle : document.querySelector('.titleinput').value,
-      tour : localStorage.tour
+      tour : localStorage.tour,
+      prefertype : localStorage.prefertype,
+      timetype : localStorage.timetype
     }
     $.ajax({
       type:'POST',
@@ -229,9 +231,11 @@ function memberstore(){
         alert('Success')
         localStorage.removeItem('titleplaceholder')
         localStorage.removeItem('tour')
+        localStorage.removeItem('prefertype')
+        localStorage.removeItem('timetype')
         window.location.href=`${API_HOST}/profile.html`;
       },error: function(data) {
-        alert('Please try again later')
+        alert('Something Wrong \n Please try again later')
         window.location.href=`${API_HOST}/tourdetail.html`;
       }
     })

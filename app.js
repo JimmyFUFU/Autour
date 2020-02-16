@@ -389,7 +389,11 @@ app.post('/newAutour' , async function (req,res){
 
     }
     console.log('periodarray finish !');
-    res.status(200).send(periodarray)
+    var responseobj = {
+      periodarray: periodarray
+    }
+
+    res.status(200).send(responseobj)
   } catch (e) {
     res.status(400).send({error:e})
   }

@@ -257,7 +257,7 @@ function submit() {
     contentType: 'application/json',
     url: `${API_HOST}/newAutour`,
     success: function(data) {
-      localStorage.setItem('tour', JSON.stringify(data));
+      localStorage.setItem('tour', JSON.stringify(data.periodarray));
       // document.write(JSON.stringify(data))
       // console.log(data);
       window.location.href=`${API_HOST}/tourdetail.html`;
