@@ -19,8 +19,8 @@ function animateCSS(element, animationName, callback) {
 }
 
 // access_token 是否存在
-if(localStorage["access_token"]){
-  var access_token = localStorage.access_token;
+if(sessionStorage["access_token"]){
+  var access_token = sessionStorage.access_token;
 
   $.ajax({
     type : 'GET',
@@ -77,9 +77,9 @@ if(localStorage["access_token"]){
 }
 
 function logout(){
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("name");
-  localStorage.removeItem("id");
+  sessionStorage.removeItem("access_token");
+  sessionStorage.removeItem("name");
+  sessionStorage.removeItem("id");
   window.location.reload();
 }
 

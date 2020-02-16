@@ -59,9 +59,9 @@ function loginAjax() {
     contentType: 'application/json',
     url: `${API_HOST}/user/login`,
     success: function(data) {
-      localStorage.setItem("access_token", data.data.access_token);
-      localStorage.setItem("name", data.data.user.name);
-      localStorage.setItem("id", data.data.user.id);
+      sessionStorage.setItem("access_token", data.data.access_token);
+      sessionStorage.setItem("name", data.data.user.name);
+      sessionStorage.setItem("id", data.data.user.id);
       document.querySelector('.hitext strong').innerText = data.data.user.name
       animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
       window.location.reload();
@@ -85,9 +85,9 @@ function signupAjax() {
     contentType: 'application/json',
     url: `${API_HOST}/user/signup`,
     success: function(data) {
-      localStorage.setItem("access_token", data.data.access_token);
-      localStorage.setItem("name", data.data.user.name);
-      localStorage.setItem("id", data.data.user.id);
+      sessionStorage.setItem("access_token", data.data.access_token);
+      sessionStorage.setItem("name", data.data.user.name);
+      sessionStorage.setItem("id", data.data.user.id);
       document.querySelector('.hitext strong').innerText = data.data.user.name
       animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
       window.location.reload();
@@ -136,9 +136,9 @@ function fblogin(){
       contentType: 'application/json',
       url: `${API_HOST}/user/login`,
       success: function(data) {
-        localStorage.setItem("access_token", data.data.access_token);
-        localStorage.setItem("name", data.data.user.name);
-        localStorage.setItem("id", data.data.user.id);
+        sessionStorage.setItem("access_token", data.data.access_token);
+        sessionStorage.setItem("name", data.data.user.name);
+        sessionStorage.setItem("id", data.data.user.id);
         document.querySelector('.hitext strong').innerText = data.data.user.name
         animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
         window.location.reload();
@@ -198,9 +198,9 @@ function onSignIn() {
       contentType: 'application/json',
       url: `${API_HOST}/user/login`,
       success: function(data) {
-        localStorage.setItem("access_token", data.data.access_token);
-        localStorage.setItem("name", data.data.user.name);
-        localStorage.setItem("id", data.data.user.id);
+        sessionStorage.setItem("access_token", data.data.access_token);
+        sessionStorage.setItem("name", data.data.user.name);
+        sessionStorage.setItem("id", data.data.user.id);
         document.querySelector('.hitext strong').innerText = data.data.user.name
         animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
         window.location.reload();

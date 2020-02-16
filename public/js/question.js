@@ -243,8 +243,11 @@ function submit() {
   for (var i = 0; i < $('.timeradio').length; i++) {
     if ($('.timeradio')[i].checked == true) {
       jsonobj['timetype'] = $('.timeradio')[i].value
+      localStorage.setItem('timetype' , $('.timeradio')[i].value )
     }
   }
+
+  localStorage.setItem('prefertype' , prefertype)
 
   $.ajax({
     type: 'POST',

@@ -43,7 +43,31 @@ var idday = function (placeid , day){
   })
 }
 
+var restaurant = function(restaurantdetail , time ){
+  console.log(time);
+/*  if (restaurantdetail.opening_hours) {
+    for (var i in restaurantdetail.opening_hours.periods) {
+      if (restaurantdetail.opening_hours.periods[i].open.day == 0 && restaurantdetail.opening_hours.periods[i].open.time == "0000" && placeobj.opening_hours.periods.length == 1) { //24小時營業
+        return true;
+      }
+      if (restaurantdetail.opening_hours.periods[i].open.day == day) {
+        if (whichmeal == 'lunch') {
+
+        }else if(whichmeal == 'dinner') {
+
+        }
+        // return true;
+      }
+    }
+    return false;
+  }else{
+    return true;
+  }*/
+
+}
+
 
 
 module.exports.day = day;
 module.exports.idday = idday;
+module.exports.restaurant = restaurant;
