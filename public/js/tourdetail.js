@@ -132,7 +132,7 @@ function rendertourdetail(tourobj){
         oneday.appendChild(oneplace)
 
         // 放午餐
-        if (tourobj[i].period.lunch.name != "" && placetime.getUTCHours() == 10) {
+        if (tourobj[i].period.lunch && placetime.getUTCHours() == 10) {
           let lunchplace = document.createElement('div')
           lunchplace.className = 'oneplace'
 
@@ -152,7 +152,7 @@ function rendertourdetail(tourobj){
           oneday.appendChild(lunchplace)
         }
         //放晚餐
-        if (tourobj[i].period.dinner.name != "" && placetime.getUTCHours() == 16) {
+        if (tourobj[i].period.dinner && placetime.getUTCHours() == 16) {
           let dinnerplace = document.createElement('div')
           dinnerplace.className = 'oneplace'
 
