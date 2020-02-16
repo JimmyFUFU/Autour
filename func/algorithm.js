@@ -78,12 +78,6 @@ var openingMatrix = function(placelistdetail , periodarray){
 
   for (let i in periodarray) {
     let time = new Date(periodarray[i].time)
-    console.log(time);
-    console.log(time.getUTCFullYear());
-    console.log(time.getUTCMonth());
-    console.log(time.getUTCDate());
-    console.log(time.getUTCDay());
-    console.log( new Date(Date.UTC( time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() , 10 )));
 
     // 這個時段是否在每個 place 的營業時間內
     var onePeriodOpeningArray = new Array()
@@ -103,7 +97,7 @@ var openingMatrix = function(placelistdetail , periodarray){
             let googleopentime = placelistdetail[j].opening_hours.periods[z].open.time
             let openhour = `${googleopentime[0]}${googleopentime[1]}`
             let openminute = `${googleopentime[2]}${googleopentime[3]}`
-            let thisdayOpentime = new Date(Date.UTC(time.getFullYear() , time.getMonth() , time.getDate() ,Number(openhour) , Number(openminute)));
+            let thisdayOpentime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() ,Number(openhour) , Number(openminute)));
 
             // 結束營業時間
             if (placelistdetail[j].opening_hours.periods[z].close) {
@@ -111,12 +105,12 @@ var openingMatrix = function(placelistdetail , periodarray){
               let closehour = `${googleclosetime[0]}${googleclosetime[1]}`
               let closeminute = `${googleclosetime[2]}${googleclosetime[3]}`
               if( placelistdetail[j].opening_hours.periods[z].open.day !== placelistdetail[j].opening_hours.periods[z].close.day) {
-                var thisdayClosetime = new Date(Date.UTC(time.getFullYear() , time.getMonth() , time.getDate()+1 , Number(closehour) , Number(closeminute)))
+                var thisdayClosetime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate()+1 , Number(closehour) , Number(closeminute)))
               }else {
-                var thisdayClosetime = new Date(Date.UTC(time.getFullYear() , time.getMonth() , time.getDate() , Number(closehour) , Number(closeminute)))
+                var thisdayClosetime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() , Number(closehour) , Number(closeminute)))
               }
             }else{
-              var thisdayClosetime = new Date(Date.UTC(time.getFullYear() , time.getMonth() , time.getDate()+1 , Number(closehour) , Number(closeminute)))
+              var thisdayClosetime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate()+1 , Number(closehour) , Number(closeminute)))
             }
             console.log(thisdayOpentime);
             console.log(thisdayClosetime);
