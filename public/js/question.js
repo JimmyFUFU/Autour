@@ -197,7 +197,9 @@ function confirmQ5() {
 }
 
 function changeEndtime() {
-  document.querySelector('.enddaytime').value = document.querySelector('.startdaytime').value
+  if (document.querySelector('.enddaytime').value == "") {
+    document.querySelector('.enddaytime').value = document.querySelector('.startdaytime').value
+  }
 }
 
 function SameAsStartPoint(thisobject) {
