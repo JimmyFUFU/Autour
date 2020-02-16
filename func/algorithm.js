@@ -75,60 +75,50 @@ var toMatrix = function(obj){
 
 var openingMatrix = function(placelistdetail , periodarray){
   var returnMatrix = new Array()
-
   for (let i in periodarray) {
     let time = new Date(periodarray[i].time)
-
     // 這個時段是否在每個 place 的營業時間內
     var onePeriodOpeningArray = new Array()
-
     for (var j in placelistdetail) {
-
       if(placelistdetail[j].opening_hours){
+        //24 小時營業 給 true
+        if (placelistdetail[j].opening_hours.periods.length == 1 && placelistdetail[j].opening_hours.periods[0].open.day == 0 && placelistdetail[j].opening_hours.periods[0].open.time == "0000") {
+          onePeriodOpeningArray.push(true)
+        }else if (placelistdetail[j].opening_hours.periods.indexOf(time.getUTCDay()) == -1) { //星期 X 沒開
+          onePeriodOpeningArray.push(false)
+        }else{
+          for (let z in placelistdetail[j].opening_hours.periods) {
+            if (placelistdetail[j].opening_hours.periods[z].open.day == time.getUTCDay() ) {
 
-        for (let z in placelistdetail[j].opening_hours.periods) {
+              // 算出開始營業時間
+              let googleopentime = placelistdetail[j].opening_hours.periods[z].open.time
+              let openhour = `${googleopentime[0]}${googleopentime[1]}`
+              let openminute = `${googleopentime[2]}${googleopentime[3]}`
+              let thisdayOpentime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() ,Number(openhour) , Number(openminute)));
 
-          //24 小時營業 給 true
-          if (placelistdetail[j].opening_hours.periods.length == 1 && placelistdetail[j].opening_hours.periods[0].open.day == 0 && placelistdetail[j].opening_hours.periods[0].open.time == "0000") {
-            onePeriodOpeningArray.push(true)
-          }else if (placelistdetail[j].opening_hours.periods[z].open.day == time.getUTCDay() ) {
-
-            // 算出開始營業時間
-            let googleopentime = placelistdetail[j].opening_hours.periods[z].open.time
-            let openhour = `${googleopentime[0]}${googleopentime[1]}`
-            let openminute = `${googleopentime[2]}${googleopentime[3]}`
-            let thisdayOpentime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() ,Number(openhour) , Number(openminute)));
-
-            // 結束營業時間
-            if (placelistdetail[j].opening_hours.periods[z].close) {
-              let googleclosetime = placelistdetail[j].opening_hours.periods[z].close.time
-              let closehour = `${googleclosetime[0]}${googleclosetime[1]}`
-              let closeminute = `${googleclosetime[2]}${googleclosetime[3]}`
-              if( placelistdetail[j].opening_hours.periods[z].open.day !== placelistdetail[j].opening_hours.periods[z].close.day) {
+              // 結束營業時間
+              if (placelistdetail[j].opening_hours.periods[z].close) {
+                let googleclosetime = placelistdetail[j].opening_hours.periods[z].close.time
+                let closehour = `${googleclosetime[0]}${googleclosetime[1]}`
+                let closeminute = `${googleclosetime[2]}${googleclosetime[3]}`
+                if( placelistdetail[j].opening_hours.periods[z].open.day !== placelistdetail[j].opening_hours.periods[z].close.day) {
+                  var thisdayClosetime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate()+1 , Number(closehour) , Number(closeminute)))
+                }else {
+                  var thisdayClosetime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() , Number(closehour) , Number(closeminute)))
+                }
+              }else{
                 var thisdayClosetime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate()+1 , Number(closehour) , Number(closeminute)))
-              }else {
-                var thisdayClosetime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate() , Number(closehour) , Number(closeminute)))
               }
-            }else{
-              var thisdayClosetime = new Date(Date.UTC(time.getUTCFullYear() , time.getUTCMonth() , time.getUTCDate()+1 , Number(closehour) , Number(closeminute)))
-            }
-            console.log(thisdayOpentime);
-            console.log(thisdayClosetime);
-            // 判斷如果這個時段有在這個地點的營業時間內
-            if( time >= thisdayOpentime && time < thisdayClosetime){
-              onePeriodOpeningArray.push(true)
-            }else{
-              onePeriodOpeningArray.push(false)
+              // 判斷如果這個時段有在這個地點的營業時間內
+              if( time >= thisdayOpentime && time < thisdayClosetime){  onePeriodOpeningArray.push(true) }
+              else{ onePeriodOpeningArray.push(false) }
             }
           }
-
         }
       }else {
-        onePeriodOpeningArray.push(true) //沒營業時間 給 true
+        onePeriodOpeningArray.push(true) //沒營業時間給 true
       }
-
     }
-
     returnMatrix.push(onePeriodOpeningArray)
   }
   return returnMatrix
