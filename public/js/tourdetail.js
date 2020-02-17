@@ -45,7 +45,9 @@ if(localStorage["tour"] || id){
       }
     })
   } else if (localStorage["tour"]){
-    rendertourdetail(JSON.parse(localStorage.tour))
+    let tour = JSON.parse(localStorage.tour)
+    rendertourdetail(tour)
+    renderwaringdiv(localStorage.warning , tour.length)
     document.querySelector('.memberstore').style.display = "block"
   }
 }else{
@@ -65,6 +67,12 @@ function rendererror(){
   errortext.className = 'errortext'
   errortext.innerText = '這裡沒有行程哦 !'
   detail.appendChild(errortext)
+}
+
+function renderwaringdiv(warningarray , days){
+  console.log(days);
+  console.log(warningarray);
+  console.log(warningarray.length);
 }
 
 function rendertourdetail(tourobj){
@@ -263,12 +271,14 @@ function nostore(){
   localStorage.removeItem('titleplaceholder');
   localStorage.removeItem('prefertype')
   localStorage.removeItem('timetype')
+  localStorage.removeItem('warning')
   window.location.href=`${API_HOST}/profile.html`;
 }
 
 var markers = []
 var polylines = []
 function deleteMarkers() {
+
   markers.forEach(function(e) {
     e.setMap(null);
   });
@@ -321,7 +331,7 @@ function daymarker(thisobj , tourobj , map){
       markers.push(marker)
     }
 
-    if (tourobj[thisobj.id].period.place[i].time[11]==1 && tourobj[thisobj.id].period.place[i].time[12]==0 && tourobj[thisobj.id].period.lunch.name != "" ) {
+    if (tourobj[thisobj.id].period.place[i].time[11]==1 && tourobj[thisobj.id].period.place[i].time[12]==0 && tourobj[thisobj.id].period.lunch && tourobj[thisobj.id].period.lunch.name != '') {
       // 午餐
       points.push({lat: tourobj[thisobj.id].period.lunch.lat, lng: tourobj[thisobj.id].period.lunch.lng})
       var marker = new google.maps.Marker({
@@ -331,11 +341,12 @@ function daymarker(thisobj , tourobj , map){
         },
         map: map,
         animation: google.maps.Animation.DROP,
-        title:tourobj[thisobj.id].period.lunch.name
+        title:tourobj[thisobj.id].period.lunch.name,
+        icon:'../icon/mealpoint.png'
       })
       markers.push(marker)
     }
-    if (tourobj[thisobj.id].period.place[i].time[11]==1 && tourobj[thisobj.id].period.place[i].time[12]==6 && tourobj[thisobj.id].period.dinner.name != "" ) {
+    if (tourobj[thisobj.id].period.place[i].time[11]==1 && tourobj[thisobj.id].period.place[i].time[12]==6 && tourobj[thisobj.id].period.dinner && tourobj[thisobj.id].period.dinner.name != '') {
       //晚餐
       points.push({lat: tourobj[thisobj.id].period.dinner.lat, lng: tourobj[thisobj.id].period.dinner.lng})
       var marker = new google.maps.Marker({
@@ -345,7 +356,8 @@ function daymarker(thisobj , tourobj , map){
         },
         map: map,
         animation: google.maps.Animation.DROP,
-        title:tourobj[thisobj.id].period.dinner.name
+        title:tourobj[thisobj.id].period.dinner.name,
+        icon:'../icon/mealpoint.png'
       })
       markers.push(marker)
     }

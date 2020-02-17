@@ -57,13 +57,13 @@ var find2pointAllPath = function(matrix , start ,end){
  return minpath
 }
 
-var toMatrix = function(obj){
-  var moveCostMatrix = []
+var toMatrix = function(obj ,placetype){
+  var moveCostMatrix = new Array()
   for (var i = 0; i < obj.rows.length; i++) {
-    let array = []
+    let array = new Array()
     for (var j = 0; j < obj.rows[i].elements.length; j++) {
-      if(obj.rows[i].elements[j].status === 'OK' ){
-        if(i==j) {array.push(-1)}
+      if(obj.rows[i].elements[j].status == 'OK' ){
+        if(i==j && placetype =='nearby') {array.push(-1)}
         else {array.push(obj.rows[i].elements[j].duration.value)}
       }
       else array.push(-1)
@@ -76,7 +76,6 @@ var toMatrix = function(obj){
 var openingMatrix = function(placelistdetail , periodarray){
 
   var returnMatrix = new Array()
-
   for (let i in periodarray) {
     let time = periodarray[i].time
     // 這個時段是否在每個 place 的營業時間內

@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  max-height: calc(100vh - 135px);
+  height: calc(100vh - 135px);
 }
 
 
@@ -40,13 +40,36 @@
   background-color:rgba(236, 240, 241,0.9);
 }
 
+#warningdiv {
+  position: absolute;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border : 2px solid #233D4D;
+  width: 600px;
+  height : 400px;
+  top: 50%;
+  left: 50%;
+  margin: -200px 0 0 -300px;
+  display: none;
+  border-radius: 5px;
+  background-color:rgba(236, 240, 241,0.9);
+  font-family: Microsoft JhengHei , monospace ;
+  overflow-x: auto;
+}
 
 .memberstore {
   position: absolute;
   bottom: 10%;
   left: 58%;
   cursor: pointer;
-  display: none
+  display: none;
+  transition: 0.5s;
+}
+
+.memberstore:hover {
+  transform : scale(1.1);
 }
 
 .detail {
@@ -65,7 +88,7 @@
   left: 30%;
   top: 3%;
   align-self: center;
-  font-family: '微軟正黑體';
+  font-family: Microsoft JhengHei;
   font-size: 40px;
   color: #7f8c8d;
 }
@@ -82,7 +105,7 @@
   border-radius: 5px;
   margin : 10px 3% 0 3%;
   height: 95%;
-  width: 35%;
+  min-width: 330px;
   display: flex;
   flex-direction: column;
   justify-content:flex-start;
@@ -99,6 +122,7 @@
 .thisdate {
   border-bottom: 1.5px solid #FE7F2D;
   width: 100%;
+  height: 70px;
   font-family: monospace;
   font-size:30px;
   text-align: center;
@@ -129,6 +153,6 @@
 }
 
 .oneplace strong {
-  font-family:  '微軟正黑體' ,  monospace;
+  font-family: Microsoft JhengHei,  monospace;
   font-size:20px;
 }

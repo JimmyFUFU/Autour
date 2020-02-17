@@ -21,8 +21,8 @@
       <label for="Hualien"><input type="checkbox" class="citycheckbox" id="Hualien" value="花蓮" onclick="clickcity(this)">花蓮</label>
       <label for="Taitung"><input type="checkbox" class="citycheckbox" id="Taitung" value="台東" onclick="clickcity(this)">台東</label>
       <label for="Lienchiang"><input type="checkbox" class="citycheckbox" id="Lienchiang" value="馬祖" onclick="clickcity(this)">馬祖</label>
-      <label for="Kinmen"><input type="checkbox" class="citycheckbox" id="Kinmen" value="金門" onclick="clickcity(this)">金門</label>
-      <label for="Penghu"><input type="checkbox" class="citycheckbox" id="Penghu" value="澎湖" onclick="clickcity(this)">澎湖</label>
+      <label for="Kinmen"><input type="checkbox" class="citycheckbox" id="Kinmen" value="金門縣" onclick="clickcity(this)">金門</label>
+      <label for="Penghu"><input type="checkbox" class="citycheckbox" id="Penghu" value="澎湖縣" onclick="clickcity(this)">澎湖</label>
     </div>
     <div class="Q1error">
       <img src="icon/embarrassed-red.png" alt="Q" class="erroricon">
@@ -33,11 +33,11 @@
 
   <div class="Question" id="Q2">
     <p><img src="icon/question.png" alt="Q" class="Qicon"> : 偷偷告訴我你幾號幾點會從<strong></strong>的哪裡開始旅行 ? *</p>
-    <input type="datetime-local" class="startdaytime" onchange="changeEndtime()" value="2020-02-04T08:00"><br>
-    <input type="text" class="startpoint" value="台灣新竹市東區中華路二段新竹火車站"> <!-- 台灣新竹市東區中華路二段新竹火車站 -->
+    <input type="datetime-local" class="startdaytime" onchange="changeEndtime()" value=""><br>
+    <input type="text" class="startpoint" value=""> <!-- 2020-02-04T08:00 台灣新竹市東區中華路二段新竹火車站 -->
     <p><img src="icon/question.png" alt="Q" class="Qicon"> : 什麼時候結束 ? *</p>
-    <input type="datetime-local" class="enddaytime" value="2020-02-04T21:00"><br>
-    <input type="text" class="endpoint" value="台灣新竹市東區中華路二段新竹火車站">
+    <input type="datetime-local" class="enddaytime" value=""><br>
+    <input type="text" class="endpoint" value="">
     <input type="checkbox" onclick="SameAsStartPoint(this)">同出發點
     <div class="Q2error">
       <img src="icon/embarrassed-red.png" alt="Q" class="erroricon">
@@ -92,7 +92,5 @@
       <label for="fast"><input type="radio" name="timeradio" class="timeradio" id="fast" value="fast">當然要，一定要很多地方</label>
   </div>
 
-</body>
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script src="/js/question.js"></script>
-</html>

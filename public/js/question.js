@@ -264,14 +264,17 @@ function submit() {
     url: `${API_HOST}/newAutour`,
     success: function(data) {
       localStorage.setItem('tour', JSON.stringify(data.periodarray));
+      localStorage.setItem('warning', JSON.stringify(data.warningarray));
       // document.write(JSON.stringify(data))
       // console.log(data);
       window.location.href=`${API_HOST}/tourdetail.html`;
     },
     error: function(data){
       console.log(data);
-      alert('Something Error')
-      window.location.href=`${API_HOST}/index.html`;
+      document.querySelector('#errordiv').style.display = 'block'
+      document.querySelector('#errordiv .errorbtn').onclick = function (){
+        window.location.href=`${API_HOST}/index.html`;
+      }
     }
   })
 }
@@ -280,7 +283,7 @@ function back2Q1() {
   document.querySelector('#Q1').style.display = 'block'
   document.querySelector('#Q2').style.display = 'none'
   document.querySelector(".letsGo").onclick = function(){confirmQ1()}
-  document.querySelector(".backicon").onclick = function(){window.location.href =`${API_HOST}/index.html`}
+  document.querySelector(".backicon").onclick = function(){window.location.reload()}
   document.querySelector(".progressbar").style.width = '16.6%'
 }
 

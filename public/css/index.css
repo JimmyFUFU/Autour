@@ -311,9 +311,50 @@
   transition : 0.5s;
 	cursor: pointer;
 	animation-duration: 0.5s;
-	/* border: 1px solid #feca57; */
 }
 
 .index .letsGo:hover {
  animation : swingX 1s 1;
+}
+
+#errordiv {
+	position: absolute;
+  display: none;
+  border : 2px solid #233D4D;
+  width: 450px;
+  height : 200px;
+  top: 50%;
+  left: 50%;
+  margin: -100px 0 0 -225px;
+	border-radius: 5px;
+	background-color:rgba(236, 240, 241,0.9);
+	font-family: monospace , Microsoft JhengHei;
+	font-weight:bold;
+	font-size: 20px ;
+	text-align: center;
+	z-index: 3;
+}
+#errordiv::before{
+	background-image: url(../icon/error.png);
+	background-repeat: no-repeat;
+	background-size:cover;
+	content:"";
+	width: 20%;
+  height: 45%;
+	position: absolute;
+	bottom: 5px;
+  right: 20px;
+  z-index: -1;/*-1 可以當背景*/
+  opacity:0.9;
+}
+
+.errorbtn {
+  font-size: 15px;
+  padding: 1% 2%;
+  cursor: pointer;
+  border-radius: 5px;
+	width: 25%;
+	margin: 0 auto;
+	font-weight:normal;
+  border: 2px solid #233D4D;
 }
