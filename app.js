@@ -361,26 +361,30 @@ app.post('/newAutour' , async function (req,res){
         let utchour = new Date(periodarray[i].period.place[q].time).getUTCHours()
         // 找午餐
         if (utchour == 10 || utchour == 13 || utchour == 14) {
-          let lunch = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'] , 5 )
-          lunch = lunch.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
-          lunch = lunch.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1});
-          for (let u in lunch) {
-            let lunchdetail = await googlemap.placedetail(lunch[u].place_id)
-            if (algorithm.openingMatrix([lunchdetail.result] , [periodarray[i].period.lunch])[0]) {  // 去掉中午沒開的
-              lunchdetailarr.push(lunchdetail.result)
+          if (periodarray[i].period.lunch) {
+            let lunch = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'] , 5 )
+            lunch = lunch.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
+            lunch = lunch.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1});
+            for (let u in lunch) {
+              let lunchdetail = await googlemap.placedetail(lunch[u].place_id)
+              if (algorithm.openingMatrix([lunchdetail.result] , [periodarray[i].period.lunch])[0]) {  // 去掉中午沒開的
+                lunchdetailarr.push(lunchdetail.result)
+              }
             }
           }
         }
 
         // 找晚餐
         if (utchour == 16 || utchour == 17 || utchour == 19 || utchour == 20) {
-          let dinner = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'], 5 )
-          dinner = dinner.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
-          dinner = dinner.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1})
-          for (let o in dinner) {
-            let dinnerdetail = await googlemap.placedetail(dinner[o].place_id)
-            if (algorithm.openingMatrix([dinnerdetail.result] , [periodarray[i].period.dinner])[0]) { // 去掉晚餐沒開的
-              dinnerdetailarr.push(dinnerdetail.result)
+          if (periodarray[i].period.dinner) {
+            let dinner = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'], 5 )
+            dinner = dinner.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
+            dinner = dinner.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1})
+            for (let o in dinner) {
+              let dinnerdetail = await googlemap.placedetail(dinner[o].place_id)
+              if (algorithm.openingMatrix([dinnerdetail.result] , [periodarray[i].period.dinner])[0]) { // 去掉晚餐沒開的
+                dinnerdetailarr.push(dinnerdetail.result)
+              }
             }
           }
         }
