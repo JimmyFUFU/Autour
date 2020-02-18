@@ -273,7 +273,9 @@ function submit() {
       console.log(data);
       document.querySelector('#errordiv').style.display = 'block'
       document.querySelector('#errordiv .errorbtn').onclick = function (){
-        window.location.href=`${API_HOST}/index.html`;
+        document.querySelector('.loading').style.display = 'none'
+        document.styleSheets[0].addRule('.bigflex.bigflex::after','display: none;');
+        document.querySelector('#errordiv').style.display = 'none'
       }
     }
   })
