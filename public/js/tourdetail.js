@@ -49,6 +49,7 @@ if(localStorage["tour"] || id){
     let warning = JSON.parse(localStorage.warning)
     rendertourdetail(tour)
     renderwaringdiv(warning , tour)
+    document.querySelector('#warningdiv').style.display = "flex"
     document.querySelector('.memberstore').style.display = "block"
   }
 }else{
