@@ -96,7 +96,7 @@ app.post('/newAutour' , async function (req,res){
         let mustgoplacedetail = await googlemap.placedetail(mustgoplace.candidates[0].place_id) // candidates[0] 選第一個
         mustgolist.push(mustgoplacedetail.result)
       }else {
-        warningarray.push({type: 'mustgo' , item: i ,status: mustgoplace.status})
+        warningarray.push({type: 'mustgo' , name: req.body.mustgo[i] ,status: mustgoplace.status})
       }
     }
     console.log('mustgolist finish !');
@@ -373,12 +373,13 @@ app.post('/storeAutour' , async function (req,res){
       res.status(400).send({ error: 'User Not found' })
     }else{
       const inserttourpost = {
-        id:moment(moment().valueOf()).format('YYYYMMDDHHmmss'),
-        userid:req.body.userid,
-        tourtitle:req.body.tourtitle,
-        tourdetail:req.body.tour,
-        prefertype:req.body.prefertype,
-        timetype :req.body.timetype
+        id: moment(moment().valueOf()).format('YYYYMMDDHHmmss'),
+        userid: req.body.userid,
+        tourtitle: req.body.tourtitle,
+        tourdetail: req.body.tour,
+        warningarray: req.body.warningarray,
+        prefertype: req.body.prefertype,
+        timetype : req.body.timetype
       }
       await mysql.insertdataSet('tour',inserttourpost)
       res.status(200).send({ success: true })
@@ -408,7 +409,13 @@ app.delete('/deleteAutour' , async function(req,res){
 })
 
 app.put('/revisetitle' , async function(req,res){
-
+  try {
+    await mysql.updatedatafromWhere('tour', `tourtitle = "${req.body.revisetitle}"` , `id=${req.body.tourId}`)
+    res.status(200).send({success:true})
+  } catch (e) {
+    console.log(e);
+    res.status(400).send({success:false})
+  }
 })
 
 app.post('/user/login' , async function (req,res){

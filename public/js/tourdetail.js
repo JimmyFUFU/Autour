@@ -35,7 +35,7 @@ if(localStorage["tour"] || id){
           console.log('tourdetail error');
           rendererror()
         }else{
-          // renderFirstCard(data[0].prefertype , data[0].timetype)
+          renderFirstCard(data[0])
           rendertourdetail(JSON.parse(data[0].tourdetail))
         }
       },
@@ -46,8 +46,9 @@ if(localStorage["tour"] || id){
     })
   } else if (localStorage["tour"]){
     let tour = JSON.parse(localStorage.tour)
+    let warning = JSON.parse(localStorage.warning)
     rendertourdetail(tour)
-    renderwaringdiv(localStorage.warning , tour.length)
+    renderwaringdiv(warning , tour)
     document.querySelector('.memberstore').style.display = "block"
   }
 }else{
@@ -69,10 +70,153 @@ function rendererror(){
   detail.appendChild(errortext)
 }
 
-function renderwaringdiv(warningarray , days){
-  console.log(days);
-  console.log(warningarray);
-  console.log(warningarray.length);
+function renderwaringdiv(warningarray , tour){
+
+  let warningdiv = document.querySelector('#warningdiv')
+
+  //先給 mustgo 有找不到的警告
+  let mustgowarningarr = new Array()
+  for (let v in warningarray) {
+    if (warningarray[v].type == 'mustgo') {
+      mustgowarningarr.push(warningarray[v].name)
+    }
+  }
+  if (mustgowarningarr.length != 0) {
+    let mustgoreport = document.createElement('div')
+    mustgoreport.className ='onedayreport'
+    mustgoreport.id ='mustgoreport'
+
+    let mustgotext = document.createElement('p')
+    mustgotext.className = 'mustgotext'
+    mustgotext.innerText = `您的必去清單 ➜`
+
+    let mustgoreporttext = document.createElement('p')
+    mustgoreporttext.className = 'mustgoreporttext'
+    mustgoreporttext.innerText += `沒有幫你找到 ${mustgowarningarr} 哦 !`
+
+    mustgoreport.appendChild(mustgotext)
+    mustgoreport.appendChild(mustgoreporttext)
+    warningdiv.appendChild(mustgoreport)
+  }
+
+  //看每天的警告給text
+  for (let i = 0; i < tour.length; i++) {
+    let onedayreport = document.createElement('div')
+    onedayreport.className ='onedayreport'
+
+    let Daynum = document.createElement('p')
+    Daynum.className = 'Daynum'
+    Daynum.innerText = `Day ${Number(i)+1}`
+
+    let Date = document.createElement('p')
+    Date.className = 'Date'
+    Date.innerText = `${tour[i].month}/${tour[i].date} ➜`
+
+    let fivediv = document.createElement('div')
+    fivediv.className ='fivediv'
+
+    var warningstart = document.createElement('div')
+    warningstart.className ='warningsmalldiv'
+    // warningstart.id ='warningstart'
+    warningstart.innerText = '起點✔'
+    var starttooltiptext = document.createElement('span')
+    starttooltiptext.className ='tooltiptext'
+    starttooltiptext.innerText = 'No problem'
+    fivediv.appendChild(warningstart)
+
+    if (tour[i].period.lunch) {
+      var warninglunch = document.createElement('div')
+      warninglunch.className ='warningsmalldiv'
+      // warninglunch.id ='warninglunch'
+      warninglunch.innerText = '午餐✔'
+      var lunchtooltiptext = document.createElement('span')
+      lunchtooltiptext.className ='tooltiptext'
+      lunchtooltiptext.innerText = 'No problem'
+      fivediv.appendChild(warninglunch)
+    }
+
+    var warningplace = document.createElement('div')
+    warningplace.className ='warningsmalldiv'
+    // warningplace.id ='warningplace'
+    warningplace.innerText = '景點✔'
+    var placetooltiptext = document.createElement('span')
+    placetooltiptext.className ='tooltiptext'
+    placetooltiptext.innerText = 'No problem'
+    fivediv.appendChild(warningplace)
+
+    if (tour[i].period.dinner) {
+      var warningdinner = document.createElement('div')
+      warningdinner.className ='warningsmalldiv'
+      // warningdinner.id ='warningdinner'
+      warningdinner.innerText = '晚餐✔'
+      var dinnertooltiptext = document.createElement('span')
+      dinnertooltiptext.className ='tooltiptext'
+      dinnertooltiptext.innerText = 'No problem'
+      fivediv.appendChild(warningdinner)
+    }
+
+    var warningend = document.createElement('div')
+    warningend.className ='warningsmalldiv'
+    // warningend.id ='warningend'
+    warningend.innerText = '終點✔'
+    var endtooltiptext = document.createElement('span')
+    endtooltiptext.className ='tooltiptext'
+    endtooltiptext.innerText = 'No problem'
+    fivediv.appendChild(warningend)
+
+    for (let v = 0 ; v < warningarray.length ; v++) {
+      if (warningarray[v].day == i) {
+        switch (warningarray[v].type) {
+          case 'startplace':
+            warningstart.innerText = '起點✘'
+            warningstart.style.border = "1px solid #ff4757"
+            warningstart.style.color = "#ff4757"
+            starttooltiptext.innerText = '沒有找到您指定的地點哦'
+            break;
+          case 'endplace':
+            warningend.innerText = '終點✘'
+            warningend.style.border = "1px solid #ff4757"
+            warningend.style.color = "#ff4757"
+            endtooltiptext.innerText = '沒有找到您指定的地點哦'
+            break;
+          case 'finalPlaceList':
+            warningplace.innerText = '景點✘'
+            warningplace.style.border = "1px solid #ff4757"
+            warningplace.style.color = "#ff4757"
+            placetooltiptext.innerText = '行程沒有排滿 自己去逛逛吧~'
+            break;
+          case 'lunch':
+            if (tour[i].period.lunch) {
+              warninglunch.innerText = '午餐✘'
+              warninglunch.style.border = "1px solid #ff4757"
+              warninglunch.style.color = "#ff4757"
+              lunchtooltiptext.innerText = '附近可能沒有推薦的餐廳哦'
+            }
+            break;
+          case 'dinner':
+            if (tour[i].period.dinner) {
+              warningdinner.innerText = '晚餐✘'
+              warningdinner.style.border = "1px solid #ff4757"
+              warningdinner.style.color = "#ff4757"
+              dinnertooltiptext.innerText = '附近可能沒有推薦的餐廳哦'
+            }
+            break;
+        }
+      }
+    }
+
+    // 因為好像改了父元素的屬性的話 span.innerText 會做不了事
+    if (tour[i].period.lunch) { warninglunch.appendChild(lunchtooltiptext) }
+    if (tour[i].period.dinner) { warningdinner.appendChild(dinnertooltiptext) }
+    warningstart.appendChild(starttooltiptext)
+    warningplace.appendChild(placetooltiptext)
+    warningend.appendChild(endtooltiptext)
+
+    onedayreport.appendChild(Daynum)
+    onedayreport.appendChild(Date)
+    onedayreport.appendChild(fivediv)
+    warningdiv.appendChild(onedayreport)
+  }
 }
 
 function rendertourdetail(tourobj){
@@ -161,7 +305,8 @@ function rendertourdetail(tourobj){
           oneday.appendChild(lunchplace)
         }
         //放晚餐
-        if (tourobj[i].period.dinner && tourobj[i].period.dinner.name != ""  && placetime.getUTCHours() == 16) {
+        if (placetime.getUTCHours() == 16 || placetime.getUTCHours() == 17) {
+          if (tourobj[i].period.dinner && tourobj[i].period.dinner.name != ""  ) {
           let dinnerplace = document.createElement('div')
           dinnerplace.className = 'oneplace'
 
@@ -179,6 +324,7 @@ function rendertourdetail(tourobj){
           dinnerplace.appendChild(dinnerplacestrong)
 
           oneday.appendChild(dinnerplace)
+        }
         }
 
       }
@@ -210,14 +356,56 @@ function rendertourdetail(tourobj){
   }
 }
 
-function renderFirstCard(prefertype ,timetype){
-  prefertype = prefertype.split(',')
+function renderFirstCard(data){
 
-  let oneday = document.createElement('div')
-  oneday.className = 'oneday'
+  let firstcard = document.createElement('div')
+  firstcard.id = 'firstcard'
+
+  let firstcardtourtitle = document.createElement('p')
+  firstcardtourtitle.id = 'firstcardtourtitle'
+  firstcardtourtitle.innerText = data.tourtitle
+  firstcardtourtitle.title = '點擊編輯旅程標題'
+  firstcardtourtitle.onclick = function(){change2input(this)}
+  firstcard.appendChild(firstcardtourtitle)
+
+  let firstcardtourid = document.createElement('p')
+  firstcardtourid.id = 'firstcardtourid'
+  firstcardtourid.value = data.id
+  firstcardtourid.innerText = `行程編號 ${data.id}`
+  firstcard.appendChild(firstcardtourid)
+
+  let typetext = document.createElement('p')
+  typetext.id = 'typetext'
+  typetext.innerText =  '↓ 您的偏好選項 ↓'
+  firstcard.appendChild(typetext)
+
+  if ( data.prefertype.length > 0) {
+    prefertype = data.prefertype.split(',')
+    let preferdiv = document.createElement('div')
+    preferdiv.id = 'preferdiv'
+    for (let i in prefertype) {
+      let preferItemdiv = document.createElement('div')
+      preferItemdiv.className = 'preferItemdiv'
+      preferItemdiv.innerText = getChinese(prefertype[i])
+      preferdiv.appendChild(preferItemdiv)
+    }
+    firstcard.appendChild(preferdiv)
+  }
 
 
-  detail.appendChild(oneday)
+  let timetypediv = document.createElement('div')
+  timetypediv.id = 'timetypediv'
+  if (data.timetype == 'fast') {
+    timetypediv.innerText = '一定要去很多地方！'
+  }else if (data.timetype == 'slow') {
+    timetypediv.innerText = '慢慢玩就好～'
+  }
+  firstcard.appendChild(timetypediv)
+
+
+
+
+  detail.appendChild(firstcard)
 }
 
 function checkmember(){
@@ -238,6 +426,7 @@ function memberstore(){
       userid : sessionStorage.id,
       tourtitle : document.querySelector('.titleinput').value,
       tour : localStorage.tour,
+      warningarray : localStorage.warning,
       prefertype : localStorage.prefertype,
       timetype : localStorage.timetype
     }
@@ -250,6 +439,7 @@ function memberstore(){
         alert('Success')
         localStorage.removeItem('titleplaceholder')
         localStorage.removeItem('tour')
+        localStorage.removeItem('warning')
         localStorage.removeItem('prefertype')
         localStorage.removeItem('timetype')
         window.location.href=`${API_HOST}/profile.html`;
@@ -293,7 +483,7 @@ function deleteMarkers() {
 function daymarker(thisobj , tourobj , map){
 
   document.querySelectorAll('.oneday').forEach((item, i) => {item.style.borderWidth = "1.5px"})
-  thisobj.style.borderWidth = "5px"
+  thisobj.style.borderWidth = "3.5px"
   deleteMarkers()
 
   var points = []
@@ -392,4 +582,73 @@ function daymarker(thisobj , tourobj , map){
 
 function closethis(thisobj) {
   thisobj.parentNode.style.display = 'none'
+}
+
+function getChinese(item) {
+  switch (item) {
+    case 'shopping':
+      return '逛街'
+      break;
+    case 'movie':
+      return '看電影'
+      break;
+    case 'animal':
+      return '看動物'
+      break;
+    case 'spirit':
+      return '知性之旅'
+      break;
+    case 'sport':
+      return '運動'
+      break;
+    case 'eighteen':
+      return '我有 18 歲'
+      break;
+    case 'Afternoon_tea':
+      return '喝咖啡'
+      break;
+    case 'other':
+      return '其他更多'
+      break;
+  }
+}
+
+function change2input(thisobj) {
+  var oldtitle = thisobj.innerText;
+  var newobj = document.createElement('input');
+  newobj.type = 'text';
+  newobj.value = oldtitle;
+  newobj.className = 'titleEdit'
+  newobj.onblur = function() {
+
+          if (newobj.value == '') {
+            newobj.style.boxShadow = "0 0 8px 0 #eb2f06"
+            newobj.style.borderColor = "rgba(235, 47, 6,0.5)"
+          }else {
+            newobj.style.display = 'none';
+            thisobj.style.display = 'block';
+            thisobj.innerText = newobj.value
+            if (oldtitle != newobj.value){
+              revisetitle(newobj.value , document.querySelector('#firstcardtourid').value)
+            }
+          }
+       }
+  thisobj.style.display = 'none';
+  thisobj.parentNode.insertBefore(newobj ,thisobj.parentNode.firstChild);
+  newobj.setSelectionRange(0, oldtitle.length);
+  newobj.focus();
+}
+
+function revisetitle(titletext , tourid) {
+  $.ajax({
+    type:'PUT',
+    data:JSON.stringify({revisetitle: titletext ,tourId: tourid ,access_token:sessionStorage.access_token}),
+    contentType: 'application/json',
+    url : `${API_HOST}/revisetitle`,
+    success: function(data) {
+      console.log('Success')
+    },error: function(data) {
+      console.log(data);
+    }
+  })
 }

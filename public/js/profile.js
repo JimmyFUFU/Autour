@@ -34,37 +34,53 @@ if(sessionStorage["access_token"]){
       document.querySelector('.membername').innerText = data.user.name
       document.querySelector('.memberemail').innerText = data.user.email
       document.querySelector('.logout').style.display = 'block'
-      for (var i in data.tour) {
+      if (data.tour.length > 0) {
+        for (var i in data.tour) {
 
-        var onetour = document.createElement('a')
-        onetour.className = 'onetour'
-        onetour.href = `${API_HOST}/tourdetail.html?id=${data.tour[i].id}`
+          var onetour = document.createElement('a')
+          onetour.className = 'onetour'
+          onetour.href = `${API_HOST}/tourdetail.html?id=${data.tour[i].id}`
 
-        var tourimg = document.createElement('img')
-        tourimg.className = 'tourimg'
-        tourimg.src = "../icon/taiwan.png";
+          var tourimg = document.createElement('img')
+          tourimg.className = 'tourimg'
+          tourimg.src = "../icon/taiwan.png";
 
-        var tourtitle = document.createElement('div')
-        tourtitle.className = 'tourtitle'
-        tourtitle.innerText = data.tour[i].tourtitle
+          var tourtitle = document.createElement('div')
+          tourtitle.className = 'tourtitle'
+          tourtitle.innerText = data.tour[i].tourtitle
 
-        var tourId = document.createElement('div')
-        tourId.className = 'tourId'
-        tourId.innerText = data.tour[i].id
+          var tourId = document.createElement('div')
+          tourId.className = 'tourId'
+          tourId.innerText = data.tour[i].id
 
-        var deletetour = document.createElement('img')
-        deletetour.className = 'deletetour'
-        deletetour.id = data.tour[i].id
-        deletetour.src = "../icon/trash.png";
-        deletetour.title = '刪除這趟旅程'
-        deletetour.onclick = function (){ confirmdelete(this) }
+          var deletetour = document.createElement('img')
+          deletetour.className = 'deletetour'
+          deletetour.id = data.tour[i].id
+          deletetour.src = "../icon/trash.png";
+          deletetour.title = '刪除這趟旅程'
+          deletetour.onclick = function (){ confirmdelete(this) }
 
-        onetour.appendChild(tourimg)
-        onetour.appendChild(tourtitle)
-        onetour.appendChild(tourId)
-        onetour.appendChild(deletetour)
+          onetour.appendChild(tourimg)
+          onetour.appendChild(tourtitle)
+          onetour.appendChild(tourId)
+          onetour.appendChild(deletetour)
 
-        document.querySelector('.tourlist').appendChild(onetour)
+          document.querySelector('.tourlist').appendChild(onetour)
+        }
+      }else {
+
+        var link2index = document.createElement('div')
+        link2index.className = 'link2index'
+        link2index.innerText = '你還沒有任何行程哦！趕快去自動產生一個吧'
+
+        var link2indeximg = document.createElement('img')
+        link2indeximg.className = 'link2indeximg'
+        link2indeximg.src = "../icon/letsautour.png";
+        link2indeximg.onclick = function (){ window.location.href = `${API_HOST}` }
+
+        document.querySelector('.tourlist').appendChild(link2index)
+        document.querySelector('.tourlist').appendChild(link2indeximg)
+        animateCSS('.link2indeximg','pulse')
       }
     },
     error : function(data) {

@@ -132,10 +132,22 @@
 
 .logout {
 	margin-top: 5%;
-	font-family: monospace , '微軟正黑體';
+	font-family: monospace ,  Microsoft JhengHei;
 	border-bottom: 1px solid #233D4D;
 	display: none;
 	cursor: pointer;
+}
+
+.link2index {
+	font-family: Microsoft JhengHei;
+	font-size: 30px;
+	margin: 5% 0;
+}
+
+.link2indeximg {
+	cursor: pointer;
+	align-self: flex-end;
+	margin-right: 5%;
 }
 
 /* confirm delete div */

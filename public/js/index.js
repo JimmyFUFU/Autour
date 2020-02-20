@@ -1,6 +1,7 @@
 $(".header").load("header.html");
 $(".footer").load("footer.html");
 
+
 function getRandom(x){
     return Math.floor(Math.random()*x)+1;
 };
@@ -29,13 +30,15 @@ document.querySelector(".letsGo").onclick = function(){startquestion()};
 
 function startquestion() {
   // $("html, body").animate({scrollTop:$('.bigflex').offset().top-20},500)
+  $(".question").load("question.html");
   bouncepointid.forEach((item, i) => {animateCSS(`#${item}`,'bounceOutUp' ,function(){document.querySelector(`#${item}`).style.display = "none"})});
+  document.querySelector(".introduction").style.display = 'none'
   document.querySelector('.index').style.width = '35%'
   document.querySelector('.index').style.flexDirection = 'column'
   document.querySelector('.letsGo').style.alignSelf = 'center'
   document.querySelector('.question').style.width = '65%'
+  document.querySelector('.question').style.padding = '5%'
   document.querySelector('.taiwan').style.height = '500px'
-  $(".question").load("question.html");
   document.querySelector(".letsGo").onclick = function(){confirmQ1()};
   document.querySelector(".letsGo").style.width = '80px'
   document.querySelector(".letsGo").style.height = '80px'

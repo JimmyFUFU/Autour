@@ -1,5 +1,5 @@
 body{
-  font-family: '微軟正黑體';
+  font-family: Microsoft JhengHei , monospace;
 }
 
 #Q1 p , #Q2 p ,#Q3 p ,#Q4 p ,#Q5 p , #Q6 p {
@@ -14,6 +14,11 @@ body{
 .erroricon {
   height: 30px;
   margin-right: 5px;
+}
+
+input[type="checkbox"]{
+  width:19px;
+  height:19px;
 }
 
 
@@ -32,6 +37,7 @@ body{
 }
 .citycheckbox {
   margin-right: 10px;
+  /* display: none; */
 }
 
 .citycheck label {
@@ -83,6 +89,11 @@ body{
 .Q2errortext {
   font-size: 17px;
   color: #c0392b;
+}
+
+#Q2 label {
+  cursor: pointer;
+  font-size: 20px;
 }
 
 /* Q3 */
@@ -148,7 +159,7 @@ body{
 #addMustGoBtn {
   border: 1px solid #2f3542;
   border-radius: 5px;
-  margin-left: 5px;
+  margin-left: 10px;
   padding: 5px;
   font-family: monospace;
   font-size: 19px;
@@ -163,7 +174,7 @@ body{
 }
 
 .mustgoinput {
-  width: 80%;
+  width: 70%;
 }
 
 

@@ -118,6 +118,12 @@
   line-height: 30px;
   font-family: monospace;
   font-size: 15px;
+  caret-color: #233D4D;
+  border-radius: 3px;
+}
+
+.loginform div input:focus , .signupform div input:focus {
+  outline: #233D4D;
 }
 
 .nativelogin , .signupbtn {
@@ -127,6 +133,12 @@
   border: 2px solid #233D4D;
   border-radius: 5px;
   cursor: pointer;
+  transition: 0.4s;
+}
+
+.nativelogin:hover , .signupbtn:hover , .fblogin:hover , .googlelogin:hover {
+  color: #ffffff;
+  background-color:#233D4D ;
 }
 
 .fblogin , .googlelogin {
@@ -139,6 +151,7 @@
   border-radius: 5px;
   cursor: pointer;
   text-align: center;
+  transition: 0.4s;
 }
 
 .loginerror , .signuperror {

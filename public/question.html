@@ -38,7 +38,7 @@
     <p><img src="icon/question.png" alt="Q" class="Qicon"> : 什麼時候結束 ? *</p>
     <input type="datetime-local" class="enddaytime" value=""><br>
     <input type="text" class="endpoint" value="">
-    <input type="checkbox" onclick="SameAsStartPoint(this)">同出發點
+    <label for="samepoint"><input type="checkbox" id="samepoint" onclick="SameAsStartPoint(this)">同出發點</label>
     <div class="Q2error">
       <img src="icon/embarrassed-red.png" alt="Q" class="erroricon">
       <div class="Q2errortext">你確定你都有填嗎 ?</div>
@@ -89,7 +89,7 @@
       <label for="foots"><input type="checkbox" class="transcheckbox" id="foots" value="foots" checked="checked">雙腳</label>
     <p>多玩一點 ?</p>
       <label for="slow"><input type="radio" name="timeradio" class="timeradio" id="slow" value="slow" checked="checked">不用，慢慢玩就好</label>
-      <label for="fast"><input type="radio" name="timeradio" class="timeradio" id="fast" value="fast">當然要，一定要很多地方</label>
+      <label for="fast"><input type="radio" name="timeradio" class="timeradio" id="fast" value="fast">當然要，一定要去很多地方</label>
   </div>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
