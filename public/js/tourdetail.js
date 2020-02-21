@@ -515,7 +515,7 @@ function daymarker(thisobj , tourobj , map){
           lng: tourobj[thisobj.id].period.place[i].lng
         },
         map: map,
-        label: `${i+1}`,
+        label: {text:`${i+1}` , color : "#FFFFFF"},
         animation: google.maps.Animation.DROP,
         title:tourobj[thisobj.id].period.place[i].name
       })
