@@ -46,20 +46,20 @@ app.get('/test' , async (req, res)  => {
   // [a.name , b.name] =[ b.name , a.name ]
   // b.name = [ a.name , a.name = b.name][0]
   // console.log(a,b);
-  var datenow = new Date()
-  console.log('datenow' , datenow);
-  console.log('datenow get' , datenow.getFullYear() , datenow.getMonth() , datenow.getDate() , datenow.getHours() );
-  console.log('datenow getUTC' , datenow.getUTCFullYear() , datenow.getUTCMonth() , datenow.getUTCDate() , datenow.getUTCHours() );
-  console.log('\n');
-  var datepoint = new Date(2020,1,21,0)
-  console.log('datepoint' , datepoint);
-  console.log('datepoint get' , datepoint.getFullYear() , datepoint.getMonth() , datepoint.getDate() , datepoint.getHours() );
-  console.log('datepoint getUTC' , datepoint.getUTCFullYear() , datepoint.getUTCMonth() , datepoint.getUTCDate() , datepoint.getUTCHours() );
-  console.log('\n');
-  var datepointUTC = new Date(Date.UTC(2020,1,21,0))
-  console.log('datepointUTC' , datepointUTC);
-  console.log('datepointUTC get' , datepointUTC.getFullYear() , datepointUTC.getMonth() , datepointUTC.getDate() , datepointUTC.getHours() );
-  console.log('datepointUTC getUTC' , datepointUTC.getUTCFullYear() , datepointUTC.getUTCMonth() , datepointUTC.getUTCDate() , datepointUTC.getUTCHours() );
+  // var datenow = new Date()
+  // console.log('datenow' , datenow);
+  // console.log('datenow get' , datenow.getFullYear() , datenow.getMonth() , datenow.getDate() , datenow.getHours() );
+  // console.log('datenow getUTC' , datenow.getUTCFullYear() , datenow.getUTCMonth() , datenow.getUTCDate() , datenow.getUTCHours() );
+  // console.log('\n');
+  // var datepoint = new Date(2020,1,21,0)
+  // console.log('datepoint' , datepoint);
+  // console.log('datepoint get' , datepoint.getFullYear() , datepoint.getMonth() , datepoint.getDate() , datepoint.getHours() );
+  // console.log('datepoint getUTC' , datepoint.getUTCFullYear() , datepoint.getUTCMonth() , datepoint.getUTCDate() , datepoint.getUTCHours() );
+  // console.log('\n');
+  // var datepointUTC = new Date(Date.UTC(2020,1,21,0))
+  // console.log('datepointUTC' , datepointUTC);
+  // console.log('datepointUTC get' , datepointUTC.getFullYear() , datepointUTC.getMonth() , datepointUTC.getDate() , datepointUTC.getHours() );
+  // console.log('datepointUTC getUTC' , datepointUTC.getUTCFullYear() , datepointUTC.getUTCMonth() , datepointUTC.getUTCDate() , datepointUTC.getUTCHours() );
 
   res.send('3223')
 
@@ -167,10 +167,22 @@ app.post('/newAutour' , async function (req,res){
   // --------------------------------------------------排每天的景點進 placelist-----------------------------------------------//
     for (let i in periodarray) {
       io.emit('server message', {day: Number(i)+1 , msg: `day ${Number(i)+1} start`})
+      console.log(`day ${i} started`);
       let remain = periodarray[i].period.place.length - periodarray[i].placelist.length // 今天還剩多少時段
       let finalPlaceList = new Array()
+      //要先把這天的mustgo放進finalPlaceList
+      for (let t = 0; t <periodarray[i].placelist.length; t++) {
+        for (var u = 0; u < mustgolist.length; u++) {
+          if (mustgolist[u].place_id == periodarray[i].placelist[t].place_id) {
+            finalPlaceList.push(mustgolist[u])
+          }
+        }
+      }
+
       // console.log(`day${i} 原本有 ${periodarray[i].period.place.length} 已經有 ${periodarray[i].placelist.length} 個時段`);
       // console.log(`day${i} 還剩 ${remain}個時段`);
+
+      // console.log(periodarray[i].period.place.length , periodarray[i].placelist.length);
 
       // 還有剩才需要給偏好跟推薦
       if (remain > 0) {
@@ -270,6 +282,9 @@ app.post('/newAutour' , async function (req,res){
         var placelistdetail = new Array() // 等等用來看營業時間
         let idarray = new Array()
         idarray.push(`place_id:${periodarray[i].period.start.place_id}`)// push 起點
+
+        // console.log(periodarray[i].placelist.length , finalPlaceList.length);
+
         for (let y in periodarray[i].placelist) {
           idarray.push(`place_id:${periodarray[i].placelist[y].place_id}`) // 把 placelist 裡每個景點的place_id push 進 idarray
           placelistdetail.push(finalPlaceList[y]) // 把 placelist 裡每個景點 push 進 placelistdetail
@@ -279,6 +294,7 @@ app.post('/newAutour' , async function (req,res){
         let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'nearby') //  轉成 Matrix
         allpath = algorithm.find2pointAllPath(moveCostMatrix,0,idarray.length-1) // 拿到所有路徑
         sort.bysmall2big(allpath , "weight")
+        console.log('placelistdetail.len' , placelistdetail.length);
         placeopeningMatrix = algorithm.openingMatrix( placelistdetail , periodarray[i].period.place ) // 二維陣列 每個時段*每個景點
         console.log("Matrix\n", placeopeningMatrix);
 
@@ -331,14 +347,14 @@ app.post('/newAutour' , async function (req,res){
             }
           }
           if (w == placeopeningMatrix.length-1) {
-            console.log('opening Matrix check over !');
             openingMatrixcheck = true
           }
         }
       }
+      console.log('opening Matrix check over !');
 
-      var shortpath = algorithm.findShortestPath(allpath ,placeopeningMatrix )
-      console.log(`day${i} shortpath` , shortpath);
+      var shortpath = algorithm.findShortestPath(allpath, placeopeningMatrix)
+      console.log(`day${i} shortpath`, shortpath);
 
       for (let k = 1 ; k < shortpath.length-1 ; k++) {
         periodarray[i].period.place[k-1].name = periodarray[i].placelist[shortpath[k]-1].name
@@ -424,8 +440,9 @@ app.post('/newAutour' , async function (req,res){
 
       }
       console.log(`day ${i} lunch & dinner are OK !`);
-
+      console.log(`day ${i} finished`);
       io.emit('server message', {day:Number(i)+1 , msg: `day ${Number(i)+1} finish`})
+      
     }
     console.log('periodarray finish !');
 

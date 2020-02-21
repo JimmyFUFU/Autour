@@ -80,6 +80,9 @@ var openingMatrix = function(placelistdetail , periodarray){
     let time = periodarray[i].time
     // 這個時段是否在每個 place 的營業時間內
     var onePeriodOpeningArray = new Array()
+
+    
+
     for (var j in placelistdetail) {
       if(placelistdetail[j].opening_hours){
         //24 小時營業 給 true
