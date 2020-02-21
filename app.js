@@ -528,7 +528,7 @@ app.post('/user/login' , async function (req,res){
         let nowTime = moment(time).format('YYYYMMDDHHmmss')
         let token = md5(`${req.body.email}` + `${nowTime}`)
         // get the time One hour later as new access_expired
-        let expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss') // 一小時過期
+        let expiredtime = moment(time).add(6, 'h').format('YYYY-MM-DD HH:mm:ss') // 一小時過期
         // let expiredtime = moment(time).add(30, "s").format('YYYY-MM-DD HH:mm:ss');//30s過期
 
         var updateTokenExpired = await mysql.updatedatafromWhere('user', `provider = '${req.body.provider}' , access_token = '${token}', access_expired = '${expiredtime}'`, `email = '${req.body.email}' AND provider = "${req.body.provider}"`)
