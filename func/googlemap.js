@@ -167,13 +167,13 @@ function countitems(typename , items) {
       return Math.ceil(items/6)
       break;
     case 'gym':
-      return Math.ceil(items/2)
+      return Math.ceil(items/6)
       break;
     case 'bowling_alley':
-      return Math.ceil(items/2)
+      return Math.ceil(items/6)
       break;
     case 'stadium':
-      return Math.ceil(items/2)
+      return Math.ceil(items/6)
       break;
     case 'art_gallery':
       return Math.ceil(items/2)

@@ -11,7 +11,6 @@ const radius = require('./func/radius.js')
 const sort = require('./func/sort.js')
 const period = require('./func/period.js')
 const algorithm = require('./func/algorithm.js')
-const opening = require('./func/opening.js')
 const mysql = require('./func/mysql.js')
 const cst = require('./secret/constant.js')
 
@@ -72,7 +71,6 @@ app.post('/newAutour' , async function (req,res){
   // 先算有多少時段 才知道要拿多少個景點 // 順便放好 起點 住宿 終點資訊
   var periodarray = period.getperiod(req.body)
   var warningarray = new Array()
-
   try {
     // 找到每天起點、終點的資料
     var startplacelist = new Array()
@@ -134,7 +132,13 @@ app.post('/newAutour' , async function (req,res){
       let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'mostgo')
       let theNearest = 0 , minweight = -1
       for(let j = 0 ; j < moveCostMatrix.length ; j++){
-        if( opening.day( mustgolist[i] , periodarray[j].week ) && moveCostMatrix[j][0] != -1){
+
+        let mustgoOpeningcheck = false
+        let thismustgoMatrix = algorithm.openingMatrix( [mustgolist[i]] , periodarray[j].period.place )
+        for (let x = 0; x < thismustgoMatrix.length; x++) {
+          if (thismustgoMatrix[x][0] == true) { mustgoOpeningcheck = true ; break; }
+        }
+        if( mustgoOpeningcheck && moveCostMatrix[j][0] != -1){
           if (minweight == -1 || moveCostMatrix[j][0] < minweight) {
             minweight = moveCostMatrix[j][0]
             theNearest = j
@@ -165,9 +169,10 @@ app.post('/newAutour' , async function (req,res){
   //-------------------------------------------------------- must go --------------------------------------------------------//
 
   // --------------------------------------------------排每天的景點進 placelist-----------------------------------------------//
+
     for (let i in periodarray) {
       io.emit('server message', {day: Number(i)+1 , msg: `day ${Number(i)+1} start`})
-      console.log(`day ${i} started`);
+      console.log(`\n day ${i} started`);
       let remain = periodarray[i].period.place.length - periodarray[i].placelist.length // 今天還剩多少時段
       let finalPlaceList = new Array()
       //要先把這天的mustgo放進finalPlaceList
@@ -179,10 +184,7 @@ app.post('/newAutour' , async function (req,res){
         }
       }
 
-      // console.log(`day${i} 原本有 ${periodarray[i].period.place.length} 已經有 ${periodarray[i].placelist.length} 個時段`);
-      // console.log(`day${i} 還剩 ${remain}個時段`);
-
-      // console.log(periodarray[i].period.place.length , periodarray[i].placelist.length);
+      console.log(`day${i} remain ${remain} periods`);
 
       // 還有剩才需要給偏好跟推薦
       if (remain > 0) {
@@ -282,7 +284,6 @@ app.post('/newAutour' , async function (req,res){
         var placelistdetail = new Array() // 等等用來看營業時間
         let idarray = new Array()
         idarray.push(`place_id:${periodarray[i].period.start.place_id}`)// push 起點
-        // console.log(periodarray[i].placelist.length , finalPlaceList.length);
         for (let y in periodarray[i].placelist) {
           idarray.push(`place_id:${periodarray[i].placelist[y].place_id}`) // 把 placelist 裡每個景點的 place_id push 進 idarray
           for (var x = 0; x < finalPlaceList.length; x++) {
@@ -299,6 +300,11 @@ app.post('/newAutour' , async function (req,res){
         placeopeningMatrix = algorithm.openingMatrix( placelistdetail , periodarray[i].period.place ) // 二維陣列 每個時段*每個景點
         console.log("Matrix\n", placeopeningMatrix);
 
+        if (placeopeningMatrix.length == 0) {
+          openingMatrixcheck = true
+          console.log('No period');
+          break
+        }
         // 檢查有沒有一個時段是全部都沒開的
         outer:
         for (let w = 0; w < placeopeningMatrix.length; w++) {
@@ -348,10 +354,10 @@ app.post('/newAutour' , async function (req,res){
           }
           if (w == placeopeningMatrix.length-1) {
             openingMatrixcheck = true
+            console.log('opening Matrix check over !');
           }
         }
       }
-      console.log('opening Matrix check over !');
 
       var shortpath = algorithm.findShortestPath(allpath, placeopeningMatrix)
       console.log(`day${i} shortpath`, shortpath);
@@ -455,6 +461,7 @@ app.post('/newAutour' , async function (req,res){
     console.log(e);
     res.status(400).send({error:e})
   }
+
 
 })
 
