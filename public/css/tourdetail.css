@@ -209,13 +209,15 @@
   align-items: center;
   cursor: pointer;
   transition: 0.3s;
-  overflow-y: auto;
-  overflow-y: overlay;
+  overflow-y: hidden;
+  overflow-y: hidden;
   box-sizing:border-box;
 }
 
 .oneday:hover {
   border: 3.5px solid #FE7F2D;
+  overflow-y: auto;
+  overflow-y: overlay;
 }
 
 /* scroll */

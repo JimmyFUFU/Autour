@@ -172,13 +172,13 @@ function renderwaringdiv(warningarray , tour){
             warningstart.innerText = '起點✘'
             warningstart.style.border = "1px solid #ff4757"
             warningstart.style.color = "#ff4757"
-            starttooltiptext.innerText = '沒有找到您指定的地點哦'
+            starttooltiptext.innerText = '沒有找到您指定的起點哦！會以您所選的縣市當起點'
             break;
           case 'endplace':
             warningend.innerText = '終點✘'
             warningend.style.border = "1px solid #ff4757"
             warningend.style.color = "#ff4757"
-            endtooltiptext.innerText = '沒有找到您指定的地點哦'
+            endtooltiptext.innerText = '沒有找到您指定的落腳處哦！會以您所選的縣市當今日的終點'
             break;
           case 'finalPlaceList':
             warningplace.innerText = '景點✘'

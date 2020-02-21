@@ -28,7 +28,6 @@ const PORT = 3000
 function md5 (text) {
   return crypto.createHash('md5').update(text).digest('hex')
 };
-
 app.use('/', express.static('public'))
 app.use(bodyparser.urlencoded({
   extended: false
@@ -40,11 +39,35 @@ app.get('/test' , async (req, res)  => {
 
   // let startplace = await googlemap.findplace('嘉義')
   // res.send(startplace)
+
+  // var a = {name : 'jimmy' , age : 18}
+  // var b = {name : 'jijiji' , age :458}
+  // console.log(a ,b );
+  // [a.name , b.name] =[ b.name , a.name ]
+  // b.name = [ a.name , a.name = b.name][0]
+  // console.log(a,b);
+  var datenow = new Date()
+  console.log('datenow' , datenow);
+  console.log('datenow get' , datenow.getFullYear() , datenow.getMonth() , datenow.getDate() , datenow.getHours() );
+  console.log('datenow getUTC' , datenow.getUTCFullYear() , datenow.getUTCMonth() , datenow.getUTCDate() , datenow.getUTCHours() );
+  console.log('\n');
+  var datepoint = new Date(2020,1,21,0)
+  console.log('datepoint' , datepoint);
+  console.log('datepoint get' , datepoint.getFullYear() , datepoint.getMonth() , datepoint.getDate() , datepoint.getHours() );
+  console.log('datepoint getUTC' , datepoint.getUTCFullYear() , datepoint.getUTCMonth() , datepoint.getUTCDate() , datepoint.getUTCHours() );
+  console.log('\n');
+  var datepointUTC = new Date(Date.UTC(2020,1,21,0))
+  console.log('datepointUTC' , datepointUTC);
+  console.log('datepointUTC get' , datepointUTC.getFullYear() , datepointUTC.getMonth() , datepointUTC.getDate() , datepointUTC.getHours() );
+  console.log('datepointUTC getUTC' , datepointUTC.getUTCFullYear() , datepointUTC.getUTCMonth() , datepointUTC.getUTCDate() , datepointUTC.getUTCHours() );
+
+  res.send('3223')
+
 })
 
 
 app.post('/newAutour' , async function (req,res){
-
+  console.log(req.body);
 //--------------------------------------------------------預備工作 先把時段放好--------------------------------------------------------//
   // 先算有多少時段 才知道要拿多少個景點 // 順便放好 起點 住宿 終點資訊
   var periodarray = period.getperiod(req.body)
@@ -144,7 +167,6 @@ app.post('/newAutour' , async function (req,res){
   // --------------------------------------------------排每天的景點進 placelist-----------------------------------------------//
     for (let i in periodarray) {
       io.emit('server message', {day: Number(i)+1 , msg: `day ${Number(i)+1} start`})
-      let idarray = [`place_id:${periodarray[i].period.start.place_id}`]
       let remain = periodarray[i].period.place.length - periodarray[i].placelist.length // 今天還剩多少時段
       let finalPlaceList = new Array()
       // console.log(`day${i} 原本有 ${periodarray[i].period.place.length} 已經有 ${periodarray[i].placelist.length} 個時段`);
@@ -163,7 +185,6 @@ app.post('/newAutour' , async function (req,res){
           let thisnearbyplacedetail = await googlemap.placedetail(nearbyplace[u].place_id)
           nearbyplace[u] = thisnearbyplacedetail.result
         }
-        if (nearbyplace.length == 0) { warningarray.push({type: 'nearbyplace' , day: i ,status:'ZERO_RESULTS'}) }
         console.log(`day${i} nearbyplace finish !`);
         // console.log(`day${i} 找到 ${nearbyplace.length} 個 nearbyplace `);
 
@@ -178,7 +199,6 @@ app.post('/newAutour' , async function (req,res){
           let thismoreplacedetail = await googlemap.placedetail(moreplace[u].place_id)
           moreplace[u] = thismoreplacedetail.result
         }
-        if (moreplace.length == 0) { warningarray.push({type: 'moreplace' , day: i ,status:'ZERO_RESULTS'}) }
         console.log(`day${i} moreplace finish !`);
         // console.log(`day${i} 找到 ${moreplace.length} 個 moreplace `);
 
@@ -214,9 +234,7 @@ app.post('/newAutour' , async function (req,res){
             for (let k in AllTourPlaceIdlist)  { if (AllTourPlaceIdlist[k] == finalPlaceList[p].place_id ) { check = true }}
             for (let j in periodarray[i].placelist) { if (periodarray[i].placelist[j].place_id == finalPlaceList[p].place_id ) { check = true }}
             let onePlaceOpening = algorithm.openingMatrix([finalPlaceList[p]] , periodarray[i].period.place)
-            for (let t in onePlaceOpening) {
-              if (onePlaceOpening[t][0]) { openingcheck = true }
-            }
+            for (let t in onePlaceOpening) { if (onePlaceOpening[t][0]) { openingcheck = true } }
 
             if ( !check && openingcheck) {
               if (count < remain) {
@@ -225,15 +243,14 @@ app.post('/newAutour' , async function (req,res){
                   place_id:finalPlaceList[p].place_id ,
                   lat : finalPlaceList[p].geometry.location.lat,
                   lng : finalPlaceList[p].geometry.location.lng });
-                  count++;
-                }
+              }
               if (count >= remain) {
                 periodarray[i].placeREC.push({name:finalPlaceList[p].name ,
                   place_id:finalPlaceList[p].place_id ,
                   lat : finalPlaceList[p].geometry.location.lat,
                   lng : finalPlaceList[p].geometry.location.lng });
-                  count++;
               }
+              count++;
             }
 
         }
@@ -243,23 +260,82 @@ app.post('/newAutour' , async function (req,res){
 
       }
 
-      var placelistdetail = new Array() // 等等用來看營業時間
-      for (let y in periodarray[i].placelist) {
-        idarray.push(`place_id:${periodarray[i].placelist[y].place_id}`)
-        placelistdetail.push(finalPlaceList[y])
+      var allpath
+      var placeopeningMatrix
+      var openingMatrixcheck = false
+      var swapcount = 0
+
+      while (!openingMatrixcheck) {
+
+        var placelistdetail = new Array() // 等等用來看營業時間
+        let idarray = new Array()
+        idarray.push(`place_id:${periodarray[i].period.start.place_id}`)// push 起點
+        for (let y in periodarray[i].placelist) {
+          idarray.push(`place_id:${periodarray[i].placelist[y].place_id}`) // 把 placelist 裡每個景點的place_id push 進 idarray
+          placelistdetail.push(finalPlaceList[y]) // 把 placelist 裡每個景點 push 進 placelistdetail
+        }
+        idarray.push(`place_id:${periodarray[i].period.end.place_id}`) // push 終點
+        let getMoveCost = await googlemap.distanceMatrix(idarray , idarray , 'driving') // 拿到點與點的移動成本
+        let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'nearby') //  轉成 Matrix
+        allpath = algorithm.find2pointAllPath(moveCostMatrix,0,idarray.length-1) // 拿到所有路徑
+        sort.bysmall2big(allpath , "weight")
+        placeopeningMatrix = algorithm.openingMatrix( placelistdetail , periodarray[i].period.place ) // 二維陣列 每個時段*每個景點
+        console.log("Matrix\n", placeopeningMatrix);
+
+        // 檢查有沒有一個時段是全部都沒開的
+
+        outer:
+        for (let w = 0; w < placeopeningMatrix.length; w++) {
+          if (!placeopeningMatrix[w].includes(true)) {
+            console.log(`day ${i} period ${w} have opening issue`);
+            // 先檢查有沒有點換
+            if (periodarray[i].placeREC.length != 0) {
+                // 要選一個點替換掉
+                for (let y = periodarray[i].placelist.length-1 ; y >= 0 ; y--) {
+                  // 不能是mustgolist裡面的點
+                  let ifinmustgolist = false
+                  for (let p in mustgolist) {
+                    if (periodarray[i].placelist[y].place_id == mustgolist[p].place_id ) { ifinmustgolist = true }
+                  }
+
+                  if (!ifinmustgolist) { //能換就換
+                    if (swapcount == periodarray[i].placeREC.length+1) {
+                      warningarray.push({type: 'opening_issue' , day : i , period : w, status: 'No_more_placeREC'})
+                      openingMatrixcheck = true
+                      break outer
+                    }
+                    //AllTourPlaceIdlist 要把原本的拿出來
+                    AllTourPlaceIdlist.splice(AllTourPlaceIdlist.indexOf(periodarray[i].placelist[y].place_id),1)
+                    periodarray[i].placeREC.push({
+                      name: periodarray[i].placelist[y].name,
+                      place_id: periodarray[i].placelist[y].place_id,
+                      lat: periodarray[i].placelist[y].lat,
+                      lng: periodarray[i].placelist[y].lng })
+                    let firstplaceREC = periodarray[i].placeREC.shift()
+                    periodarray[i].placelist[y] = firstplaceREC
+                    AllTourPlaceIdlist.push(firstplaceREC.place_id)
+                    swapcount++
+                    // 交換成功就再去外面試一次
+                    break outer
+                  }
+                  if (y == 0) { // 從最後一個已經檢查到第一個 代表沒有點可以換(全部都是mustgo) 不要刪 給提示
+                    warningarray.push({type: 'opening_issue' , day : i , period : w, status: 'All_mustgo'})
+                    openingMatrixcheck = true
+                  }
+                }
+            }else {
+              // 沒景點換 不要刪 給提示
+              warningarray.push({type: 'opening_issue' , day : i , period : w, status: 'No_placeREC'})
+              openingMatrixcheck = true
+              break
+            }
+          }
+          if (w == placeopeningMatrix.length-1) {
+            console.log('opening Matrix check over !');
+            openingMatrixcheck = true
+          }
+        }
       }
-
-      idarray.push(`place_id:${periodarray[i].period.end.place_id}`)
-
-      let getMoveCost = await googlemap.distanceMatrix(idarray , idarray , 'driving')
-      let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'nearby')
-
-      let allpath = algorithm.find2pointAllPath(moveCostMatrix,0,idarray.length-1)
-      sort.bysmall2big(allpath , "weight")
-
-      // console.log('placelist' , periodarray[i].placelist);
-
-      let placeopeningMatrix = algorithm.openingMatrix( placelistdetail , periodarray[i].period.place )
 
       var shortpath = algorithm.findShortestPath(allpath ,placeopeningMatrix )
       console.log(`day${i} shortpath` , shortpath);

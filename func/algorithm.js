@@ -135,7 +135,6 @@ var findShortestPath = function(allpath , placeopeningMatrix){
     allpath[r].truecount = truecount
   }
   sort.by(allpath , 'truecount')
-  console.log("Matrix",placeopeningMatrix);
   return allpath[0].path
 }
 
