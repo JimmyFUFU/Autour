@@ -171,7 +171,7 @@ app.post('/newAutour' , async function (req,res){
       let remain = periodarray[i].period.place.length - periodarray[i].placelist.length // 今天還剩多少時段
       let finalPlaceList = new Array()
       //要先把這天的mustgo放進finalPlaceList
-      for (let t = 0; t <periodarray[i].placelist.length; t++) {
+      for (let t = 0; t < periodarray[i].placelist.length; t++) {
         for (var u = 0; u < mustgolist.length; u++) {
           if (mustgolist[u].place_id == periodarray[i].placelist[t].place_id) {
             finalPlaceList.push(mustgolist[u])
@@ -282,24 +282,24 @@ app.post('/newAutour' , async function (req,res){
         var placelistdetail = new Array() // 等等用來看營業時間
         let idarray = new Array()
         idarray.push(`place_id:${periodarray[i].period.start.place_id}`)// push 起點
-
         // console.log(periodarray[i].placelist.length , finalPlaceList.length);
-
         for (let y in periodarray[i].placelist) {
-          idarray.push(`place_id:${periodarray[i].placelist[y].place_id}`) // 把 placelist 裡每個景點的place_id push 進 idarray
-          placelistdetail.push(finalPlaceList[y]) // 把 placelist 裡每個景點 push 進 placelistdetail
+          idarray.push(`place_id:${periodarray[i].placelist[y].place_id}`) // 把 placelist 裡每個景點的 place_id push 進 idarray
+          for (var x = 0; x < finalPlaceList.length; x++) {
+            if (finalPlaceList[x].place_id == periodarray[i].placelist[y].place_id) {
+              placelistdetail.push(finalPlaceList[x]) // 把 finalPlaceList 裡每個景點 push 進 placelistdetail
+            }
+          }
         }
         idarray.push(`place_id:${periodarray[i].period.end.place_id}`) // push 終點
         let getMoveCost = await googlemap.distanceMatrix(idarray , idarray , 'driving') // 拿到點與點的移動成本
         let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'nearby') //  轉成 Matrix
         allpath = algorithm.find2pointAllPath(moveCostMatrix,0,idarray.length-1) // 拿到所有路徑
         sort.bysmall2big(allpath , "weight")
-        console.log('placelistdetail.len' , placelistdetail.length);
         placeopeningMatrix = algorithm.openingMatrix( placelistdetail , periodarray[i].period.place ) // 二維陣列 每個時段*每個景點
         console.log("Matrix\n", placeopeningMatrix);
 
         // 檢查有沒有一個時段是全部都沒開的
-
         outer:
         for (let w = 0; w < placeopeningMatrix.length; w++) {
           if (!placeopeningMatrix[w].includes(true)) {
@@ -442,7 +442,7 @@ app.post('/newAutour' , async function (req,res){
       console.log(`day ${i} lunch & dinner are OK !`);
       console.log(`day ${i} finished`);
       io.emit('server message', {day:Number(i)+1 , msg: `day ${Number(i)+1} finish`})
-      
+
     }
     console.log('periodarray finish !');
 
