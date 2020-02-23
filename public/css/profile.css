@@ -58,12 +58,12 @@
 	margin: 2% 0 ;
 	width: 80%;
 	cursor: pointer;
-	transition: 0.5s;
+	transition: 0.2s;
 	text-decoration: none;
 }
 
 .onetour:hover{
-	border: 4px solid #FFBC42;
+	border: 3px solid #FFBC42;
 }
 
 .tourimg {

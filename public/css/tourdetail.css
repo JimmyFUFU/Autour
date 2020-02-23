@@ -119,7 +119,7 @@
 }
 .warningsmalldiv .tooltiptext {
   visibility: hidden;
-  min-width: 120px;
+  min-width: 140px;
   background-color: #233D4D;
   color: #fff;
   text-align: center;
@@ -130,7 +130,7 @@
   position: absolute;
   z-index: 1;
   bottom: 125%;
-  left: 50%;
+  left: 15%;
   margin-left: -60px;
 
   /* Fade in tooltip */
@@ -283,6 +283,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 #firstcardtourtitle {
@@ -294,6 +295,18 @@
   text-align: center;
   cursor: pointer;
   padding: 4.5px;
+}
+
+#firstcardtourtitle::after{
+  background-image: url(../icon/edit.png);
+	background-repeat: no-repeat;
+	background-size:cover;
+	content:"";
+	width: 30px;
+  height: 30px;
+  position: absolute;
+  opacity:0.6;
+  margin: 2% 0 0 2%;
 }
 
 .titleEdit {
@@ -354,4 +367,33 @@
   font-family: Microsoft JhengHei,  monospace;
   font-weight: bold;
   cursor: pointer;
+}
+#transportationdiv {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content:space-around;
+  width: 70%;
+  margin-top: 3%;
+}
+#transportationdiv .transportationItemdiv {
+  width: 40px;
+  height: 40px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.5;
+  transition: 0.5s;
+}
+#transportationdiv .transportationItemdiv:hover {
+  opacity: 0.9;
+}
+#openreport {
+  font-family: monospace , Microsoft JhengHei;
+  cursor: pointer;
+  font-size: 15px;
+  border-bottom: 1px solid #2f3542;
+  color: #2f3542;
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
 }

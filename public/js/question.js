@@ -256,7 +256,8 @@ function submit() {
   }
 
   localStorage.setItem('prefertype' , prefertype)
-
+  localStorage.setItem('transportation' , transportation)
+  
   $.ajax({
     type: 'POST',
     data: JSON.stringify(jsonobj),

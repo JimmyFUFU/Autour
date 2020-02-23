@@ -36,6 +36,7 @@ if(localStorage["tour"] || id){
           rendererror()
         }else{
           renderFirstCard(data[0])
+          renderwaringdiv(JSON.parse(data[0].warningarray) , JSON.parse(data[0].tourdetail))
           rendertourdetail(JSON.parse(data[0].tourdetail))
         }
       },
@@ -73,6 +74,9 @@ function rendererror(){
 
 function renderwaringdiv(warningarray , tour){
 
+  if (!warningarray) {
+    return
+  }
   let warningdiv = document.querySelector('#warningdiv')
 
   //先給 mustgo 有找不到的警告
@@ -403,8 +407,26 @@ function renderFirstCard(data){
   }
   firstcard.appendChild(timetypediv)
 
+  if ( data.transportation.length > 0) {
+    transportation = data.transportation.split(',')
+    let transportationdiv = document.createElement('div')
+    transportationdiv.id = 'transportationdiv'
+    for (let i in transportation) {
+      let transportationItemdiv = document.createElement('div')
+      transportationItemdiv.className = 'transportationItemdiv'
+      transportationItemdiv.style.backgroundImage = getTransimg(transportation[i])
+      transportationItemdiv.title = getChinese(transportation[i])
+      transportationdiv.appendChild(transportationItemdiv)
+    }
+    firstcard.appendChild(transportationdiv)
+  }
 
 
+  let openreport = document.createElement('div')
+  openreport.id = 'openreport'
+  openreport.innerText = 'Autour 報告.'
+  openreport.onclick = function() { document.querySelector('#warningdiv').style.display = "flex" }
+  firstcard.appendChild(openreport)
 
   detail.appendChild(firstcard)
 }
@@ -429,7 +451,8 @@ function memberstore(){
       tour : localStorage.tour,
       warningarray : localStorage.warning,
       prefertype : localStorage.prefertype,
-      timetype : localStorage.timetype
+      timetype : localStorage.timetype,
+      transportation : localStorage.transportation
     }
     $.ajax({
       type:'POST',
@@ -437,16 +460,15 @@ function memberstore(){
       contentType: 'application/json',
       url : `${API_HOST}/storeAutour`,
       success: function(data) {
-        alert('Success')
         localStorage.removeItem('titleplaceholder')
         localStorage.removeItem('tour')
         localStorage.removeItem('warning')
         localStorage.removeItem('prefertype')
         localStorage.removeItem('timetype')
+        localStorage.removeItem('transportation')
         window.location.href=`${API_HOST}/profile.html`;
       },error: function(data) {
         alert('Something Wrong \n Please try again later')
-        window.location.href=`${API_HOST}/tourdetail.html`;
       }
     })
 
@@ -610,6 +632,35 @@ function getChinese(item) {
       break;
     case 'other':
       return '其他更多'
+      break;
+    case 'car':
+      return '開車'
+      break;
+    case 'motor':
+      return '騎車'
+      break;
+    case 'publictrans':
+      return '大眾運輸'
+      break;
+    case 'foots':
+      return '步行'
+      break;
+  }
+}
+
+function getTransimg(item){
+  switch (item) {
+    case 'car':
+      return "url('../icon/car.png')"
+      break;
+    case 'motor':
+      return "url('../icon/scooter.png')"
+      break;
+    case 'publictrans':
+      return "url('../icon/train.png')"
+      break;
+    case 'foots':
+      return "url('../icon/walk.png')"
       break;
   }
 }

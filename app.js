@@ -479,7 +479,8 @@ app.post('/storeAutour' , async function (req,res){
         tourdetail: req.body.tour,
         warningarray: req.body.warningarray,
         prefertype: req.body.prefertype,
-        timetype : req.body.timetype
+        timetype : req.body.timetype,
+        transportation : req.body.transportation
       }
       await mysql.insertdataSet('tour',inserttourpost)
       res.status(200).send({ success: true })
