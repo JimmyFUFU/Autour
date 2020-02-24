@@ -361,7 +361,6 @@ app.post('/newAutour' , async function (req,res){
           }
         }
       }
-
       var shortpath = algorithm.findShortestPath(allpath, placeopeningMatrix)
       console.log(`day${i} shortpath`, shortpath);
 

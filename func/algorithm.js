@@ -64,7 +64,7 @@ var toMatrix = function(obj ,placetype){
     for (var j = 0; j < obj.rows[i].elements.length; j++) {
       if(obj.rows[i].elements[j].status == 'OK' ){
         if(i==j && placetype =='nearby') {
-
+          array.push(-1)
         }else if(placetype =='forTrans') {
           if (obj.rows[i].elements[j].duration.value == 0) {
             array.push({time : -1 , text : obj.rows[i].elements[j].duration.text})
@@ -81,7 +81,7 @@ var toMatrix = function(obj ,placetype){
         }else {
           array.push(-1)
         }
-      } 
+      }
     }
     moveCostMatrix.push(array)
   }
