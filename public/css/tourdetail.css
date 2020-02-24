@@ -210,14 +210,12 @@
   cursor: pointer;
   transition: 0.3s;
   overflow-y: hidden;
-  overflow-y: hidden;
   box-sizing:border-box;
 }
 
 .oneday:hover {
   border: 3.5px solid #FE7F2D;
   overflow-y: auto;
-  overflow-y: overlay;
 }
 
 /* scroll */
@@ -246,10 +244,9 @@
 
 .oneplace {
   width: 92%;
-  border-bottom: 1px solid #FFBC42;
-  padding: 3px;
+  /* border-bottom: 1px solid #FFBC42; */
+  padding: 8px;
   text-align: center;
-  margin: 2% 0 ;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -257,7 +254,7 @@
 }
 
 .oneplace img {
-  	width: 40px;
+  width: 40px;
 }
 
 .oneplace p {
@@ -383,6 +380,7 @@
   background-size: cover;
   opacity: 0.5;
   transition: 0.5s;
+  cursor: pointer;
 }
 #transportationdiv .transportationItemdiv:hover {
   opacity: 0.9;
@@ -396,4 +394,42 @@
   position: absolute;
   right: 8px;
   bottom: 8px;
+}
+
+/* transDiv */
+.transDiv {
+  width: 80%;
+  height: 35px;
+  border-left: 2px solid #747d8c;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+.transImg {
+  width: 25px;
+  height: 25px;
+  margin-left: 11%;
+  background-size: cover;
+  opacity: 0.5;
+  transition: 0.5s;
+}
+
+.transtext {
+  font-family: monospace , Microsoft JhengHei;
+  width: 160px;
+  height: 23px;
+  margin-left: 10%;
+  color : #a4b0be;
+  font-size: 15px;
+  transition: 0.5s;
+}
+
+.transDiv:hover .transImg {
+  opacity: 1.0;
+}
+.transDiv:hover .transtext {
+  color : #233D4D;
 }

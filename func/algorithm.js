@@ -63,10 +63,25 @@ var toMatrix = function(obj ,placetype){
     let array = new Array()
     for (var j = 0; j < obj.rows[i].elements.length; j++) {
       if(obj.rows[i].elements[j].status == 'OK' ){
-        if(i==j && placetype =='nearby') {array.push(-1)}
-        else {array.push(obj.rows[i].elements[j].duration.value)}
+        if(i==j && placetype =='nearby') {
+
+        }else if(placetype =='forTrans') {
+          if (obj.rows[i].elements[j].duration.value == 0) {
+            array.push({time : -1 , text : obj.rows[i].elements[j].duration.text})
+          }else {
+            array.push({time : obj.rows[i].elements[j].duration.value , text : obj.rows[i].elements[j].duration.text})
+          }
+        }else {
+          array.push(obj.rows[i].elements[j].duration.value)
+        }
       }
-      else array.push(-1)
+      else{
+        if (placetype =='forTrans') {
+          array.push({time : -1 , text : obj.rows[i].elements[j].status})
+        }else {
+          array.push(-1)
+        }
+      } 
     }
     moveCostMatrix.push(array)
   }
@@ -81,7 +96,7 @@ var openingMatrix = function(placelistdetail , periodarray){
     // 這個時段是否在每個 place 的營業時間內
     var onePeriodOpeningArray = new Array()
 
-    
+
 
     for (var j in placelistdetail) {
       if(placelistdetail[j].opening_hours){

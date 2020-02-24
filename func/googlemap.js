@@ -131,6 +131,7 @@ var distanceMatrix = function (origin , destination , type){
       destinations: destination,
       language: 'zh-TW',
       units: 'metric',
+      mode:type
     } ,  (err,response) => {
       if(err) {
         console.log(err);

@@ -23,6 +23,16 @@ var detail = document.querySelector('.detail')
 var getUrlString = location.href;
 var url = new URL(getUrlString);
 var id = url.searchParams.get('id');
+
+
+var id2Darray = new Array()
+var markersinRoutes = [];
+var infowindowses = [];
+var markers = []
+var polylines = []
+var directionsService = new google.maps.DirectionsService();
+var directionsDisplay = new google.maps.DirectionsRenderer();
+
 //localStorage 存在 tour
 if(localStorage["tour"] || id){
   if(id){
@@ -38,6 +48,7 @@ if(localStorage["tour"] || id){
           renderFirstCard(data[0])
           renderwaringdiv(JSON.parse(data[0].warningarray) , JSON.parse(data[0].tourdetail))
           rendertourdetail(JSON.parse(data[0].tourdetail))
+          rendertrans(id2Darray , data[0].transportation)
         }
       },
       error : function(data){
@@ -48,15 +59,15 @@ if(localStorage["tour"] || id){
   } else if (localStorage["tour"]){
     let tour = JSON.parse(localStorage.tour)
     let warning = JSON.parse(localStorage.warning)
-    rendertourdetail(tour)
     renderwaringdiv(warning , tour)
+    rendertourdetail(tour)
+    rendertrans(id2Darray , localStorage.transportation)
     document.querySelector('#warningdiv').style.display = "flex"
     document.querySelector('.memberstore').style.display = "block"
   }
 }else{
   rendererror()
 }
-
 
 function rendererror(){
   var map = new google.maps.Map(document.getElementById('map'), {
@@ -225,15 +236,171 @@ function renderwaringdiv(warningarray , tour){
 }
 
 function rendertourdetail(tourobj){
+
   var map = new google.maps.Map(document.getElementById('map'), {
     zoom: 15,
     center: {
       lat: tourobj[0].period.start.lat,
       lng: tourobj[0].period.start.lng
-    }
+    },
+    styles :[
+        { elementType: 'geometry', stylers: [ { color: '#ebe3cd' } ] },
+        { elementType: 'geometry.fill', stylers: [ { weight: 1.5 } ] },
+        {
+          elementType: 'labels.text.fill',
+          stylers: [ { color: '#523735' } ]
+        },
+        {
+          elementType: 'labels.text.stroke',
+          stylers: [ { color: '#f5f1e6' } ]
+        },
+        {
+          featureType: 'administrative',
+          elementType: 'geometry.stroke',
+          stylers: [ { color: '#c9b2a6' } ]
+        },
+        {
+          featureType: 'administrative.land_parcel',
+          elementType: 'geometry.stroke',
+          stylers: [ { color: '#dcd2be' } ]
+        },
+        {
+          featureType: 'administrative.land_parcel',
+          elementType: 'labels',
+          stylers: [ { visibility: 'off' } ]
+        },
+        {
+          featureType: 'administrative.land_parcel',
+          elementType: 'labels.text.fill',
+          stylers: [ { color: '#ae9e90' } ]
+        },
+        {
+          featureType: 'administrative.province',
+          elementType: 'geometry.stroke',
+          stylers: [ { color: '#848484' }, { weight: 1 } ]
+        },
+        {
+          featureType: 'landscape.natural',
+          elementType: 'geometry',
+          stylers: [ { color: '#dfd2ae' } ]
+        },
+        {
+          featureType: 'poi',
+          elementType: 'geometry',
+          stylers: [ { color: '#dfd2ae' } ]
+        },
+        {
+          featureType: 'poi',
+          elementType: 'labels.text',
+          stylers: [ { visibility: 'off' } ]
+        },
+        {
+          featureType: 'poi',
+          elementType: 'labels.text.fill',
+          stylers: [ { color: '#93817c' } ]
+        },
+        { featureType: 'poi.business', stylers: [ { visibility: 'off' } ] },
+        {
+          featureType: 'poi.park',
+          elementType: 'geometry.fill',
+          stylers: [ { color: '#a5b076' } ]
+        },
+        {
+          featureType: 'poi.park',
+          elementType: 'labels.text',
+          stylers: [ { visibility: 'off' } ]
+        },
+        {
+          featureType: 'poi.park',
+          elementType: 'labels.text.fill',
+          stylers: [ { color: '#447530' } ]
+        },
+        {
+          featureType: 'road',
+          elementType: 'geometry',
+          stylers: [ { color: '#f5f1e6' } ]
+        },
+        {
+          featureType: 'road.arterial',
+          elementType: 'geometry',
+          stylers: [ { color: '#fdfcf8' } ]
+        },
+        {
+          featureType: 'road.arterial',
+          elementType: 'labels',
+          stylers: [ { visibility: 'off' } ]
+        },
+        {
+          featureType: 'road.highway',
+          elementType: 'geometry',
+          stylers: [ { color: '#f8c967' } ]
+        },
+        {
+          featureType: 'road.highway',
+          elementType: 'geometry.stroke',
+          stylers: [ { color: '#e9bc62' } ]
+        },
+        {
+          featureType: 'road.highway',
+          elementType: 'labels',
+          stylers: [ { visibility: 'off' } ]
+        },
+        {
+          featureType: 'road.highway.controlled_access',
+          elementType: 'geometry',
+          stylers: [ { color: '#e98d58' } ]
+        },
+        {
+          featureType: 'road.highway.controlled_access',
+          elementType: 'geometry.stroke',
+          stylers: [ { color: '#db8555' } ]
+        },
+        { featureType: 'road.local', stylers: [ { visibility: 'off' } ] },
+        {
+          featureType: 'road.local',
+          elementType: 'labels',
+          stylers: [ { visibility: 'off' } ]
+        },
+        {
+          featureType: 'road.local',
+          elementType: 'labels.text.fill',
+          stylers: [ { color: '#806b63' } ]
+        },
+        {
+          featureType: 'transit.line',
+          elementType: 'geometry',
+          stylers: [ { color: '#dfd2ae' } ]
+        },
+        {
+          featureType: 'transit.line',
+          elementType: 'labels.text.fill',
+          stylers: [ { color: '#8f7d77' } ]
+        },
+        {
+          featureType: 'transit.line',
+          elementType: 'labels.text.stroke',
+          stylers: [ { color: '#ebe3cd' } ]
+        },
+        {
+          featureType: 'transit.station',
+          elementType: 'geometry',
+          stylers: [ { color: '#dfd2ae' } ]
+        },
+        {
+          featureType: 'water',
+          elementType: 'geometry.fill',
+          stylers: [ { color: '#b9d3c2' } ]
+        },
+        {
+          featureType: 'water',
+          elementType: 'labels.text.fill',
+          stylers: [ { color: '#92998d' } ]
+        }]
   })
 
   for (var i = 0 ; i < tourobj.length ; i++){
+
+    let idarray = new Array() //這時候順便蒐集各天的 idarray
 
     let oneday = document.createElement('div')
     oneday.className = 'oneday'
@@ -246,8 +413,10 @@ function rendertourdetail(tourobj){
     oneday.appendChild(thisdate)
 
     //放起點
+    idarray.push(`place_id:${tourobj[i].period.start.place_id}`)
     let startplace = document.createElement('div')
     startplace.className = 'oneplace'
+    startplace.value = tourobj[i].period.start.place_id
 
     let startplaceimg = document.createElement('img')
     startplaceimg.src = "../icon/point.png";
@@ -267,11 +436,30 @@ function rendertourdetail(tourobj){
 
     oneday.appendChild(startplace)
 
+    //交通方式的 div
+    let transDiv = document.createElement('div')
+    transDiv.className = 'transDiv'
+    transDiv.onclick = function(){routeInmap(this ,map)}
+
+    let transImg = document.createElement('div')
+    transImg.className = 'transImg'
+    transDiv.appendChild(transImg)
+
+    let transtext = document.createElement('p')
+    transtext.className = 'transtext'
+    transDiv.appendChild(transtext)
+
+    oneday.appendChild(transDiv)
+
+
+
     //放景點
     for (var j = 0; j < tourobj[i].period.place.length; j++) {
       if (tourobj[i].period.place[j].name != "") {
+        idarray.push(`place_id:${tourobj[i].period.place[j].place_id}`)
         let oneplace = document.createElement('div')
         oneplace.className = 'oneplace'
+        oneplace.value = tourobj[i].period.place[j].place_id
 
         let oneplaceimg = document.createElement('img')
         oneplaceimg.src = "../icon/point.png";
@@ -289,10 +477,27 @@ function rendertourdetail(tourobj){
 
         oneday.appendChild(oneplace)
 
+        //交通方式的 div
+        let transDiv = document.createElement('div')
+        transDiv.className = 'transDiv'
+        transDiv.onclick = function(){routeInmap(this ,map)}
+
+        let transImg = document.createElement('div')
+        transImg.className = 'transImg'
+        transDiv.appendChild(transImg)
+
+        let transtext = document.createElement('p')
+        transtext.className = 'transtext'
+        transDiv.appendChild(transtext)
+
+        oneday.appendChild(transDiv)
+
         // 放午餐
         if (tourobj[i].period.lunch && tourobj[i].period.lunch.name != "" && placetime.getUTCHours() == 10) {
+          idarray.push(`place_id:${tourobj[i].period.lunch.place_id}`)
           let lunchplace = document.createElement('div')
           lunchplace.className = 'oneplace'
+          lunchplace.value = tourobj[i].period.lunch.place_id
 
           let lunchplaceimg = document.createElement('img')
           lunchplaceimg.src = "../icon/meal.png";
@@ -308,36 +513,71 @@ function rendertourdetail(tourobj){
           lunchplace.appendChild(lunchplacestrong)
 
           oneday.appendChild(lunchplace)
+
+          //交通方式的 div
+          let transDiv = document.createElement('div')
+          transDiv.className = 'transDiv'
+          transDiv.onclick = function(){routeInmap(this ,map)}
+
+          let transImg = document.createElement('div')
+          transImg.className = 'transImg'
+          transDiv.appendChild(transImg)
+
+          let transtext = document.createElement('p')
+          transtext.className = 'transtext'
+          transDiv.appendChild(transtext)
+
+          oneday.appendChild(transDiv)
+
         }
         //放晚餐
         if (placetime.getUTCHours() == 16 || placetime.getUTCHours() == 17) {
           if (tourobj[i].period.dinner && tourobj[i].period.dinner.name != ""  ) {
-          let dinnerplace = document.createElement('div')
-          dinnerplace.className = 'oneplace'
+            idarray.push(`place_id:${tourobj[i].period.dinner.place_id}`)
+            let dinnerplace = document.createElement('div')
+            dinnerplace.className = 'oneplace'
+            dinnerplace.value = tourobj[i].period.dinner.place_id
 
-          let dinnerplaceimg = document.createElement('img')
-          dinnerplaceimg.src = "../icon/meal.png";
-          dinnerplace.appendChild(dinnerplaceimg)
+            let dinnerplaceimg = document.createElement('img')
+            dinnerplaceimg.src = "../icon/meal.png";
+            dinnerplace.appendChild(dinnerplaceimg)
 
 
-          let dinnerplacep = document.createElement('p')
-          dinnerplacep.innerText = `18:00`
-          dinnerplace.appendChild(dinnerplacep)
+            let dinnerplacep = document.createElement('p')
+            dinnerplacep.innerText = `18:00`
+            dinnerplace.appendChild(dinnerplacep)
 
-          let dinnerplacestrong = document.createElement('strong')
-          dinnerplacestrong.innerText = tourobj[i].period.dinner.name
-          dinnerplace.appendChild(dinnerplacestrong)
+            let dinnerplacestrong = document.createElement('strong')
+            dinnerplacestrong.innerText = tourobj[i].period.dinner.name
+            dinnerplace.appendChild(dinnerplacestrong)
 
-          oneday.appendChild(dinnerplace)
-        }
+            oneday.appendChild(dinnerplace)
+
+            //交通方式的 div
+            let transDiv = document.createElement('div')
+            transDiv.className = 'transDiv'
+            transDiv.onclick = function(){routeInmap(this ,map)}
+
+            let transImg = document.createElement('div')
+            transImg.className = 'transImg'
+            transDiv.appendChild(transImg)
+
+            let transtext = document.createElement('p')
+            transtext.className = 'transtext'
+            transDiv.appendChild(transtext)
+
+            oneday.appendChild(transDiv)
+          }
         }
 
       }
     }
 
     // 放終點
+    idarray.push(`place_id:${tourobj[i].period.end.place_id}`)
     let endplace = document.createElement('div')
     endplace.className = 'oneplace'
+    endplace.value = tourobj[i].period.end.place_id
 
     let endplaceimg = document.createElement('img')
     endplaceimg.src = "../icon/point.png";
@@ -358,7 +598,9 @@ function rendertourdetail(tourobj){
     oneday.appendChild(endplace)
 
     detail.appendChild(oneday)
+    id2Darray.push(idarray)
   }
+
 }
 
 function renderFirstCard(data){
@@ -431,6 +673,37 @@ function renderFirstCard(data){
   detail.appendChild(firstcard)
 }
 
+function rendertrans(id2Darray , transportation){
+  transportation = transportation.split(',')
+  var transDiv = document.querySelectorAll('.transDiv')
+  var transDivcount = 0
+
+  for (let i = 0; i < id2Darray.length;i++) {
+    $.ajax({
+      type: 'POST',
+      data: JSON.stringify({id2Darray:id2Darray[i] , transportation:transportation}),
+      contentType: 'application/json',
+      url : `${API_HOST}/google/getFastMatrix`,
+      async: false
+    })
+    .done(function(data){
+      for (let j = 0; j < data.length; j++) {
+        transDiv[transDivcount].firstChild.style.backgroundImage = getTransimg(data[j].type)
+        transDiv[transDivcount].title = getChinese(data[j].type)
+        transDiv[transDivcount].lastChild.innerText = `約 ${data[j].text}`
+        transDiv[transDivcount].value = data[j].type
+        transDivcount++
+      }
+    })
+    .fail(function(data){
+      for (let j = 0; j < transDiv.length; j++) {
+        transDiv[j].lastChild.innerText = 'error'
+      }
+    })
+  }
+
+}
+
 function checkmember(){
   if (sessionStorage.name){
     document.querySelector('#storediv').style.display = 'flex'
@@ -488,8 +761,6 @@ function nostore(){
   window.location.href=`${API_HOST}/profile.html`;
 }
 
-var markers = []
-var polylines = []
 function deleteMarkers() {
 
   markers.forEach(function(e) {
@@ -501,6 +772,70 @@ function deleteMarkers() {
     e.setMap(null);
   });
   polylines = [];
+
+  markersinRoutes.forEach(function(e) {
+    e.setMap(null);
+  });
+  markersinRoutes = [];
+
+  infowindowses.forEach(function(e) {
+    e.setMap(null);
+  });
+  infowindowses = [];
+
+  directionsDisplay.setMap(null);
+}
+
+function routeInmap(thisobj , map){
+  event.stopPropagation(); //父層是 div
+
+  deleteMarkers()
+
+  directionsDisplay.setMap(map);
+
+  var request = {
+      origin: {'placeId': thisobj.previousSibling.value},
+      destination: {'placeId': thisobj.nextSibling.value},
+      travelMode: thisobj.value.toUpperCase()
+  };
+
+  var markersinRoute = [];
+  var infowindows = [];
+  directionsService.route(request, function (result, status) {
+      if (status == 'OK') {
+          // 回傳路線上每個步驟的細節
+          // console.log(result.routes[0].legs[0].steps);
+          var steps = result.routes[0].legs[0].steps;
+          steps.forEach((e, i) => {
+            markersinRoute[i] = new google.maps.Marker({
+              position: { lat: e.start_location.lat(), lng: e.start_location.lng() },
+              map: map,
+              icon: {
+                  url: getMarkerimg(thisobj.value),
+                  scaledSize: new google.maps.Size(64, 64)
+                }
+            });
+            markersinRoutes.push(markersinRoute[i])
+              // 加入資訊視窗
+            infowindows[i] = new google.maps.InfoWindow({
+              content: e.instructions
+            });
+            infowindowses.push(infowindows[i])
+            markersinRoute[i].addListener('click', function () {
+               if(infowindows[i].anchor){
+                   infowindows[i].close();
+               }else{
+                   infowindows[i].open(map, markersinRoute[i]);
+               }
+            });
+          })
+          directionsDisplay.setDirections(result);
+      } else {
+          console.log('Directions request failed due to ' + status);
+      }
+  });
+
+
 }
 
 function daymarker(thisobj , tourobj , map){
@@ -529,7 +864,7 @@ function daymarker(thisobj , tourobj , map){
 
   // 景點
   for (var i = 0; i < tourobj[thisobj.id].period.place.length; i++) {
-    if (tourobj[thisobj.id].period.place[i].name !== "") {
+    if (tourobj[thisobj.id].period.place[i].name != "") {
       points.push({lat: tourobj[thisobj.id].period.place[i].lat, lng: tourobj[thisobj.id].period.place[i].lng})
       var marker = new google.maps.Marker({
         position: {
@@ -590,16 +925,30 @@ function daymarker(thisobj , tourobj , map){
 
 
 
+  var iconPath = {
+    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+  };
+  var polyline = new google.maps.Polyline({
+      path: points,
+      strokeColor: '#eb2f06',
+      strokeOpacity: 0.9,
+      strokeWeight: 5
+  });
+  var a = 0
+  setInterval(function(){
+      a = a + 1;
+      if(a>100){ a = 0; }
+      polyline.setOptions({
+        icons:[{
+          icon: iconPath,
+          offset: a + '%',
+          scale:10
+        }]
+      })
+    },80);
 
-    var polyline = new google.maps.Polyline({
-        path: points,
-        strokeColor: '#FF0000',
-        strokeOpacity: 1.0,
-        strokeWeight: 2
-    });
-
-    polyline.setMap(map);
-    polylines.push(polyline)
+  polyline.setMap(map);
+  polylines.push(polyline)
 
 }
 
@@ -633,16 +982,16 @@ function getChinese(item) {
     case 'other':
       return '其他更多'
       break;
-    case 'car':
+    case 'driving':
       return '開車'
       break;
-    case 'motor':
+    case 'bicycling':
       return '騎車'
       break;
-    case 'publictrans':
+    case 'transit':
       return '大眾運輸'
       break;
-    case 'foots':
+    case 'walking':
       return '步行'
       break;
   }
@@ -650,17 +999,34 @@ function getChinese(item) {
 
 function getTransimg(item){
   switch (item) {
-    case 'car':
+    case 'driving':
       return "url('../icon/car.png')"
       break;
-    case 'motor':
+    case 'bicycling':
       return "url('../icon/scooter.png')"
       break;
-    case 'publictrans':
+    case 'transit':
       return "url('../icon/train.png')"
       break;
-    case 'foots':
+    case 'walking':
       return "url('../icon/walk.png')"
+      break;
+  }
+}
+
+function getMarkerimg(item){
+  switch (item) {
+    case 'driving':
+      return '../icon/orangecar.png'
+      break;
+    case 'bicycling':
+      return '../icon/orangescooter.png'
+      break;
+    case 'transit':
+      return '../icon/orangetrain.png'
+      break;
+    case 'walking':
+      return '../icon/orangewalk.png'
       break;
   }
 }

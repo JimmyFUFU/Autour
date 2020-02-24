@@ -4,6 +4,7 @@ const bodyparser = require('body-parser')
 const bearerToken = require('express-bearer-token')
 const crypto = require('crypto')
 const moment = require('moment')
+const util = require('util')
 
 const weight = require('./func/addweight.js')
 const googlemap = require('./func/googlemap.js')
@@ -60,7 +61,9 @@ app.get('/test' , async (req, res)  => {
   // console.log('datepointUTC get' , datepointUTC.getFullYear() , datepointUTC.getMonth() , datepointUTC.getDate() , datepointUTC.getHours() );
   // console.log('datepointUTC getUTC' , datepointUTC.getUTCFullYear() , datepointUTC.getUTCMonth() , datepointUTC.getUTCDate() , datepointUTC.getUTCHours() );
 
-  res.send('3223')
+
+  // console.log(util.inspect(JSON.parse(str) ,  {showHidden: false, depth: null} ));  log 完整
+  res.send('njlkiuj')
 
 })
 
@@ -752,7 +755,44 @@ app.get('/user/profile' , async function(req,res){
   }
 })
 
+app.post('/google/getFastMatrix' , async function (req,res){
+  try {
+    var transMatrix = new Array() // transition 2D Array
+    var returnMatrix = new Array() // 用來回傳的 1D Array
+    for (let i = 0; i < req.body.transportation.length; i++) {
+      let matrix = await googlemap.distanceMatrix(req.body.id2Darray , req.body.id2Darray , req.body.transportation[i])
+      console.log(`distanceMatrix 用了一次 (${req.body.id2Darray.length} items)`);
+      let moveCostMatrix = algorithm.toMatrix(matrix , 'forTrans')
+      if (i == 0) { // 用第一個交通方式來初始化要回傳的 2D Array
+        for (let j = 0; j < moveCostMatrix.length; j++) {
+          moveCostMatrix[j].forEach((item, o) => { item.type = req.body.transportation[i] });
+          transMatrix.push(moveCostMatrix[j])
+        }
+      }else{
+        for (let j = 0; j < moveCostMatrix.length; j++) {
+          moveCostMatrix[j].forEach((item, o) => { item.type = req.body.transportation[i] });
+          for (let x = 0; x < moveCostMatrix[j].length; x++) {
+            if (transMatrix[j][x].time == -1 && moveCostMatrix[j][x].time != -1) {
+              transMatrix[j][x] = moveCostMatrix[j][x]
+            }
+            if (moveCostMatrix[j][x].time < transMatrix[j][x].time && moveCostMatrix[j][x].time != -1) {
+              // 比交通時間
+              transMatrix[j][x] = moveCostMatrix[j][x]
+            }
+          }
+        }
+      }
+    }
+    for (let i = 1; i < transMatrix.length; i++) {
+      returnMatrix.push(transMatrix[i-1][i])
+    }
+    res.status(200).send(returnMatrix)
 
+  } catch (e) {
+    console.log(e);
+    res.status(400).send('error')
+  }
+})
 
 server.listen(PORT , ()=>{
   console.log(`App is running on port ${PORT}!`)
