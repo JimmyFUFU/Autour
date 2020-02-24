@@ -115,11 +115,14 @@
 }
 
 .loginform div input , .signupform div input {
-  line-height: 30px;
+  line-height: 33px;
   font-family: monospace;
   font-size: 15px;
   caret-color: #233D4D;
   border-radius: 3px;
+  outline: none;
+  border: 1px solid #ced6e0;
+  padding: 1%;
 }
 
 .loginform div input:focus , .signupform div input:focus {
@@ -154,10 +157,10 @@
   transition: 0.4s;
 }
 
-.loginerror , .signuperror {
+.loginerror , .signuperror , .emailvalid{
   font-family: monospace;
   font-size: 12px;
-  color: red;
+  color: #eb2f06;
   position: absolute;
   /* display: none; */
 }

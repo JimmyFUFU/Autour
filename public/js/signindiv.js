@@ -99,7 +99,19 @@ function signupAjax() {
   })
 }
 
+function validation(){
+  let email = document.querySelector('#inemail').value
+  let emailvalid = document.querySelector('.emailvalid')
+  var pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
 
+  if (email.match(pattern)){
+    emailvalid.innerText = 'Your Email Address in Valid.'
+    emailvalid.style.color = '#009432'
+  }else{
+    emailvalid.innerText = 'Please Enter Valid Email Address.'
+    emailvalid.style.color = '#eb2f06'
+  }
+}
 
 
 // FB

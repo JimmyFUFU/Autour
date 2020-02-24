@@ -13,13 +13,14 @@
     <div class="loginform">
       <div>
         <img src="../icon/mail.png" alt="">
-        <input type="email" id="inemail" value="" placeholder="Your Email" required="required">
+        <input type="email" id="inemail" value="" placeholder="Your Email" required="required" onkeydown="validation()">
       </div>
+      <span class="emailvalid" style="top:17%"></span>
       <div>
         <img src="../icon/lock.png" alt="">
         <input type="password" id="inpassword" value="" placeholder="Your password" required="required">
       </div>
-      <div class="loginerror" style="top:35%"></div>
+      <span class="loginerror" style="top:36%"></span>
       <input type="hidden" id="inprovider" value="native">
       <div class="nativelogin" onclick="loginAjax()">Login !</div>
       <div class="fblogin" onclick="fblogin()"><img src="../icon/facebook.png" alt="FB">Connect with Facebook</div>
