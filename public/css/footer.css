@@ -7,3 +7,27 @@ footer {
   align-items: center;
   margin-top: 15px
 }
+footer .link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #f1f2f6;
+}
+
+.link .item {
+  font-family:monospace,Microsoft JhengHei;
+  color:#a4b0be;
+  width: 130px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.link .item:hover {
+  color: #ffffff;
+}
+
+footer .copyright {
+  font-family:monospace,Microsoft JhengHei;
+  width: 250px;
+  color: #828282;
+}

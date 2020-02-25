@@ -212,6 +212,20 @@ function SameAsStartPoint(thisobject) {
 
 function submit() {
 
+  var transportation = []
+  for (var i = 0; i < $('.transcheckbox').length; i++) {
+    if ($('.transcheckbox')[i].checked == true) {
+      transportation.push($('.transcheckbox')[i].value)
+    }
+  }
+  if (!transportation.length) {
+    document.querySelector('.Q6error').style.display = 'flex'
+    document.querySelector('.Q6errortext').innerText = '交通方式要勾哦 ! '
+    animateCSS(`.Q6error`,'shake')
+    return
+  }
+
+
   var socket = io();
   socket.on('server message', (data) => {
     console.log(data.msg); // Hello Client
@@ -223,14 +237,6 @@ function submit() {
   document.styleSheets[0].addRule('.bigflex.bigflex::after','display: block;');
 
   localStorage.setItem('titleplaceholder' , `${startdaytime.getFullYear()}/${startdaytime.getMonth()+1} ${cityarr}`)
-
-  var transportation = []
-  for (var i = 0; i < $('.transcheckbox').length; i++) {
-    if ($('.transcheckbox')[i].checked == true) {
-      transportation.push($('.transcheckbox')[i].value)
-    }
-  }
-
 
   var jsonobj = {
     city: cityarr,
@@ -257,7 +263,7 @@ function submit() {
 
   localStorage.setItem('prefertype' , prefertype)
   localStorage.setItem('transportation' , transportation)
-  
+
   $.ajax({
     type: 'POST',
     data: JSON.stringify(jsonobj),
@@ -280,6 +286,7 @@ function submit() {
       }
     }
   })
+  
 }
 
 function back2Q1() {

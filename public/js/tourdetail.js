@@ -48,7 +48,7 @@ if(localStorage["tour"] || id){
           renderFirstCard(data[0])
           renderwaringdiv(JSON.parse(data[0].warningarray) , JSON.parse(data[0].tourdetail))
           rendertourdetail(JSON.parse(data[0].tourdetail))
-          rendertrans(id2Darray , data[0].transportation)
+          rendertrans(id2Darray , data[0].transportation , id)
         }
       },
       error : function(data){
@@ -61,7 +61,7 @@ if(localStorage["tour"] || id){
     let warning = JSON.parse(localStorage.warning)
     renderwaringdiv(warning , tour)
     rendertourdetail(tour)
-    rendertrans(id2Darray , localStorage.transportation)
+    rendertrans(id2Darray , localStorage.transportation , sessionStorage.id)
     document.querySelector('#warningdiv').style.display = "flex"
     document.querySelector('.memberstore').style.display = "block"
   }
@@ -673,15 +673,22 @@ function renderFirstCard(data){
   detail.appendChild(firstcard)
 }
 
-function rendertrans(id2Darray , transportation){
+function rendertrans(id2Darray , transportation , id){
   transportation = transportation.split(',')
   var transDiv = document.querySelectorAll('.transDiv')
   var transDivcount = 0
 
   for (let i = 0; i < id2Darray.length;i++) {
+
+    let jsonobj = {
+      id2Darray:id2Darray[i] ,
+      transportation:transportation ,
+      tourid : id ,
+      day : i
+    }
     $.ajax({
       type: 'POST',
-      data: JSON.stringify({id2Darray:id2Darray[i] , transportation:transportation}),
+      data: JSON.stringify(jsonobj),
       contentType: 'application/json',
       url : `${API_HOST}/google/getFastMatrix`,
       async: false

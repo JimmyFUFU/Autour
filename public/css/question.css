@@ -219,3 +219,15 @@ input[type="checkbox"]{
 #Q6 label {
     cursor: pointer;
 }
+
+.Q6error {
+  margin-top: 40px;
+  float: right;
+  /* display: flex; */
+  align-items: center;
+  display: none;
+}
+.Q6errortext {
+  font-size: 17px;
+  color: #c0392b;
+}
