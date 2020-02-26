@@ -74,29 +74,33 @@ function loginAjax() {
 }
 
 function signupAjax() {
-  var jsonobj = {
-    name : $('#upname').val(),
-    email : $('#upemail').val(),
-    password : $('#uppassword').val()
-  }
-  $.ajax({
-    type: 'POST',
-    data: JSON.stringify(jsonobj),
-    contentType: 'application/json',
-    url: `${API_HOST}/user/signup`,
-    success: function(data) {
-      sessionStorage.setItem("access_token", data.data.access_token);
-      sessionStorage.setItem("name", data.data.user.name);
-      sessionStorage.setItem("id", data.data.user.id);
-      document.querySelector('.hitext strong').innerText = data.data.user.name
-      animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
-      window.location.reload();
-    },
-    error: function(data) {
-      document.querySelector('.signuperror').innerText = data.responseJSON.error
-      document.querySelector('.signuperror').style.display = 'block'
+  if (!document.querySelector('.emailvalid').value) {
+    document.querySelector('#upemail').style.boxShadow = "0 0 5px 0 #eb2f06"
+  }else {
+    var jsonobj = {
+      name : $('#upname').val(),
+      email : $('#upemail').val(),
+      password : $('#uppassword').val()
     }
-  })
+    $.ajax({
+      type: 'POST',
+      data: JSON.stringify(jsonobj),
+      contentType: 'application/json',
+      url: `${API_HOST}/user/signup`,
+      success: function(data) {
+        sessionStorage.setItem("access_token", data.data.access_token);
+        sessionStorage.setItem("name", data.data.user.name);
+        sessionStorage.setItem("id", data.data.user.id);
+        document.querySelector('.hitext strong').innerText = data.data.user.name
+        animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
+        window.location.reload();
+      },
+      error: function(data) {
+        document.querySelector('.signuperror').innerText = data.responseJSON.error
+        document.querySelector('.signuperror').style.display = 'block'
+      }
+    })
+  }
 }
 
 function validation(){
@@ -105,11 +109,17 @@ function validation(){
   var pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
 
   if (email.match(pattern)){
+    document.querySelector('#upemail').style.boxShadow = "0 0 5px 0 #009432"
     emailvalid.innerText = 'Your Email Address in Valid.'
     emailvalid.style.color = '#009432'
+    emailvalid.style.left = '23%'
+    emailvalid.value = true
   }else{
+    document.querySelector('#upemail').style.boxShadow = "0 0 5px 0 #eb2f06"
     emailvalid.innerText = 'Please Enter Valid Email Address.'
     emailvalid.style.color = '#eb2f06'
+    emailvalid.style.left = '20%'
+    emailvalid.value = false
   }
 }
 

@@ -95,22 +95,22 @@ function confirmQ2() {
     startdaytime = new Date(startdaytime)
     var enddaytime = new Date(enddaytime)
     var days = (Date.parse(new Date(enddaytime.getFullYear(), enddaytime.getMonth(), enddaytime.getDate())) - Date.parse(new Date(startdaytime.getFullYear(), startdaytime.getMonth(), startdaytime.getDate())))/86400000
-
       // 有按就要清空 #hoteldiv
       document.querySelector('#hoteldiv').innerHTML = "";
+      if (days == 0) {
+        document.querySelector('#hoteldiv').innerText = '你的行程只有一天！可以直接跳下一步哦'
+        document.querySelector('#hoteldiv').style.fontSize = '20px'
+        let img = document.createElement('img')
+        img.src = "../icon/rabbit.png"
+        img.style.width = '40px'
+        img.style.margin = "10px 0 0 5px"
+        document.querySelector('#hoteldiv').appendChild(img)
+      }
       for (let i = 0; i < days; i++) {
         let div = document.createElement('div')
         let label = document.createElement('label')
         let hotelinput = document.createElement('input')
-        // 都住同一個地方的按鈕
-        /*if (i === 0) {
-          let allSameHotelBtn = document.createElement('input')
-          allSameHotelBtn.type = 'button'
-          allSameHotelBtn.value = '都住同一個地方'
-          allSameHotelBtn.onclick = function(){allSameHotel()};
-          document.querySelector('#hoteldiv').appendChild(allSameHotelBtn)
-        }*/
-
+  
         //算天數 每天都要給住宿框框
         let getdate = new Date(startdaytime.valueOf() + 1000 * 60 * 60 * 24 * i)
         label.innerText = `${getdate.getFullYear()} / ${getdate.getMonth()+1} / ${getdate.getDate()}`
@@ -286,7 +286,7 @@ function submit() {
       }
     }
   })
-  
+
 }
 
 function back2Q1() {
