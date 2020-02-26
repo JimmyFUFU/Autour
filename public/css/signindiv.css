@@ -157,7 +157,7 @@
   transition: 0.4s;
 }
 
-.loginerror , .signuperror , .emailvalid{
+.loginerror , .signuperror , .emailvalid , .signupemailvalid{
   font-family: monospace;
   font-size: 12px;
   color: #eb2f06;

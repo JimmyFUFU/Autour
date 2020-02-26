@@ -153,7 +153,14 @@ var findShortestPath = function(allpath , placeopeningMatrix){
     allpath[r].truecount = truecount
   }
   sort.by(allpath , 'truecount')
-  return allpath[0].path
+  allpath.filter((item, index, array)=>{ return item.truecount < allpath[0].path.length-2 }); // 去掉不是全部都是 ture 的
+
+  if (!allpath.length) {
+    return []
+  }else {
+    return allpath[0].path
+  }
+
 }
 
 

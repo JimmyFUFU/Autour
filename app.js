@@ -181,7 +181,7 @@ app.post('/newAutour' , async function (req,res){
 
     for (let i in periodarray) {
       io.emit('server message', {day: Number(i)+1 , msg: `day ${Number(i)+1} start`})
-      console.log(`\n day ${i} started`);
+      console.log(`\nday ${i} started`);
       let remain = periodarray[i].period.place.length - periodarray[i].placelist.length // 今天還剩多少時段
       let finalPlaceList = new Array()
       //要先把這天的mustgo放進finalPlaceList
@@ -285,6 +285,7 @@ app.post('/newAutour' , async function (req,res){
 
       var allpath
       var placeopeningMatrix
+      var shortpath
       var openingMatrixcheck = false
       var swapcount = 0
 
@@ -308,66 +309,65 @@ app.post('/newAutour' , async function (req,res){
         sort.bysmall2big(allpath , "weight")
         placeopeningMatrix = algorithm.openingMatrix( placelistdetail , periodarray[i].period.place ) // 二維陣列 每個時段*每個景點
         console.log("Matrix\n", placeopeningMatrix);
+        shortpath = algorithm.findShortestPath(allpath, placeopeningMatrix)
 
         if (placeopeningMatrix.length == 0) {
           openingMatrixcheck = true
-          console.log('No period');
+          console.log('No period , Do not need check opening');
           break
         }
-        // 檢查有沒有一個時段是全部都沒開的
-        outer:
-        for (let w = 0; w < placeopeningMatrix.length; w++) {
-          if (!placeopeningMatrix[w].includes(true)) {
-            console.log(`day ${i} period ${w} have opening issue`);
-            // 先檢查有沒有點換
-            if (periodarray[i].placeREC.length != 0) {
-                // 要選一個點替換掉
-                for (let y = periodarray[i].placelist.length-1 ; y >= 0 ; y--) {
-                  // 不能是mustgolist裡面的點
-                  let ifinmustgolist = false
-                  for (let p in mustgolist) {
-                    if (periodarray[i].placelist[y].place_id == mustgolist[p].place_id ) { ifinmustgolist = true }
-                  }
 
-                  if (!ifinmustgolist) { //能換就換
-                    if (swapcount == periodarray[i].placeREC.length+1) {
-                      warningarray.push({type: 'opening_issue' , day : i , period : w, status: 'No_more_placeREC'})
-                      openingMatrixcheck = true
-                      break outer
-                    }
-                    //AllTourPlaceIdlist 要把原本的拿出來
-                    AllTourPlaceIdlist.splice(AllTourPlaceIdlist.indexOf(periodarray[i].placelist[y].place_id),1)
-                    periodarray[i].placeREC.push({
-                      name: periodarray[i].placelist[y].name,
-                      place_id: periodarray[i].placelist[y].place_id,
-                      lat: periodarray[i].placelist[y].lat,
-                      lng: periodarray[i].placelist[y].lng })
-                    let firstplaceREC = periodarray[i].placeREC.shift()
-                    periodarray[i].placelist[y] = firstplaceREC
-                    AllTourPlaceIdlist.push(firstplaceREC.place_id)
-                    swapcount++
-                    // 交換成功就再去外面試一次
-                    break outer
-                  }
-                  if (y == 0) { // 從最後一個已經檢查到第一個 代表沒有點可以換(全部都是mustgo) 不要刪 給提示
-                    warningarray.push({type: 'opening_issue' , day : i , period : w, status: 'All_mustgo'})
-                    openingMatrixcheck = true
-                  }
+        // 檢查有沒有一個時段是全部都沒開的
+
+        if (!shortpath.length) {
+          console.log(`day ${i} period ${w} have opening issue`);
+          // 先檢查有沒有點換
+          if (periodarray[i].placeREC.length != 0) {
+            // 要選一個點替換掉
+            for (let y = periodarray[i].placelist.length-1 ; y >= 0 ; y--) {
+              // 不能是mustgolist裡面的點
+              let ifinmustgolist = false
+              for (let p in mustgolist) {
+                if (periodarray[i].placelist[y].place_id == mustgolist[p].place_id ) { ifinmustgolist = true }
+              }
+
+              if (!ifinmustgolist) { //能換就換
+                if (swapcount == periodarray[i].placeREC.length+1) {
+                  warningarray.push({type: 'opening_issue' , day : i , status: 'No_more_placeREC'})
+                  openingMatrixcheck = true
+                  break
                 }
+                //AllTourPlaceIdlist 要把原本的拿出來
+                AllTourPlaceIdlist.splice(AllTourPlaceIdlist.indexOf(periodarray[i].placelist[y].place_id),1)
+                periodarray[i].placeREC.push({
+                  name: periodarray[i].placelist[y].name,
+                  place_id: periodarray[i].placelist[y].place_id,
+                  lat: periodarray[i].placelist[y].lat,
+                  lng: periodarray[i].placelist[y].lng })
+                  let firstplaceREC = periodarray[i].placeREC.shift()
+                  periodarray[i].placelist[y] = firstplaceREC
+                  AllTourPlaceIdlist.push(firstplaceREC.place_id)
+                  swapcount++
+                  // 交換成功就再去外面試一次
+                  break
+                }
+                if (y == 0) { // 從最後一個已經檢查到第一個 代表沒有點可以換(全部都是mustgo) 不要刪 給提示
+                  warningarray.push({type: 'opening_issue' , day : i , status: 'All_mustgo'})
+                  openingMatrixcheck = true
+                }
+              }
             }else {
               // 沒景點換 不要刪 給提示
-              warningarray.push({type: 'opening_issue' , day : i , period : w, status: 'No_placeREC'})
+              warningarray.push({type: 'opening_issue' , day : i , status: 'No_placeREC'})
               openingMatrixcheck = true
               break
             }
-          }
-          if (w == placeopeningMatrix.length-1) {
-            openingMatrixcheck = true
-            console.log('opening Matrix check over !');
-          }
+        }else {
+          console.log('opening Matrix check over !');
+          break
         }
+
       }
-      var shortpath = algorithm.findShortestPath(allpath, placeopeningMatrix)
       console.log(`day${i} shortpath`, shortpath);
 
       for (let k = 1 ; k < shortpath.length-1 ; k++) {
@@ -810,7 +810,7 @@ app.post('/google/getFastMatrix' , async function (req,res){
           }
           // 存進redis
           client.hset(`${req.body.tourid}`, `day:${req.body.day}` ,  `${JSON.stringify(returnMatrix)}`)
-          client.expire(`${req.body.tourid}`, 6*3600) // expires after six hour
+          client.expire(`${req.body.tourid}`, 9*3600) // expires after six hour
           console.log(`${req.body.tourid} day:${req.body.day} 已放進 redis`)
 
           res.status(200).send(returnMatrix)

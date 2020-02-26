@@ -85,9 +85,8 @@ function rendererror(){
 
 function renderwaringdiv(warningarray , tour){
 
-  if (!warningarray) {
-    return
-  }
+  if (!warningarray)  return
+
   let warningdiv = document.querySelector('#warningdiv')
 
   //先給 mustgo 有找不到的警告
@@ -200,6 +199,17 @@ function renderwaringdiv(warningarray , tour){
             warningplace.style.border = "1px solid #ff4757"
             warningplace.style.color = "#ff4757"
             placetooltiptext.innerText = '行程沒有排滿 自己去逛逛吧~'
+            break;
+          case 'opening_issue':
+            if (warningplace.style.color == "rgb(255, 71, 87)") {
+              warningplace.innerText = '景點⚠'
+              placetooltiptext.innerText += '出發前記得注意營業時間哦！'
+            }else {
+              warningplace.innerText = '景點⚠'
+              warningplace.style.border = "1.3px solid #f7b731"
+              warningplace.style.color = "#f7b731"
+              placetooltiptext.innerText = '今天的景點可能會有營業時間的問題！出發前再確認一下哦'
+            }
             break;
           case 'lunch':
             if (tour[i].period.lunch) {
@@ -819,7 +829,7 @@ function routeInmap(thisobj , map){
               map: map,
               icon: {
                   url: getMarkerimg(thisobj.value),
-                  scaledSize: new google.maps.Size(64, 64)
+                  scaledSize: new google.maps.Size(32, 32)
                 }
             });
             markersinRoutes.push(markersinRoute[i])

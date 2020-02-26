@@ -183,10 +183,10 @@ function countitems(typename , items) {
       return Math.ceil(items/2)
       break;
     case 'library':
-      return Math.ceil(items/2)
+      return Math.ceil(items/6)
       break;
     case 'church':
-      return Math.ceil(items/2)
+      return Math.ceil(items/6)
       break;
     case 'department_store':
       return Math.ceil(items/2)

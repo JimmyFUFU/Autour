@@ -100,7 +100,7 @@ function signupAjax() {
 }
 
 function validation(){
-  let email = document.querySelector('#inemail').value
+  let email = document.querySelector('#upemail').value
   let emailvalid = document.querySelector('.emailvalid')
   var pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
 

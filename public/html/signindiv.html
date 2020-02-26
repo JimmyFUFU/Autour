@@ -13,9 +13,8 @@
     <div class="loginform">
       <div>
         <img src="../icon/mail.png" alt="">
-        <input type="email" id="inemail" value="" placeholder="Your Email" required="required" onkeydown="validation()">
+        <input type="email" id="inemail" value="" placeholder="Your Email" required="required">
       </div>
-      <span class="emailvalid" style="top:17%"></span>
       <div>
         <img src="../icon/lock.png" alt="">
         <input type="password" id="inpassword" value="" placeholder="Your password" required="required">
@@ -33,7 +32,8 @@
       </div>
       <div class="">
         <img src="../icon/mail.png" alt="">
-        <input type="email" id="upemail" value="" placeholder="Your Email" required="required">
+        <input type="email" id="upemail" value="" placeholder="Your Email" required="required" onblur="validation()" >
+        <span class="emailvalid" style="top:44% ;left:24%;"></span>
       </div>
       <div class="">
         <img src="../icon/lock.png" alt="">
