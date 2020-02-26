@@ -65,8 +65,13 @@ function confirmQ1() {
     document.querySelector(".backicon").style.display = 'block'
     document.querySelector(".backicon").onclick = function(){back2Q1()}
     document.querySelector(".progressbar").style.width = '33.3%'
-    // let curtime = new Date()
-    // document.querySelector('.startdaytime').value = `"${curtime.getFullYear()}-${curtime.getMonth()+1}-${curtime.getDate()}T09:00"`;
+    let curtime = new Date()
+    let curtimeMonth
+    if (curtime.getMonth()+1 < 10) { curtimeMonth = `0${curtime.getMonth()+1}` }
+    let datestr = `${curtime.getFullYear()}-${curtimeMonth}-${curtime.getDate()}T${curtime.getHours()}:${curtime.getMinutes()}`
+    document.querySelector('.startdaytime').value = datestr
+    document.querySelector('.enddaytime').value = datestr
+
   } else {
     console.log('Please select city');
     document.querySelector('.Q1error').style.display = 'flex'
@@ -110,7 +115,7 @@ function confirmQ2() {
         let div = document.createElement('div')
         let label = document.createElement('label')
         let hotelinput = document.createElement('input')
-  
+
         //算天數 每天都要給住宿框框
         let getdate = new Date(startdaytime.valueOf() + 1000 * 60 * 60 * 24 * i)
         label.innerText = `${getdate.getFullYear()} / ${getdate.getMonth()+1} / ${getdate.getDate()}`
