@@ -71,7 +71,6 @@ function confirmQ1() {
     let datestr = `${curtime.getFullYear()}-${curtimeMonth}-${curtime.getDate()}T${curtime.getHours()}:${curtime.getMinutes()}`
     document.querySelector('.startdaytime').value = datestr
     document.querySelector('.enddaytime').value = datestr
-
   } else {
     console.log('Please select city');
     document.querySelector('.Q1error').style.display = 'flex'

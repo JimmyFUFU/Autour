@@ -101,6 +101,46 @@ input[type="checkbox"]{
   display: none;
 }
 
+#Q3 p {
+  position: relative;
+  width: max-content;
+}
+.Q3hintTooltiptext{
+  visibility: hidden;
+  height: 18px;
+  width: max-content;
+  background-color: #57606f;
+  color: #fff;
+  text-align: center;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-family: monospace ,Microsoft JhengHei;
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  left: 110%;
+  font-size: 14px;
+  line-height: 20px;
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.Q3hintTooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 36%;
+  right: 100%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #57606f transparent transparent;
+}
+#Q3 p:hover .Q3hintTooltiptext {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
 .hotel {
   margin-bottom: 10px;
   width: 60%;
@@ -147,8 +187,44 @@ input[type="checkbox"]{
   margin-left: 50px;
   font-size: 20px;
   cursor: pointer;
+  position: relative;
 }
 
+.prefertypeTooltiptext{
+  visibility: hidden;
+  height: 18px;
+  width: max-content;
+  background-color: #57606f;
+  color: #fff;
+  text-align: center;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-family: monospace ,Microsoft JhengHei;
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  left: 110%;
+  font-size: 14px;
+  line-height: 20px;
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.prefertypeTooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 36%;
+  right: 100%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #57606f transparent transparent;
+}
+.prefer label:hover .prefertypeTooltiptext {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
 
 
 /* Q5 */

@@ -41,9 +41,9 @@
 	border: 1.5px solid #233D4D;
 	border-radius: 20px ;
 	position: absolute;
-	top:110px;
+	top:112px;
 	left: 141px;
-	height: 20px;
+	height: 16px;
 	width: 50%;
 	display: none;
 }
@@ -51,7 +51,7 @@
 .progressbar {
 	background-color: #233D4D ;
 	border-radius: 20px ;
-	height: 20px;
+	height: 16px;
 	width: 16.6%;
 	transition: 0.5s;
 }
