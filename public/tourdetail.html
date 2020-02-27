@@ -31,7 +31,10 @@
       </div> -->
       <!-- <div class="errortext">這裡沒有行程哦 !</div> -->
     </div>
-    <img src="./icon/import.png" class="memberstore" title="儲存旅程" onclick="checkmember()" >
+    <div class="unstoreToollist">
+      <img src="./icon/report.png" class="openreport" title="查看報告" onclick="document.querySelector('#warningdiv').style.display = 'flex' " >
+      <img src="./icon/import.png" class="memberstore" title="儲存旅程" onclick="checkmember()" >
+    </div>
     <div class="googlemap" id="map"></div>
     <div id="signindiv" class="animated bounceInDown"></div>
     <div id="storediv" class="animated bounceInDown"></div>

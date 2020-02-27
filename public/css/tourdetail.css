@@ -168,19 +168,34 @@
 
 /* END warningdiv */
 
-
-.memberstore {
-  position: absolute;
-  bottom: 10%;
-  left: 58%;
-  cursor: pointer;
+/* unstoreToollist */
+.unstoreToollist {
+  height: 60px;
+  width: 160px;
+  margin: 0 25px 25px -170px;
+  align-self: flex-end;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  padding: 1px 3px;
   display: none;
-  transition: 0.5s;
+  background-color: rgba(241, 242, 246,0.7);
+  border-radius: 20px;
+  z-index: 100;
 }
 
-.memberstore:hover {
+.openreport , .memberstore {
+  cursor: pointer;
+  transition: 0.5s;
+  margin: 1%;
+  width: 52px;
+  height: 52px;
+}
+.openreport:hover , .memberstore:hover {
   transform : scale(1.1);
 }
+
+/* END unstoreToollist */
 
 .detail {
   height: auto;
@@ -216,6 +231,7 @@
   margin : 10px 3% 0 3%;
   height: 95%;
   min-width: 330px;
+  max-width:  330px;
   display: flex;
   flex-direction: column;
   justify-content:flex-start;

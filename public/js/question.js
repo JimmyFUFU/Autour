@@ -240,9 +240,8 @@ function submit() {
   document.styleSheets[0].addRule('.bigflex.bigflex::after','display: block;');
 
   localStorage.setItem('titleplaceholder' , `${startdaytime.getFullYear()}/${startdaytime.getMonth()+1} ${cityarr}`)
-
   let temptourID = getRandom(9999999999) //跑一個亂碼給這個還沒儲存的tour 當暫時 ID 使用
-  sessionStorage.setItem('temptourID' , temptourID)
+  localStorage.setItem('temptourID' , temptourID)
 
   var jsonobj = {
     city: cityarr,

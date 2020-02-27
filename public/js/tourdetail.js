@@ -61,9 +61,9 @@ if(localStorage["tour"] || id){
     let warning = JSON.parse(localStorage.warning)
     renderwaringdiv(warning , tour)
     rendertourdetail(tour)
-    rendertrans(id2Darray , localStorage.transportation , sessionStorage.temptourID)
+    rendertrans(id2Darray , localStorage.transportation , localStorage.temptourID)
     document.querySelector('#warningdiv').style.display = "flex"
-    document.querySelector('.memberstore').style.display = "block"
+    document.querySelector('.unstoreToollist').style.display = "flex"
   }
 }else{
   rendererror()
@@ -770,11 +770,7 @@ function memberstore(){
 }
 
 function nostore(){
-  localStorage.removeItem('tour');
-  localStorage.removeItem('titleplaceholder');
-  localStorage.removeItem('prefertype')
-  localStorage.removeItem('timetype')
-  localStorage.removeItem('warning')
+  localStorage.clear()
   window.location.href=`${API_HOST}/profile.html`;
 }
 
