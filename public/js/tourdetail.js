@@ -61,7 +61,7 @@ if(localStorage["tour"] || id){
     let warning = JSON.parse(localStorage.warning)
     renderwaringdiv(warning , tour)
     rendertourdetail(tour)
-    rendertrans(id2Darray , localStorage.transportation , sessionStorage.id)
+    rendertrans(id2Darray , localStorage.transportation , sessionStorage.temptourID)
     document.querySelector('#warningdiv').style.display = "flex"
     document.querySelector('.memberstore').style.display = "block"
   }

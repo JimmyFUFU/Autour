@@ -216,7 +216,7 @@ function SameAsStartPoint(thisobject) {
 
 function submit() {
 
-  var transportation = []
+  var transportation = new Array()
   for (var i = 0; i < $('.transcheckbox').length; i++) {
     if ($('.transcheckbox')[i].checked == true) {
       transportation.push($('.transcheckbox')[i].value)
@@ -229,10 +229,9 @@ function submit() {
     return
   }
 
-
   var socket = io();
   socket.on('server message', (data) => {
-    console.log(data.msg); // Hello Client
+    // console.log(data.msg);
     document.querySelector('#loadingtext').innerText = `正在幫您完成第 ${data.day} 天的行程 ...`
   });
 
@@ -241,6 +240,9 @@ function submit() {
   document.styleSheets[0].addRule('.bigflex.bigflex::after','display: block;');
 
   localStorage.setItem('titleplaceholder' , `${startdaytime.getFullYear()}/${startdaytime.getMonth()+1} ${cityarr}`)
+
+  let temptourID = getRandom(9999999999) //跑一個亂碼給這個還沒儲存的tour 當暫時 ID 使用
+  sessionStorage.setItem('temptourID' , temptourID)
 
   var jsonobj = {
     city: cityarr,
@@ -257,7 +259,6 @@ function submit() {
     mustgo: mustgoarr,
     transportation: transportation,
   }
-
   for (var i = 0; i < $('.timeradio').length; i++) {
     if ($('.timeradio')[i].checked == true) {
       jsonobj['timetype'] = $('.timeradio')[i].value
@@ -276,8 +277,6 @@ function submit() {
     success: function(data) {
       localStorage.setItem('tour', JSON.stringify(data.periodarray));
       localStorage.setItem('warning', JSON.stringify(data.warningarray));
-      // document.write(JSON.stringify(data))
-      // console.log(data);
       window.location.href=`${API_HOST}/tourdetail.html`;
     },
     error: function(data){
@@ -333,3 +332,7 @@ function back2Q5() {
   document.querySelector(".backicon").onclick = function(){back2Q4()}
   document.querySelector(".progressbar").style.width = '83.3%'
 }
+
+function getRandom(x){
+    return Math.floor(Math.random()*x)+1;
+};
