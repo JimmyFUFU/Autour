@@ -35,6 +35,10 @@ var directionsDisplay = new google.maps.DirectionsRenderer();
 
 //localStorage 存在 tour
 if(localStorage["tour"] || id){
+  // loading
+  document.querySelector('.loading').style.display = 'flex'
+  document.styleSheets[0].addRule('.bigflex.bigflex::after','display: block;');
+
   if(id){
     $.ajax({
       type : 'GET',
@@ -44,16 +48,22 @@ if(localStorage["tour"] || id){
         if(!data[0].tourdetail) {
           console.log('tourdetail error');
           rendererror()
+          document.querySelector('.loading').style.display = 'none'
+          document.styleSheets[0].addRule('.bigflex.bigflex::after','display: none;');
         }else{
           renderFirstCard(data[0])
           renderwaringdiv(JSON.parse(data[0].warningarray) , JSON.parse(data[0].tourdetail))
           rendertourdetail(JSON.parse(data[0].tourdetail))
           rendertrans(id2Darray , data[0].transportation , id)
+          document.querySelector('.loading').style.display = 'none'
+          document.styleSheets[0].addRule('.bigflex.bigflex::after','display: none;');
         }
       },
       error : function(data){
         console.log('Ajax error');
         rendererror()
+        document.querySelector('.loading').style.display = 'none'
+        document.styleSheets[0].addRule('.bigflex.bigflex::after','display: none;');
       }
     })
   } else if (localStorage["tour"]){
@@ -64,9 +74,13 @@ if(localStorage["tour"] || id){
     rendertrans(id2Darray , localStorage.transportation , localStorage.temptourID)
     document.querySelector('#warningdiv').style.display = "flex"
     document.querySelector('.unstoreToollist').style.display = "flex"
+    document.querySelector('.loading').style.display = 'none'
+    document.styleSheets[0].addRule('.bigflex.bigflex::after','display: none;');
   }
 }else{
   rendererror()
+  document.querySelector('.loading').style.display = 'none'
+  document.styleSheets[0].addRule('.bigflex.bigflex::after','display: none;');
 }
 
 function rendererror(){
