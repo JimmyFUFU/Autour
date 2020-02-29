@@ -3,7 +3,6 @@ const sort = require('./sort.js')
 var find2pointAllPath = function(matrix , start ,end){
 
   var minpath = []
-
   var mainstack = [] , substack = []
   var eachsubstack = []
   var minweight = 0
@@ -36,25 +35,18 @@ var find2pointAllPath = function(matrix , start ,end){
     if (mainstack[mainstack.length-1] === end) {
       if(mainstack.length === matrix.length) {
         let weight = 0
-        for(let i = 0 ; i < mainstack.length-1 ; i++){
+        for(let i = 0 ; i < mainstack.length-1 ; i++) {
           weight += matrix[mainstack[i]][mainstack[i+1]]
         }
         minpath.push({path:[] , weight :weight})
-        // minpath[count] = []
         mainstack.forEach((item, i) => {minpath[count].path.push(item)});
         count++
-        // 直接找最小
-        // if(minweight == 0 || weight < minweight) {
-        //   minweight = weight;
-        //   minpath = [];
-        //   mainstack.forEach((item, i) => {minpath.push(item)});
-        // }
       }
       mainstack.pop()
       substack.pop()
     }
  }
- return minpath
+  return minpath
 }
 
 var toMatrix = function(obj ,placetype){
@@ -95,8 +87,6 @@ var openingMatrix = function(placelistdetail , periodarray){
     let time = periodarray[i].time
     // 這個時段是否在每個 place 的營業時間內
     var onePeriodOpeningArray = new Array()
-
-
 
     for (var j in placelistdetail) {
       if(placelistdetail[j].opening_hours){
@@ -145,6 +135,7 @@ var openingMatrix = function(placelistdetail , periodarray){
 }
 
 var findShortestPath = function(allpath , placeopeningMatrix){
+
   for (let r in allpath) {
     let truecount = 0
     for (let q = 1 ; q < allpath[r].path.length-1 ; q++) {
@@ -153,14 +144,7 @@ var findShortestPath = function(allpath , placeopeningMatrix){
     allpath[r].truecount = truecount
   }
   sort.by(allpath , 'truecount')
-  allpath.filter((item, index, array)=>{ return item.truecount < allpath[0].path.length-2 }); // 去掉不是全部都是 ture 的
-
-  if (!allpath.length) {
-    return []
-  }else {
-    return allpath[0].path
-  }
-
+  return allpath[0] 
 }
 
 

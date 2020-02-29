@@ -43,43 +43,51 @@ app.use(bearerToken())
 
 app.get('/test' , async (req, res)  => {
 
-  // let startplace = await googlemap.findplace('嘉義')
-  // res.send(startplace)
+  /*var a = {name : 'jimmy' , age : 18}
+  var b = {name : 'jijiji' , age :458}
+  console.log(a ,b );
+  [a.name , b.name] =[ b.name , a.name ]
+  b.name = [ a.name , a.name = b.name][0]
+  console.log(a,b);
+  var datenow = new Date()
+  console.log('datenow' , datenow);
+  console.log('datenow get' , datenow.getFullYear() , datenow.getMonth() , datenow.getDate() , datenow.getHours() );
+  console.log('datenow getUTC' , datenow.getUTCFullYear() , datenow.getUTCMonth() , datenow.getUTCDate() , datenow.getUTCHours() );
+  console.log('\n');
+  var datepoint = new Date(2020,1,21,0)
+  console.log('datepoint' , datepoint);
+  console.log('datepoint get' , datepoint.getFullYear() , datepoint.getMonth() , datepoint.getDate() , datepoint.getHours() );
+  console.log('datepoint getUTC' , datepoint.getUTCFullYear() , datepoint.getUTCMonth() , datepoint.getUTCDate() , datepoint.getUTCHours() );
+  console.log('\n');
+  var datepointUTC = new Date(Date.UTC(2020,1,21,0))
+  console.log('datepointUTC' , datepointUTC);
+  console.log('datepointUTC get' , datepointUTC.getFullYear() , datepointUTC.getMonth() , datepointUTC.getDate() , datepointUTC.getHours() );
+  console.log('datepointUTC getUTC' , datepointUTC.getUTCFullYear() , datepointUTC.getUTCMonth() , datepointUTC.getUTCDate() , datepointUTC.getUTCHours() );
 
-  // var a = {name : 'jimmy' , age : 18}
-  // var b = {name : 'jijiji' , age :458}
-  // console.log(a ,b );
-  // [a.name , b.name] =[ b.name , a.name ]
-  // b.name = [ a.name , a.name = b.name][0]
-  // console.log(a,b);
-  // var datenow = new Date()
-  // console.log('datenow' , datenow);
-  // console.log('datenow get' , datenow.getFullYear() , datenow.getMonth() , datenow.getDate() , datenow.getHours() );
-  // console.log('datenow getUTC' , datenow.getUTCFullYear() , datenow.getUTCMonth() , datenow.getUTCDate() , datenow.getUTCHours() );
-  // console.log('\n');
-  // var datepoint = new Date(2020,1,21,0)
-  // console.log('datepoint' , datepoint);
-  // console.log('datepoint get' , datepoint.getFullYear() , datepoint.getMonth() , datepoint.getDate() , datepoint.getHours() );
-  // console.log('datepoint getUTC' , datepoint.getUTCFullYear() , datepoint.getUTCMonth() , datepoint.getUTCDate() , datepoint.getUTCHours() );
-  // console.log('\n');
-  // var datepointUTC = new Date(Date.UTC(2020,1,21,0))
-  // console.log('datepointUTC' , datepointUTC);
-  // console.log('datepointUTC get' , datepointUTC.getFullYear() , datepointUTC.getMonth() , datepointUTC.getDate() , datepointUTC.getHours() );
-  // console.log('datepointUTC getUTC' , datepointUTC.getUTCFullYear() , datepointUTC.getUTCMonth() , datepointUTC.getUTCDate() , datepointUTC.getUTCHours() );
-
-
-  // console.log(util.inspect(JSON.parse(str) ,  {showHidden: false, depth: null} ));  log 完整
-  res.send('njlkiuj')
-
+  console.log(util.inspect(JSON.parse(str) ,  {showHidden: false, depth: null} ));  log 完整
+  */
+  var allpath = [{ path: [ 0, 5, 1, 2, 4, 6, 3, 7] },{ path:[ 0, 5, 1, 4, 6, 2, 3, 7] }]
+  var placeopeningMatrix = [
+  [ true, true, true, true, true, true ],
+  [ true, true, true, true, true, true ],
+  [ true, true, true, true, true, true ],
+  [ false, false, false, false, false, true ],
+  [ false, false, false, false, false, true ],
+  [ false, false, false, false, false, true ] ]
+ var shortpath = algorithm.findShortestPath(allpath, placeopeningMatrix)
+ console.log(shortpath);
 })
 
 
 app.post('/newAutour' , async function (req,res){
+
   console.log(req.body);
 //--------------------------------------------------------預備工作 先把時段放好--------------------------------------------------------//
+
   // 先算有多少時段 才知道要拿多少個景點 // 順便放好 起點 住宿 終點資訊
   var periodarray = period.getperiod(req.body)
   var warningarray = new Array()
+
   try {
     // 找到每天起點、終點的資料
     var startplacelist = new Array()
@@ -113,9 +121,7 @@ app.post('/newAutour' , async function (req,res){
         periodarray[k].period.end.lng = endplace.candidates[0].geometry.location.lng
       }
     }
-
     var AllTourPlaceIdlist = new Array()
-
 
   //-------------------------------------------------------- must go --------------------------------------------------------//
 
@@ -145,26 +151,34 @@ app.post('/newAutour' , async function (req,res){
         let mustgoOpeningcheck = false
         let thismustgoMatrix = algorithm.openingMatrix( [mustgolist[i]] , periodarray[j].period.place )
         for (let x = 0; x < thismustgoMatrix.length; x++) {
-          if (thismustgoMatrix[x][0] == true) { mustgoOpeningcheck = true ; break; }
+          if (thismustgoMatrix[x][0]) {
+             mustgoOpeningcheck = true ;
+             break
+          }
         }
+
         if( mustgoOpeningcheck && moveCostMatrix[j][0] != -1){
           if (minweight == -1 || moveCostMatrix[j][0] < minweight) {
-            minweight = moveCostMatrix[j][0]
-            theNearest = j
+            if ( mustgolist[i].types.includes('amusement_park') && periodarray[j].period.place.length < 3 ) {
+              break
+            }else {
+              minweight = moveCostMatrix[j][0]
+              theNearest = j
+            }
           }
         }
       }
       // 如果是 amusement_park 放兩個 如果評論 > 9560 放三個
       if(mustgolist[i].types.includes('amusement_park')) {
         let n = 2
-        if (mustgolist[i].user_ratings_total >= 9560) { n = 3}
-        else if (mustgolist[i].user_ratings_total < 500) { n = 1}
+        if (mustgolist[i].user_ratings_total >= 9560) { n = 3 }
+        else if (mustgolist[i].user_ratings_total < 500) { n = 1 }
         for (var p = 0; p < n; p++) {
            periodarray[theNearest].placelist.push({name : mustgolist[i].name ,
                                                    place_id : mustgolist[i].place_id ,
                                                    lat : mustgolist[i].geometry.location.lat ,
                                                    lng : mustgolist[i].geometry.location.lng } )
-         }
+        }
       }else{
         periodarray[theNearest].placelist.push({name : mustgolist[i].name ,
                                                 place_id : mustgolist[i].place_id ,
@@ -251,36 +265,66 @@ app.post('/newAutour' , async function (req,res){
         // console.log(`day${i} 最後有 ${finalPlaceList.length} 個 finalPlaceList `);
         periodarray[i].placeREC = new Array()
         let count = 0
+
         for (var p in finalPlaceList) {
 
-            let check = false , openingcheck = false
-            for (let k in AllTourPlaceIdlist)  { if (AllTourPlaceIdlist[k] == finalPlaceList[p].place_id ) { check = true }}
-            for (let j in periodarray[i].placelist) { if (periodarray[i].placelist[j].place_id == finalPlaceList[p].place_id ) { check = true }}
-            let onePlaceOpening = algorithm.openingMatrix([finalPlaceList[p]] , periodarray[i].period.place)
-            for (let t in onePlaceOpening) { if (onePlaceOpening[t][0]) { openingcheck = true } }
+          let check = false , openingcheck = false
+          for (let k in AllTourPlaceIdlist)  { if (AllTourPlaceIdlist[k] == finalPlaceList[p].place_id ) { check = true } }
+          for (let j in periodarray[i].placelist) { if (periodarray[i].placelist[j].place_id == finalPlaceList[p].place_id ) { check = true } }
+          let onePlaceOpening = algorithm.openingMatrix([finalPlaceList[p]] , periodarray[i].period.place)
+          for (let t in onePlaceOpening) { if (onePlaceOpening[t][0]) { openingcheck = true } }
 
-            if ( !check && openingcheck) {
-              if (count < remain) {
+          if ( !check && openingcheck) {
+
+            if (count < remain) {
+
+              if( finalPlaceList[p].types.includes('amusement_park') ) {
+
+                let n = 0
+                if (finalPlaceList[p].user_ratings_total >= 9560 && remain-count >= 3) {
+                    n = 3
+                    AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
+                }else if (finalPlaceList[p].user_ratings_total < 9560 && finalPlaceList[p].user_ratings_total >= 500 && remain-count >= 2 ) {
+                    n = 2
+                    AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
+                }else if (finalPlaceList[p].user_ratings_total < 500 && remain-count >= 1) {
+                    n = 1
+                    AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
+                }else if (remain-count <= 0) {
+                    // 是遊樂園但是時間不構
+                    periodarray[i].placeREC.push({name:finalPlaceList[p].name ,
+                      place_id:finalPlaceList[p].place_id ,
+                      lat : finalPlaceList[p].geometry.location.lat,
+                      lng : finalPlaceList[p].geometry.location.lng });
+                    break
+                  }
+                for (let p = 0; p < n; p++) {
+                    periodarray[i].placelist.push({name:finalPlaceList[p].name ,
+                      place_id:finalPlaceList[p].place_id ,
+                      lat : finalPlaceList[p].geometry.location.lat,
+                      lng : finalPlaceList[p].geometry.location.lng });
+                    count++;
+                  }
+              }else{
                 AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
                 periodarray[i].placelist.push({name:finalPlaceList[p].name ,
                   place_id:finalPlaceList[p].place_id ,
                   lat : finalPlaceList[p].geometry.location.lat,
                   lng : finalPlaceList[p].geometry.location.lng });
+                count++;
               }
-              if (count >= remain) {
+            }else if (count >= remain) {
                 periodarray[i].placeREC.push({name:finalPlaceList[p].name ,
                   place_id:finalPlaceList[p].place_id ,
                   lat : finalPlaceList[p].geometry.location.lat,
                   lng : finalPlaceList[p].geometry.location.lng });
-              }
-              count++;
+                  count++;
             }
-
-        }
+         }
+       }
         if (count < remain) {
           warningarray.push({type: 'finalPlaceList' , day: i ,status: 'Not_enough_recommended_places'})
         }
-
       }
 
       var allpath
@@ -288,6 +332,7 @@ app.post('/newAutour' , async function (req,res){
       var shortpath
       var openingMatrixcheck = false
       var swapcount = 0
+      var placelistcount = periodarray[i].placelist.length-1
 
       while (!openingMatrixcheck) {
 
@@ -296,9 +341,10 @@ app.post('/newAutour' , async function (req,res){
         idarray.push(`place_id:${periodarray[i].period.start.place_id}`)// push 起點
         for (let y in periodarray[i].placelist) {
           idarray.push(`place_id:${periodarray[i].placelist[y].place_id}`) // 把 placelist 裡每個景點的 place_id push 進 idarray
-          for (var x = 0; x < finalPlaceList.length; x++) {
+          for (let x = 0; x < finalPlaceList.length; x++) {
             if (finalPlaceList[x].place_id == periodarray[i].placelist[y].place_id) {
               placelistdetail.push(finalPlaceList[x]) // 把 finalPlaceList 裡每個景點 push 進 placelistdetail
+              break
             }
           }
         }
@@ -309,64 +355,61 @@ app.post('/newAutour' , async function (req,res){
         sort.bysmall2big(allpath , "weight")
         placeopeningMatrix = algorithm.openingMatrix( placelistdetail , periodarray[i].period.place ) // 二維陣列 每個時段*每個景點
         console.log("Matrix\n", placeopeningMatrix);
-        shortpath = algorithm.findShortestPath(allpath, placeopeningMatrix)
-
+        let shortpathobj = algorithm.findShortestPath(allpath, placeopeningMatrix)
+        shortpath = shortpathobj.path
         if (placeopeningMatrix.length == 0) {
           openingMatrixcheck = true
           console.log('No period , Do not need check opening');
           break
         }
 
-        // 檢查有沒有一個時段是全部都沒開的
-
-        if (!shortpath.length) {
-          console.log(`day ${i} period ${w} have opening issue`);
+        // 檢查 shortpath 是不是全部都是 false
+        if (shortpathobj.truecount < placeopeningMatrix.length) {
+          console.log(`day ${i} have opening issue`);
           // 先檢查有沒有點換
           if (periodarray[i].placeREC.length != 0) {
             // 要選一個點替換掉
             for (let y = periodarray[i].placelist.length-1 ; y >= 0 ; y--) {
-              // 不能是mustgolist裡面的點
-              let ifinmustgolist = false
-              for (let p in mustgolist) {
-                if (periodarray[i].placelist[y].place_id == mustgolist[p].place_id ) { ifinmustgolist = true }
-              }
+              if (swapcount == periodarray[i].placeREC.length+1) {
+                swapcount = 0
+                placelistcount--
+              }else {
+                // 不能是mustgolist裡面的點
+                let ifinmustgolist = false
+                for (let p in mustgolist) {
+                  if (periodarray[i].placelist[placelistcount].place_id == mustgolist[p].place_id ) { ifinmustgolist = true }
+                }
+                if (!ifinmustgolist) { //能換就換
 
-              if (!ifinmustgolist) { //能換就換
-                if (swapcount == periodarray[i].placeREC.length+1) {
-                  warningarray.push({type: 'opening_issue' , day : i , status: 'No_more_placeREC'})
-                  openingMatrixcheck = true
-                  break
-                }
-                //AllTourPlaceIdlist 要把原本的拿出來
-                AllTourPlaceIdlist.splice(AllTourPlaceIdlist.indexOf(periodarray[i].placelist[y].place_id),1)
-                periodarray[i].placeREC.push({
-                  name: periodarray[i].placelist[y].name,
-                  place_id: periodarray[i].placelist[y].place_id,
-                  lat: periodarray[i].placelist[y].lat,
-                  lng: periodarray[i].placelist[y].lng })
-                  let firstplaceREC = periodarray[i].placeREC.shift()
-                  periodarray[i].placelist[y] = firstplaceREC
-                  AllTourPlaceIdlist.push(firstplaceREC.place_id)
-                  swapcount++
-                  // 交換成功就再去外面試一次
-                  break
-                }
+                  //AllTourPlaceIdlist 要把原本的拿出來
+                  AllTourPlaceIdlist.splice(AllTourPlaceIdlist.indexOf(periodarray[i].placelist[placelistcount].place_id),1)
+                  periodarray[i].placeREC.push({
+                    name: periodarray[i].placelist[placelistcount].name,
+                    place_id: periodarray[i].placelist[placelistcount].place_id,
+                    lat: periodarray[i].placelist[placelistcount].lat,
+                    lng: periodarray[i].placelist[placelistcount].lng })
+                    let firstplaceREC = periodarray[i].placeREC.shift()
+                    periodarray[i].placelist[placelistcount] = firstplaceREC
+                    AllTourPlaceIdlist.push(firstplaceREC.place_id)
+                    swapcount++
+                    break // 交換成功就再去外面試一次
+                  }
                 if (y == 0) { // 從最後一個已經檢查到第一個 代表沒有點可以換(全部都是mustgo) 不要刪 給提示
-                  warningarray.push({type: 'opening_issue' , day : i , status: 'All_mustgo'})
-                  openingMatrixcheck = true
-                }
+                    warningarray.push({type: 'opening_issue' , day : i , status: 'All_mustgo'})
+                    openingMatrixcheck = true
+                  }
               }
-            }else {
-              // 沒景點換 不要刪 給提示
-              warningarray.push({type: 'opening_issue' , day : i , status: 'No_placeREC'})
-              openingMatrixcheck = true
-              break
             }
+          }else {
+            // 沒景點換 不要刪 給提示
+            warningarray.push({type: 'opening_issue' , day : i , status: 'No_placeREC'})
+            openingMatrixcheck = true
+            break
+          }
         }else {
           console.log('opening Matrix check over !');
           break
         }
-
       }
       console.log(`day${i} shortpath`, shortpath);
 
@@ -384,7 +427,7 @@ app.post('/newAutour' , async function (req,res){
         // 找午餐
         if (utchour == 10 || utchour == 13 || utchour == 14) {
           if (periodarray[i].period.lunch) {
-            let lunch = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'] , 5 )
+            let lunch = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'] , 4 )
             lunch = lunch.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
             lunch = lunch.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1});
             for (let u in lunch) {
@@ -399,7 +442,7 @@ app.post('/newAutour' , async function (req,res){
         // 找晚餐
         if (utchour == 16 || utchour == 17 || utchour == 19 || utchour == 20) {
           if (periodarray[i].period.dinner) {
-            let dinner = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'], 5 )
+            let dinner = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'], 4 )
             dinner = dinner.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
             dinner = dinner.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1})
             for (let o in dinner) {
@@ -414,39 +457,49 @@ app.post('/newAutour' , async function (req,res){
         if (q == periodarray[i].period.place.length-1) {
           if (lunchdetailarr.length != 0) {
             sort.by(lunchdetailarr , 'user_ratings_total')
+            let lunchCheck = false
             for (let o in lunchdetailarr) {
               let check = false
               for (let k in AllTourPlaceIdlist) {
                 if (AllTourPlaceIdlist[k] == lunchdetailarr[o].place_id ) { check = true }
               }
               if (!check) {
+                lunchCheck = true
                 periodarray[i].period.lunch.name = lunchdetailarr[o].name
                 periodarray[i].period.lunch.place_id = lunchdetailarr[o].place_id
                 periodarray[i].period.lunch.lat = lunchdetailarr[o].geometry.location.lat
                 periodarray[i].period.lunch.lng = lunchdetailarr[o].geometry.location.lng
                 AllTourPlaceIdlist.push(lunchdetailarr[o].place_id)
-                }
+              }
             }
-            //periodarray[i].lunchREC = lunchdetailarr // 10 個左右
+            if (!lunchCheck) {
+              warningarray.push({type: 'lunch' , day: i ,status:  "ZERO_RESULTS" })
+            }
+            periodarray[i].lunchREC = lunchdetailarr // 8 個左右
           }else {
             warningarray.push({type: 'lunch' , day: i ,status:  "ZERO_RESULTS" })
           }
           if (dinnerdetailarr.length != 0) {
             sort.by(dinnerdetailarr , 'user_ratings_total')
+            let dinnerCheck = false
             for (let o in dinnerdetailarr) {
               let check = false
               for (let k in AllTourPlaceIdlist) {
                 if (AllTourPlaceIdlist[k] == dinnerdetailarr[o].place_id ) { check = true }
               }
               if (!check) {
+                dinnerCheck= true
                 periodarray[i].period.dinner.name = dinnerdetailarr[o].name
                 periodarray[i].period.dinner.place_id = dinnerdetailarr[o].place_id
                 periodarray[i].period.dinner.lat = dinnerdetailarr[o].geometry.location.lat
                 periodarray[i].period.dinner.lng = dinnerdetailarr[o].geometry.location.lng
                 AllTourPlaceIdlist.push(dinnerdetailarr[o].place_id)
-                }
+              }
             }
-            //periodarray[i].dinnerREC = dinnerdetailarr // 10 個左右
+            if (!dinnerCheck) {
+              warningarray.push({type: 'dinner' , day: i ,status:  "ZERO_RESULTS" })
+            }
+            periodarray[i].dinnerREC = dinnerdetailarr // 8 個左右
           }else {
             warningarray.push({type: 'dinner' , day: i ,status:  "ZERO_RESULTS" })
           }
@@ -469,7 +522,6 @@ app.post('/newAutour' , async function (req,res){
     console.log(e);
     res.status(400).send({error:e})
   }
-
 
 })
 
@@ -785,7 +837,7 @@ app.post('/google/getFastMatrix' , async function (req,res){
             let matrix = await googlemap.distanceMatrix(req.body.id2Darray , req.body.id2Darray , req.body.transportation[i])
             console.log(`distanceMatrix 用了一次 (${req.body.id2Darray.length} items)`);
             let moveCostMatrix = algorithm.toMatrix(matrix , 'forTrans')
-            if (i == 0) { // 用第一個交通方式來初始化要回傳的 2D Array
+            if (i == 0) { // 用第一個交通方式來初始化 2D Array
               for (let j = 0; j < moveCostMatrix.length; j++) {
                 moveCostMatrix[j].forEach((item, o) => { item.type = req.body.transportation[i] });
                 transMatrix.push(moveCostMatrix[j])
@@ -794,13 +846,17 @@ app.post('/google/getFastMatrix' , async function (req,res){
               for (let j = 0; j < moveCostMatrix.length; j++) {
                 moveCostMatrix[j].forEach((item, o) => { item.type = req.body.transportation[i] });
                 for (let x = 0; x < moveCostMatrix[j].length; x++) {
+
                   if (transMatrix[j][x].time == -1 && moveCostMatrix[j][x].time != -1) {
                     transMatrix[j][x] = moveCostMatrix[j][x]
                   }
                   if (moveCostMatrix[j][x].time < transMatrix[j][x].time && moveCostMatrix[j][x].time != -1) {
-                    // 比交通時間
                     transMatrix[j][x] = moveCostMatrix[j][x]
                   }
+                  if (req.body.transportation[i] == 'walking' && moveCostMatrix[j][x].time <= 600) {
+                    transMatrix[j][x] = moveCostMatrix[j][x]
+                  }
+
                 }
               }
             }
