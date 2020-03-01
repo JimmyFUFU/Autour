@@ -35,10 +35,8 @@ function md5 (text) {
   return crypto.createHash('md5').update(text).digest('hex')
 };
 app.use('/', express.static('public'))
-app.use(bodyparser.urlencoded({
-  extended: false
-}))
-app.use(bodyparser.json())
+app.use(bodyparser.json({limit: '20mb', extended: true}))
+app.use(bodyparser.urlencoded({limit: '20mb', extended: true}))
 app.use(bearerToken())
 
 app.get('/test' , async (req, res)  => {
@@ -66,16 +64,6 @@ app.get('/test' , async (req, res)  => {
 
   console.log(util.inspect(JSON.parse(str) ,  {showHidden: false, depth: null} ));  log 完整
   */
-  var allpath = [{ path: [ 0, 5, 1, 2, 4, 6, 3, 7] },{ path:[ 0, 5, 1, 4, 6, 2, 3, 7] }]
-  var placeopeningMatrix = [
-  [ true, true, true, true, true, true ],
-  [ true, true, true, true, true, true ],
-  [ true, true, true, true, true, true ],
-  [ false, false, false, false, false, true ],
-  [ false, false, false, false, false, true ],
-  [ false, false, false, false, false, true ] ]
- var shortpath = algorithm.findShortestPath(allpath, placeopeningMatrix)
- console.log(shortpath);
 })
 
 
