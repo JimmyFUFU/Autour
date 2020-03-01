@@ -463,7 +463,7 @@ app.post('/newAutour' , async function (req,res){
             if (!lunchCheck) {
               warningarray.push({type: 'lunch' , day: i ,status:  "ZERO_RESULTS" })
             }
-            periodarray[i].lunchREC = lunchdetailarr // 8 個左右
+            // periodarray[i].lunchREC = lunchdetailarr // 8 個左右
           }else {
             warningarray.push({type: 'lunch' , day: i ,status:  "ZERO_RESULTS" })
           }
@@ -487,7 +487,7 @@ app.post('/newAutour' , async function (req,res){
             if (!dinnerCheck) {
               warningarray.push({type: 'dinner' , day: i ,status:  "ZERO_RESULTS" })
             }
-            periodarray[i].dinnerREC = dinnerdetailarr // 8 個左右
+            // periodarray[i].dinnerREC = dinnerdetailarr // 8 個左右
           }else {
             warningarray.push({type: 'dinner' , day: i ,status:  "ZERO_RESULTS" })
           }
@@ -534,6 +534,7 @@ app.post('/storeAutour' , async function (req,res){
       res.status(200).send({ success: true })
     }
   } catch (e) {
+    console.log(e);
     res.status(400).send({ error: 'DB error' })
   }
 })

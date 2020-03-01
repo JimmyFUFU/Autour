@@ -43,7 +43,7 @@ var insertdataSet = function (object, set) {
   var sql = `INSERT INTO ${object} SET ?`
   return new Promise(function (resolve, reject) {
     pool.query(sql, set, (err, results) => {
-      if (err) reject(new Error('insertFail'))
+      if (err) reject(new Error('insertFail'))  
       resolve(results)
     })
   })

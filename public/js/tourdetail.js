@@ -764,12 +764,7 @@ function memberstore(){
       contentType: 'application/json',
       url : `${API_HOST}/storeAutour`,
       success: function(data) {
-        localStorage.removeItem('titleplaceholder')
-        localStorage.removeItem('tour')
-        localStorage.removeItem('warning')
-        localStorage.removeItem('prefertype')
-        localStorage.removeItem('timetype')
-        localStorage.removeItem('transportation')
+        localStorage.clear()
         window.location.href=`${API_HOST}/profile.html`;
       },error: function(data) {
         alert('Something Wrong \n Please try again later')
