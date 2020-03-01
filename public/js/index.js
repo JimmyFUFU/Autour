@@ -1,6 +1,6 @@
 $(".header").load("header.html");
 $(".footer").load("footer.html");
-
+$("#errordiv").load("html/errordiv.html");
 
 function getRandom(x){
     return Math.floor(Math.random()*x)+1;

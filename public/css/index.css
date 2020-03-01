@@ -227,6 +227,9 @@
 	text-align: center;
 	width: 70%;
 	margin: 0 auto;
+	font-family: monospace , Microsoft JhengHei;
+	color: rgba(47, 53, 66,1.0);
+	line-height: 30px;
 }
 
 
