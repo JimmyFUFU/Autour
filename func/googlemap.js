@@ -135,7 +135,7 @@ var distanceMatrix = function (origin , destination , type){
     } ,  (err,response) => {
       if(err) {
         console.log(err);
-        reject(new Error('Google Error') )
+        reject(new Error('Google Error'))
       }
       else {
         resolve(response.json);

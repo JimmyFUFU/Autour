@@ -88,7 +88,7 @@ app.post('/newAutour' , async function (req,res){
     var mustgolist = []
     for (let i in req.body.mustgo) {
       let mustgoplace = await googlemap.findplace(req.body.mustgo[i])
-      if (mustgoplace.candidates.length != 0) {
+      if (mustgoplace.candidates.length) {
         let mustgoplacedetail = await googlemap.placedetail(mustgoplace.candidates[0].place_id) // candidates[0] 選第一個
         mustgolist.push(mustgoplacedetail.result)
       }else {
@@ -105,48 +105,48 @@ app.post('/newAutour' , async function (req,res){
       let getMoveCost = await googlemap.distanceMatrix(startplaceid , [`place_id:${mustgolist[i].place_id}`] , 'driving')
       // 轉成 Matrix
       let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'mostgo')
-      console.log(moveCostMatrix);
-      let theNearest = 0 , minweight = -1
+      let theNearest = 0 , minWeight = -1 , mustgoOpeningCheck = false
       for(let j = 0 ; j < moveCostMatrix.length ; j++){
 
-        let mustgoOpeningcheck = false
-        let thismustgoMatrix = algorithm.openingMatrix( [mustgolist[i]] , periodarray[j].period.place )
-        for (let x = 0; x < thismustgoMatrix.length; x++) {
-          if (thismustgoMatrix[x][0]) {
-             mustgoOpeningcheck = true ;
-             break
-          }
-        }
-
-        if( mustgoOpeningcheck && moveCostMatrix[j][0] != -1){
-          if (minweight == -1 || moveCostMatrix[j][0] < minweight) {
-            if ( mustgolist[i].types.includes('amusement_park') && periodarray[j].period.place.length < 3 ) {
-              break
-            }else {
-              minweight = moveCostMatrix[j][0]
-              theNearest = j
+        let thisMustgoMatrix = algorithm.openingMatrix( [mustgolist[i]] , periodarray[j].period.place )
+        for (let x = 0; x < thisMustgoMatrix.length; x++) {
+          if (thisMustgoMatrix[x][0] && moveCostMatrix[j][0] != -1) {
+            if (minWeight == -1 || moveCostMatrix[j][0] < minWeight) {
+              if ( mustgolist[i].types.includes('amusement_park') && periodarray[j].period.place.length < 3 ) {
+                break
+              }else {
+                minWeight = moveCostMatrix[j][0]
+                theNearest = j
+                mustgoOpeningCheck = true
+                break
+              }
             }
           }
         }
       }
-      // 如果是 amusement_park 放兩個 如果評論 > 9560 放三個
-      if(mustgolist[i].types.includes('amusement_park')) {
-        let n = 2
-        if (mustgolist[i].user_ratings_total >= 9560) { n = 3 }
-        else if (mustgolist[i].user_ratings_total < 500) { n = 1 }
-        for (var p = 0; p < n; p++) {
-           periodarray[theNearest].placelist.push({name : mustgolist[i].name ,
-                                                   place_id : mustgolist[i].place_id ,
-                                                   lat : mustgolist[i].geometry.location.lat ,
-                                                   lng : mustgolist[i].geometry.location.lng } )
+      if (mustgoOpeningCheck) {
+        // 如果是 amusement_park 放兩個 如果評論 > 9560 放三個
+        if(mustgolist[i].types.includes('amusement_park')) {
+          let items = 2
+          if (mustgolist[i].user_ratings_total >= 9560) { items = 3 }
+          else if (mustgolist[i].user_ratings_total < 500) { items = 1 }
+          for (let p = 0; p < items; p++) {
+             periodarray[theNearest].placelist.push({name : mustgolist[i].name ,
+                                                     place_id : mustgolist[i].place_id ,
+                                                     lat : mustgolist[i].geometry.location.lat ,
+                                                     lng : mustgolist[i].geometry.location.lng } )
+          }
+        }else{
+          periodarray[theNearest].placelist.push({name : mustgolist[i].name ,
+                                                  place_id : mustgolist[i].place_id ,
+                                                  lat : mustgolist[i].geometry.location.lat ,
+                                                  lng : mustgolist[i].geometry.location.lng } )
         }
+        AllTourPlaceIdlist.push(mustgolist[i].place_id)
       }else{
-        periodarray[theNearest].placelist.push({name : mustgolist[i].name ,
-                                                place_id : mustgolist[i].place_id ,
-                                                lat : mustgolist[i].geometry.location.lat ,
-                                                lng : mustgolist[i].geometry.location.lng } )
+        warningarray.push({type: 'mustgo' , name: mustgolist[i].name ,status: 'IS_NOT_OPEN'})
       }
-      AllTourPlaceIdlist.push(mustgolist[i].place_id)
+
     }
     console.log('mustgolist push in periodarray.placelist !');
 
