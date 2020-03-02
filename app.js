@@ -39,34 +39,6 @@ app.use(bodyparser.json({limit: '20mb', extended: true}))
 app.use(bodyparser.urlencoded({limit: '20mb', extended: true}))
 app.use(bearerToken())
 
-app.get('/test' , async (req, res)  => {
-
-  /*var a = {name : 'jimmy' , age : 18}
-  var b = {name : 'jijiji' , age :458}
-  console.log(a ,b );
-  [a.name , b.name] =[ b.name , a.name ]
-  b.name = [ a.name , a.name = b.name][0]
-  console.log(a,b);
-  var datenow = new Date()
-  console.log('datenow' , datenow);
-  console.log('datenow get' , datenow.getFullYear() , datenow.getMonth() , datenow.getDate() , datenow.getHours() );
-  console.log('datenow getUTC' , datenow.getUTCFullYear() , datenow.getUTCMonth() , datenow.getUTCDate() , datenow.getUTCHours() );
-  console.log('\n');
-  var datepoint = new Date(2020,1,21,0)
-  console.log('datepoint' , datepoint);
-  console.log('datepoint get' , datepoint.getFullYear() , datepoint.getMonth() , datepoint.getDate() , datepoint.getHours() );
-  console.log('datepoint getUTC' , datepoint.getUTCFullYear() , datepoint.getUTCMonth() , datepoint.getUTCDate() , datepoint.getUTCHours() );
-  console.log('\n');
-  var datepointUTC = new Date(Date.UTC(2020,1,21,0))
-  console.log('datepointUTC' , datepointUTC);
-  console.log('datepointUTC get' , datepointUTC.getFullYear() , datepointUTC.getMonth() , datepointUTC.getDate() , datepointUTC.getHours() );
-  console.log('datepointUTC getUTC' , datepointUTC.getUTCFullYear() , datepointUTC.getUTCMonth() , datepointUTC.getUTCDate() , datepointUTC.getUTCHours() );
-
-  console.log(util.inspect(JSON.parse(str) ,  {showHidden: false, depth: null} ));  log 完整
-  */
-})
-
-
 app.post('/newAutour' , async function (req,res){
 
   console.log(req.body);
@@ -133,6 +105,7 @@ app.post('/newAutour' , async function (req,res){
       let getMoveCost = await googlemap.distanceMatrix(startplaceid , [`place_id:${mustgolist[i].place_id}`] , 'driving')
       // 轉成 Matrix
       let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'mostgo')
+      console.log(moveCostMatrix);
       let theNearest = 0 , minweight = -1
       for(let j = 0 ; j < moveCostMatrix.length ; j++){
 
@@ -180,7 +153,7 @@ app.post('/newAutour' , async function (req,res){
   //-------------------------------------------------------- must go --------------------------------------------------------//
 
   // --------------------------------------------------排每天的景點進 placelist-----------------------------------------------//
-
+/*
     for (let i in periodarray) {
       io.emit('server message', {day: Number(i)+1 , msg: `day ${Number(i)+1} start`})
       console.log(`\nday ${i} started`);
@@ -500,7 +473,7 @@ app.post('/newAutour' , async function (req,res){
 
     }
     console.log('periodarray finish !');
-
+*/
     var responseobj = {
       periodarray: periodarray,
       warningarray : warningarray
@@ -515,13 +488,13 @@ app.post('/newAutour' , async function (req,res){
 
 app.post('/storeAutour' , async function (req,res){
   try {
-    var thisuser = await mysql.selectdatafromWhere('*' , 'user' , `id = ${req.body.userid}`)
+    var thisuser = await mysql.selectdatafromWhere('*' , 'user' , { id : req.body.userid })
     if(Object.keys(thisuser).length === 0){
       console.log('User Not found')
       res.status(400).send({ error: 'User Not found' })
     }else{
       const inserttourpost = {
-        id: moment(moment().valueOf()).format('YYYYMMDDHHmmss'),
+        id: moment(moment().valueOf()).format('YYMMDDHHmmssSSS'),
         userid: req.body.userid,
         tourtitle: req.body.tourtitle,
         tourdetail: req.body.tour,
@@ -541,7 +514,7 @@ app.post('/storeAutour' , async function (req,res){
 
 app.get('/getAutour' , async function(req,res){
 
-  var tourdetail = await mysql.selectdatafromWhere('*','tour' , `id = "${req.query.id}"`)
+  var tourdetail = await mysql.selectdatafromWhere('*', 'tour' , { id : req.query.id })
   tourdetail = JSON.stringify(tourdetail)
   tourdetail = JSON.parse(tourdetail)
   res.status(200).send(tourdetail)
@@ -549,8 +522,8 @@ app.get('/getAutour' , async function(req,res){
 
 app.delete('/deleteAutour' , async function(req,res){
   try {
-    var userdetail = await mysql.selectdatafromWhere('id', 'user' , `access_token = "${req.token}"`)
-    await mysql.deletefromwhere( 'tour' , `userid = "${userdetail[0].id}" && id = "${req.headers.id}"`)
+    let userdetail = await mysql.selectdatafromWhere('id', 'user' , {access_token : req.token} )
+    await mysql.deletefromwhere( 'tour' , {userid : userdetail[0].id , id : req.headers.id})
     res.status(200).send({success : true})
   } catch (e) {
     console.log(e);
@@ -560,7 +533,7 @@ app.delete('/deleteAutour' , async function(req,res){
 
 app.put('/revisetitle' , async function(req,res){
   try {
-    await mysql.updatedatafromWhere('tour', `tourtitle = "${req.body.revisetitle}"` , `id=${req.body.tourId}`)
+    await mysql.updatedatafromWhere('tour', {tourtitle : req.body.revisetitle} , {id : req.body.tourId} )
     res.status(200).send({success:true})
   } catch (e) {
     console.log(e);
@@ -574,7 +547,7 @@ app.post('/user/login' , async function (req,res){
     if (req.body.email === '' || req.body.password === '') {
       res.status(400).send({error : 'Email and password are required'})
     } else {
-      var userdetails = await mysql.selectdatafromWhere('*', 'user', `email = '${req.body.email}' AND password = '${req.body.password}' AND provider = "${req.body.provider}"`)
+      var userdetails = await mysql.selectdatafromWhere('*', 'user', {email : req.body.email , password : req.body.password , provider : req.body.provider })
       if (Object.keys(userdetails).length === 0) {
         console.log('User Not found')
         res.status(400).send({ error: 'Log In Error' })
@@ -587,8 +560,7 @@ app.post('/user/login' , async function (req,res){
         // get the time One hour later as new access_expired
         let expiredtime = moment(time).add(6, 'h').format('YYYY-MM-DD HH:mm:ss') // 一小時過期
         // let expiredtime = moment(time).add(30, "s").format('YYYY-MM-DD HH:mm:ss');//30s過期
-
-        var updateTokenExpired = await mysql.updatedatafromWhere('user', `provider = '${req.body.provider}' , access_token = '${token}', access_expired = '${expiredtime}'`, `email = '${req.body.email}' AND provider = "${req.body.provider}"`)
+        var updateTokenExpired = await mysql.updatedatafromWhere('user', {provider : req.body.provider , access_token : token , access_expired : expiredtime }, { email : req.body.email , provider : req.body.provider } )
         console.log('NEW Log In !! UPDATE provider and token and expired successfully ~ ')
         let signInOutputUser = {
           data : {
@@ -640,7 +612,7 @@ app.post('/user/login' , async function (req,res){
             let fbsignupdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
             await mysql.insertdataSetUpdate( 'user' , fbsignInpost , fbsignupdate)
             console.log('FB signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
-            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', `three_rd_id = "${userdata.id}" AND provider = "${req.body.provider}"`)
+            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', { three_rd_id : userdata.id , provider : req.body.provider})
             var outputUser = {
               data : {
                 access_token : `${userdatafromMysql[0].access_token}` ,
@@ -694,7 +666,7 @@ app.post('/user/login' , async function (req,res){
             let googleupdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
             await mysql.insertdataSetUpdate( 'user' , googlepost , googleupdate)
             console.log('Google signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
-            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', `email = "${userdata.email}" AND provider = "${req.body.provider}"`)
+            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', {email : userdata.email , provider : req.body.provider } )
             var outputUser = {
               data : {
                 access_token : `${userdatafromMysql[0].access_token}` ,
@@ -726,7 +698,7 @@ app.post('/user/signup' , async function (req,res){
     res.status(400).send({error:'Name, email and password are required.'})
   } else {
     // check Email exists or not
-    const checkEmail = await mysql.selectdatafromWhere('email', 'user', `email = "${req.body.email}"`)
+    const checkEmail = await mysql.selectdatafromWhere('email', 'user', {email : req.body.email} )
     if (Object.keys(checkEmail).length === 0) {
       console.log('The email is valid , ready to insert into database')
 
@@ -747,7 +719,7 @@ app.post('/user/signup' , async function (req,res){
       }
       var insertUser = await mysql.insertdataSet('user', insertUserpost)
       console.log('insert into user successfully ! Ready to select ID from user')
-      var selectuser = await mysql.selectdatafromWhere('*', 'user', `email = "${req.body.email}"`)
+      var selectuser = await mysql.selectdatafromWhere('*', 'user', {email : req.body.email })
       var outputUser = {
         data : {
           access_token: selectuser[0].access_token,
@@ -774,14 +746,14 @@ app.get('/user/profile' , async function(req,res){
     res.status(403).send({ error: 'Wrong Request: authorization is required.' })
   }else{
     //先找使用者
-    var userdetail = await mysql.selectdatafromWhere('*' , 'user' , `access_token = "${req.token}"`)
+    var userdetail = await mysql.selectdatafromWhere('*' , 'user' , {access_token : req.token} )
     if (Object.keys(userdetail).length === 0) {
       res.status(403).send( { error: 'Invalid Access Token' })
     }else{
       var time = moment().valueOf()
       var expiredtime = userdetail[0].access_expired
       if (moment(expiredtime).isBefore(time) === false) {
-        var userTour = await mysql.selectdatafromWhere('id , tourtitle' , 'tour' , `userid = "${userdetail[0].id}"`)
+        var userTour = await mysql.selectdatafromWhere('id , tourtitle' , 'tour' , { userid : userdetail[0].id })
         userTour = JSON.stringify(userTour)
         userTour = JSON.parse(userTour)
         var profileObj = {
@@ -823,6 +795,7 @@ app.post('/google/getFastMatrix' , async function (req,res){
           var transMatrix = new Array() // transition 2D Array
           var returnMatrix = new Array() // 用來回傳的 1D Array
           for (let i = 0; i < req.body.transportation.length; i++) {
+
             let matrix = await googlemap.distanceMatrix(req.body.id2Darray , req.body.id2Darray , req.body.transportation[i])
             console.log(`distanceMatrix 用了一次 (${req.body.id2Darray.length} items)`);
             let moveCostMatrix = algorithm.toMatrix(matrix , 'forTrans')

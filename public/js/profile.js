@@ -119,6 +119,7 @@ function deletetourfunc(id) {
       window.location.reload();
     },
     error : function(data){
+      alert('可能因為某些原因沒有成功哦！\n 試試重新登入吧')
       window.location.reload();
     }
   })
