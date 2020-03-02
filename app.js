@@ -153,7 +153,7 @@ app.post('/newAutour' , async function (req,res){
   //-------------------------------------------------------- must go --------------------------------------------------------//
 
   // --------------------------------------------------排每天的景點進 placelist-----------------------------------------------//
-/*
+
     for (let i in periodarray) {
       io.emit('server message', {day: Number(i)+1 , msg: `day ${Number(i)+1} start`})
       console.log(`\nday ${i} started`);
@@ -473,7 +473,7 @@ app.post('/newAutour' , async function (req,res){
 
     }
     console.log('periodarray finish !');
-*/
+
     var responseobj = {
       periodarray: periodarray,
       warningarray : warningarray

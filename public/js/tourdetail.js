@@ -104,13 +104,16 @@ function renderwaringdiv(warningarray , tour){
   let warningdiv = document.querySelector('#warningdiv')
 
   //先給 mustgo 有找不到的警告
-  let mustgowarningarr = new Array()
+  let mustgoNotFoundArr = new Array()
+  let mustgoNoOpeningArr = new Array()
   for (let v in warningarray) {
-    if (warningarray[v].type == 'mustgo') {
-      mustgowarningarr.push(warningarray[v].name)
+    if (warningarray[v].type == 'mustgo' && warningarray[v].status == 'ZERO_RESULTS') {
+      mustgoNotFoundArr.push(warningarray[v].name)
+    }else if (warningarray[v].type == 'mustgo' && warningarray[v].status == 'IS_NOT_OPEN') {
+      mustgoNoOpeningArr.push(warningarray[v].name)
     }
   }
-  if (mustgowarningarr.length != 0) {
+  if (mustgoNotFoundArr.length) {
     let mustgoreport = document.createElement('div')
     mustgoreport.className ='onedayreport'
     mustgoreport.id ='mustgoreport'
@@ -121,7 +124,24 @@ function renderwaringdiv(warningarray , tour){
 
     let mustgoreporttext = document.createElement('p')
     mustgoreporttext.className = 'mustgoreporttext'
-    mustgoreporttext.innerText += `沒有幫你找到 ${mustgowarningarr} 哦 !`
+    mustgoreporttext.innerText += `沒有幫你找到 ${mustgoNotFoundArr} 哦 !`
+
+    mustgoreport.appendChild(mustgotext)
+    mustgoreport.appendChild(mustgoreporttext)
+    warningdiv.appendChild(mustgoreport)
+  }
+  if (mustgoNoOpeningArr.length) {
+    let mustgoreport = document.createElement('div')
+    mustgoreport.className ='onedayreport'
+    mustgoreport.id ='mustgoreport'
+
+    let mustgotext = document.createElement('p')
+    mustgotext.className = 'mustgotext'
+    mustgotext.innerText = `您的必去清單 ➜`
+
+    let mustgoreporttext = document.createElement('p')
+    mustgoreporttext.className = 'mustgoreporttext'
+    mustgoreporttext.innerText += `${mustgoNoOpeningArr} 在這幾天沒有開哦 !`
 
     mustgoreport.appendChild(mustgotext)
     mustgoreport.appendChild(mustgoreporttext)
