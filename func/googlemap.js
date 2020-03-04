@@ -7,12 +7,12 @@ const googleMapsClient = require('@google/maps').createClient({
   Promise : Promise
 });
 
-var findplace = function (placename) {
+var findPlace = function (placename) {
   return new Promise(function(resolve, reject) {
     googleMapsClient.findPlace({
       input: placename,
       inputtype: 'textquery',
-      language: 'zh-TW',
+      language: cst.LANGUAGE,
       fields: [
         'formatted_address', 'geometry', 'geometry/location', 'geometry/location/lat',
         'geometry/location/lng', 'geometry/viewport', 'geometry/viewport/northeast',
@@ -34,11 +34,11 @@ var findplace = function (placename) {
   });
 }
 
-var placedetail = function (placeid){
+var placeDetail = function (placeid){
   return new Promise(function(resolve, reject) {
     googleMapsClient.place({
       placeid: placeid,
-      language: 'zh-TW'
+      language: cst.LANGUAGE
     } , (err,response) => {
       if(err) {
         console.log(err);
@@ -51,73 +51,72 @@ var placedetail = function (placeid){
   })
 }
 
-var nearby = function (lat, lng, radius, type, items){
+var nearBy = function (lat, lng, radius, type, items){
   return new Promise(function(resolve, reject) {
-    let typelist = []
+    let typeList = new Array()
     for(let i in type){
       switch (type[i]) {
         case 'shopping':
-          typelist = [...typelist, 'department_store', 'shopping_mall']
+          typeList = [...typeList, 'department_store', 'shopping_mall']
           break;
         case 'movie':
-          typelist = [...typelist, 'movie_theater']
+          typeList = [...typeList, 'movie_theater']
           break;
         case 'animal':
-          typelist = [...typelist, 'zoo', 'aquarium']
+          typeList = [...typeList, 'zoo', 'aquarium']
           break;
         case 'spirit':
-          typelist = [...typelist, 'art_gallery', 'museum', 'library', 'church']
+          typeList = [...typeList, 'art_gallery', 'museum', 'library', 'church']
           break;
         case 'sport':
-          typelist = [...typelist ,'gym', 'bowling_alley', 'stadium']
+          typeList = [...typeList ,'gym', 'bowling_alley', 'stadium']
           break;
         case 'eighteen':
-          typelist = [...typelist ,'bar', 'night_club', 'casino']
+          typeList = [...typeList ,'bar', 'night_club', 'casino']
           break;
         case 'Afternoon_tea':
-          typelist = [...typelist ,'cafe' ]
+          typeList = [...typeList ,'cafe' ]
           break;
         case 'tourist_attraction':
-          typelist = [...typelist ,'tourist_attraction' ]
+          typeList = [...typeList ,'tourist_attraction' ]
           break;
         case 'restaurant':
-          typelist = [...typelist ,'restaurant' ]
+          typeList = [...typeList ,'restaurant' ]
           break;
         default:
-          typelist = [...typelist]
+          typeList = [...typeList]
       }
     }
     // type 一次只能指定一個 要跑loop
-    var nearbylist = []
-    if(items<=0 || typelist.length == 0) resolve(nearbylist)
+    let nearbylist = new Array()
+    if(items <= 0 || typeList.length == 0) resolve(nearbylist)
     else {
       // 某些type 不要太多 看 countitems ()
-      var nearbytotalitems = 0
-      typelist.forEach((item, i) => {nearbytotalitems += countitems(item , items)});
-      for (let i = 0 ; i < typelist.length ; i++ ) {
-        request(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}+${lng}&radius=${radius}&types=${typelist[i]}&language=zh-TW&key=${cst.API_KEY}` , (error, response, body)=>{
-        body = JSON.parse(body)
-        var empty = {user_ratings_total : -1 , rating : -1}
-         if(body.status === 'OK'){
-            // 拿到要先找評分 4 (??) 分以上的 then sort by user_ratings_total  再拿前 n 個 (之後看天數決定)  S/O to 優質推薦
-            var ratingThanFour = body.results.filter((item, index, array)=>{return item.rating >= 3.8});
-            sort.by(ratingThanFour,'user_ratings_total')
-            for (let j = 0; j < countitems(typelist[i] , items); j++) {
-              if (ratingThanFour[j] == undefined) nearbylist = [...nearbylist , empty ]
-              else {
-                nearbylist = [...nearbylist , ratingThanFour[j] ]
+      let nearbyTotalItems = 0
+      typeList.forEach((item, i) => {nearbyTotalItems += countitems(item , items)});
+      for (let i = 0 ; i < typeList.length ; i++ ) {
+        request(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}+${lng}&radius=${radius}&types=${typeList[i]}&language=${cst.LANGUAGE}&key=${cst.API_KEY}` , (error, response, body)=>{
+          let empty = {user_ratings_total : -1 , rating : -1}
+          if (error) {
+            console.log(`(${typeList[i]})request error:`, error); // Print the error if one occurred
+            for (let j = 0; j < countitems(typeList[i] , items); j++) {nearbylist.push(empty) }
+          }else{
+            body = JSON.parse(body)
+            if(body.status === 'OK'){
+              // 拿到要先找評分 4 (??) 分以上的 then sort by user_ratings_total  再拿前 n 個 (之後看天數決定)  S/O to 優質推薦
+              let ratingThanFour = body.results.filter((item, index, array)=>{return item.rating >= 3.8});
+              sort.by(ratingThanFour,'user_ratings_total')
+              for (let j = 0; j < countitems(typeList[i] , items); j++) {
+                if (ratingThanFour[j] == undefined) nearbylist.push(empty)
+                else { nearbylist = [...nearbylist , ratingThanFour[j] ] }
               }
+            }else {
+              console.log(`(${typeList[i]})No results or other google error`);
+              for (let j = 0; j < countitems(typeList[i] , items); j++) {nearbylist.push(empty)}
             }
           }
-          else if (error) {   //有其他錯都給空資料
-            console.log(`(${typelist[i]})request error:`, error); // Print the error if one occurred
-            for (let j = 0; j < countitems(typelist[i] , items); j++) {nearbylist = [...nearbylist , empty ] }
-          }else{
-            console.log(`(${typelist[i]})No results or other google error`);
-            for (let j = 0; j < countitems(typelist[i] , items); j++) {nearbylist = [...nearbylist , empty ] }
-          }
           // 蒐集完景點
-          if(nearbylist.length === nearbytotalitems) {resolve(nearbylist)}
+          if(nearbylist.length == nearbyTotalItems) {resolve(nearbylist)}
         })
       }
     }
@@ -129,17 +128,15 @@ var distanceMatrix = function (origin , destination , type){
     googleMapsClient.distanceMatrix({
       origins: origin,
       destinations: destination,
-      language: 'zh-TW',
+      language: cst.LANGUAGE,
       units: 'metric',
       mode:type
     } ,  (err,response) => {
       if(err) {
         console.log(err);
-        reject(new Error('Google Error'))
+        return reject(new Error('Google Error'))
       }
-      else {
-        resolve(response.json);
-      }
+      resolve(response.json);
     })
   })
 }
@@ -199,7 +196,7 @@ function countitems(typename , items) {
   }
 }
 
-module.exports.findplace = findplace
-module.exports.placedetail = placedetail
-module.exports.nearby = nearby
+module.exports.findPlace = findPlace
+module.exports.placeDetail = placeDetail
+module.exports.nearBy = nearBy
 module.exports.distanceMatrix = distanceMatrix

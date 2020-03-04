@@ -9,17 +9,17 @@ var pool = mysql.createPool({
   database: cst.MYSQLDBNAME
 })
 
-var selectdatafrom = function (selectwhat, object) {
+var selectDataFrom = function (selectwhat, object) {
   let sql = `select ${selectwhat} from ${object}`
   return new Promise(function (resolve, reject) {
     pool.query(sql, (err, results) => {
-      if (err) console.log(err)
-      resolve(results)
+      if (err) reject(err)
+      else resolve(results)
     })
   })
 }
 
-var selectdatafromWhere = function (selectwhat, object, where) {
+var selectDataFromWhere = function (selectwhat, object, where) {
   let sql
   if (Object.keys(where).length > 1) {
     sql = `select ${selectwhat} from ${object} where ${Object.keys(where)[0]} = ?`
@@ -33,13 +33,13 @@ var selectdatafromWhere = function (selectwhat, object, where) {
 
   return new Promise(function (resolve, reject) {
     pool.query(sql, where,  (err, results) => {
-      if (err) console.log(err)
-      resolve(results)
+      if (err) reject(err)
+      else resolve(results)
     })
   })
 }
 
-var updatedatafromWhere = function (object, set, where) {
+var updateDataFromWhere = function (object, set, where) {
   let sql
   let paramArr = new Array()
   if (Object.keys(where).length > 1) {
@@ -55,36 +55,33 @@ var updatedatafromWhere = function (object, set, where) {
   }
   return new Promise(function (resolve, reject) {
     pool.query(sql, paramArr , (err, results) => {
-      if (err) console.log(err)
-      resolve(results)
+      if (err) reject(err)
+      else resolve(results)
     })
   })
 }
 
-var insertdataSet = function (object, set) {
+var insertDataSet = function (object, set) {
   var sql = `INSERT INTO ${object} SET ?`
   return new Promise(function (resolve, reject) {
     pool.query(sql, set, (err, results) => {
-      if (err) reject(new Error('insertFail'))
-      resolve(results)
+      if (err) reject(err)
+      else resolve(results)
     })
   })
 }
 
-var insertdataSetUpdate = function (object, set , update ) {
+var insertDataSetUpdate = function (object, set, update) {
   var sql = `INSERT INTO ${object} SET ? ON DUPLICATE KEY UPDATE ${update} `
   return new Promise(function (resolve, reject) {
     pool.query(sql, set, (err, results) => {
-      if (err) {
-        console.log(err);
-        reject(new Error('insertUpdateFail'))
-      }
-      resolve(results)
+      if (err) reject(err)
+      else resolve(results)
     })
   })
 }
 
-var deletefromwhere = function ( object, where ) {
+var deleteFromWhere = function (object, where) {
   let sql
   if (Object.keys(where).length > 1) {
     sql = `DELETE FROM ${object} WHERE ${Object.keys(where)[0]} = ?`
@@ -95,18 +92,18 @@ var deletefromwhere = function ( object, where ) {
   }else {
     sql = `DELETE FROM ${object} WHERE ${where}`
   }
-  
+
   return new Promise(function (resolve, reject) {
     pool.query(sql ,where , (err, results) => {
-      if (err) reject(new Error('deleteFail'))
-      resolve(results)
+      if (err) reject(err)
+      else resolve(results)
     })
   })
 }
 
-module.exports.selectdatafrom = selectdatafrom
-module.exports.selectdatafromWhere = selectdatafromWhere
-module.exports.updatedatafromWhere = updatedatafromWhere
-module.exports.insertdataSet = insertdataSet
-module.exports.insertdataSetUpdate = insertdataSetUpdate;
-module.exports.deletefromwhere = deletefromwhere;
+module.exports.selectDataFrom = selectDataFrom
+module.exports.selectDataFromWhere = selectDataFromWhere
+module.exports.updateDataFromWhere = updateDataFromWhere
+module.exports.insertDataSet = insertDataSet
+module.exports.insertDataSetUpdate = insertDataSetUpdate;
+module.exports.deleteFromWhere = deleteFromWhere;

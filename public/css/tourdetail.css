@@ -188,12 +188,12 @@
 }
 #warningdiv .onedayreport .mustgotext {
   font-size: 20px;
-  flex-grow:1;
+  width: 30%;
 }
 #warningdiv .onedayreport .mustgoreporttext {
   text-align: left;
   font-size: 18px;
-  flex-grow:9;
+  width: 60%;
 }
 #warningdiv #mustgoreport::before{
   background-image: url(../icon/warning.png);

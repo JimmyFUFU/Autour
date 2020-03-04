@@ -26,10 +26,10 @@ var id = url.searchParams.get('id');
 
 
 var id2Darray = new Array()
-var markersinRoutes = [];
-var infowindowses = [];
-var markers = []
-var polylines = []
+var markersinRoutes = new Array()
+var infowindowses = new Array()
+var markers = new Array()
+var polylines = new Array()
 var directionsService = new google.maps.DirectionsService();
 var directionsDisplay = new google.maps.DirectionsRenderer();
 
@@ -60,7 +60,7 @@ if(localStorage["tour"] || id){
         }
       },
       error : function(data){
-        console.log('Ajax error');
+        // console.log('Ajax error');
         rendererror()
         document.querySelector('.loading').style.display = 'none'
         document.styleSheets[0].addRule('.bigflex.bigflex::after','display: none;');
@@ -107,10 +107,15 @@ function renderwaringdiv(warningarray , tour){
   let mustgoNotFoundArr = new Array()
   let mustgoNoOpeningArr = new Array()
   for (let v in warningarray) {
-    if (warningarray[v].type == 'mustgo' && warningarray[v].status == 'ZERO_RESULTS') {
-      mustgoNotFoundArr.push(warningarray[v].name)
-    }else if (warningarray[v].type == 'mustgo' && warningarray[v].status == 'IS_NOT_OPEN') {
-      mustgoNoOpeningArr.push(warningarray[v].name)
+    if (warningarray[v].type == 'mustgo') {
+      switch (warningarray[v].status) {
+        case 'ZERO_RESULTS':
+          mustgoNotFoundArr.push(warningarray[v].name)
+          break;
+        case 'IS_NOT_OPEN':
+          mustgoNoOpeningArr.push(warningarray[v].name)
+          break;
+      }
     }
   }
   if (mustgoNotFoundArr.length) {
@@ -719,12 +724,12 @@ function renderFirstCard(data){
 
 function rendertrans(id2Darray , transportation , id){
   transportation = transportation.split(',')
-  var transDiv = document.querySelectorAll('.transDiv')
-  var transDivcount = 0
+  let transDiv = document.querySelectorAll('.transDiv')
+  let transDivcount = 0
 
   for (let i = 0; i < id2Darray.length;i++) {
 
-    let jsonobj = {
+    const jsonobj = {
       id2Darray:id2Darray[i] ,
       transportation:transportation ,
       tourid : id ,
@@ -747,12 +752,12 @@ function rendertrans(id2Darray , transportation , id){
       }
     })
     .fail(function(data){
-      for (let j = 0; j < transDiv.length; j++) {
+      for (let j = 0; j < data.length; j++) {
         transDiv[j].lastChild.innerText = 'error'
+        transDivcount++
       }
     })
   }
-
 }
 
 function checkmember(){

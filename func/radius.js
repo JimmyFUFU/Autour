@@ -1,11 +1,17 @@
 var radius = function (transportation){
-  var radiusfinal = 0
-  for (let i in transportation) {
-    if(transportation[i] === 'driving') radiusfinal =  30000
-    else if(transportation[i] === 'bicycling' || transportation[i] === 'transit') radiusfinal =  20000
-    else if(transportation[i] === 'walking') radiusfinal = 3500
+  switch (transportation[0]) {
+    case 'driving':
+      return 30000
+      break;
+    case 'bicycling':
+      return 20000
+      break;
+    case 'transit':
+      return 20000
+      break;
+    case 'walking':
+      return 3500
+      break;
   }
-  return radiusfinal
 }
-
 module.exports.getradius = radius

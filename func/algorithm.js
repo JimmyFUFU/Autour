@@ -1,59 +1,62 @@
 const sort = require('./sort.js')
 
-var find2pointAllPath = function(matrix , start ,end){
+var find2PointAllPath = function(matrix , start ,end){
 
-  var minpath = []
-  var mainstack = [] , substack = []
-  var eachsubstack = []
-  var minweight = 0
-  mainstack.push(start)
+  let minpath = new Array()
+  let mainStack = new Array() // 主
+  let supStack = new Array() // 輔
+  let vertexArray = new Array() // 用來裝相鄰節點列表
+  let minweight = 0
+
+  mainStack.push(start)
   for (let i = 0 ; i < matrix.length ; i++){
-    if(matrix[start][i]>0){eachsubstack.push(i)}
+    if(matrix[start][i] >= 0) { vertexArray.push(i) }
   }
-  substack.push(eachsubstack)
-  var count = 0
-  while (mainstack.length !== 0) {
+  supStack.push(vertexArray)
 
-    var substacklastarr = substack[substack.length-1]
+  let count = 0
 
-    if (substacklastarr && substacklastarr.length>0) {
-      var thissubstack = substack.pop()
-      var eachsubstack = []
-      var newpop = thissubstack.shift()
-      mainstack.push(newpop)
-      substack.push(thissubstack)
+  while (mainStack.length) {
+    
+    if (supStack[supStack.length-1] && supStack[supStack.length-1].length) {
+      let subStackTop = supStack.pop()
+      vertexArray = []
+      let newpop = subStackTop.shift()
+      mainStack.push(newpop)
+      supStack.push(subStackTop)
 
       for (let i = 0 ; i < matrix.length ; i++){
-        if(matrix[newpop][i]>=0 && mainstack.indexOf(i) === -1){eachsubstack.push(i)}
+        if(matrix[newpop][i] >= 0 && mainStack.indexOf(i) == -1){vertexArray.push(i)}
       }
-      substack.push(eachsubstack)
+      supStack.push(vertexArray)
 
     }else{
-      mainstack.pop()
-      substack.pop()
+      mainStack.pop()
+      supStack.pop()
     }
-    if (mainstack[mainstack.length-1] === end) {
-      if(mainstack.length === matrix.length) {
+
+    if (mainStack[mainStack.length-1] == end) {
+      if(mainStack.length == matrix.length) {
         let weight = 0
-        for(let i = 0 ; i < mainstack.length-1 ; i++) {
-          weight += matrix[mainstack[i]][mainstack[i+1]]
+        for(let i = 0 ; i < mainStack.length-1 ; i++) {
+          weight += matrix[mainStack[i]][mainStack[i+1]]
         }
         minpath.push({path:[] , weight :weight})
-        mainstack.forEach((item, i) => {minpath[count].path.push(item)});
+        mainStack.forEach((item, i) => {minpath[count].path.push(item)});
         count++
       }
-      mainstack.pop()
-      substack.pop()
+      mainStack.pop()
+      supStack.pop()
     }
- }
+  }
   return minpath
 }
 
 var toMatrix = function(obj ,placetype){
-  var moveCostMatrix = new Array()
-  for (var i = 0; i < obj.rows.length; i++) {
+  let moveCostMatrix = new Array()
+  for (let i = 0; i < obj.rows.length; i++) {
     let array = new Array()
-    for (var j = 0; j < obj.rows[i].elements.length; j++) {
+    for (let j = 0; j < obj.rows[i].elements.length; j++) {
       if(obj.rows[i].elements[j].status == 'OK' ){
         if(i==j && placetype =='nearby') {
           array.push(-1)
@@ -144,11 +147,11 @@ var findShortestPath = function(allpath , placeopeningMatrix){
     allpath[r].truecount = truecount
   }
   sort.by(allpath , 'truecount')
-  return allpath[0] 
+  return allpath[0]
 }
 
 
-module.exports.find2pointAllPath = find2pointAllPath;
+module.exports.find2PointAllPath = find2PointAllPath;
 module.exports.toMatrix = toMatrix;
 module.exports.openingMatrix = openingMatrix;
 module.exports.findShortestPath = findShortestPath;

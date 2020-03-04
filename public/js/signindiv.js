@@ -173,26 +173,7 @@ function fblogin(){
   });
 }
 
-// function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
-//     console.log('statusChangeCallback');
-//     console.log(response);                   // The current login status of the person.
-//     if (response.status === 'connected') {   // Logged into your webpage and Facebook.
-//       testAPI();
-//     } else {                                 // Not logged into your webpage or we are unable to tell.
-//       document.getElementById('status').innerHTML = 'Please log ' + 'into this webpage.';
-//     }
-//   }
-// FB.getLoginStatus(function(response) {
-//    statusChangeCallback(response);
-// });
-// FB.getLoginStatus(function(response) {
-//    statusChangeCallback(response);
-// });
-//
-// FB.logout(function(response) {
-//     // Person is now logged out
-// });
-
+// Google
 function init() {
 	gapi.load('auth2', function () {
 		gapi.auth2.init({
@@ -232,6 +213,5 @@ function onSignIn() {
         document.querySelector('.loginerror').style.display = 'block'
       }
     })
-
 	})
 }

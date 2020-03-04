@@ -41,78 +41,76 @@ app.use(bearerToken())
 
 app.post('/newAutour' , async function (req,res){
 
-  console.log(req.body);
+  // console.log(req.body);
 //--------------------------------------------------------預備工作 先把時段放好--------------------------------------------------------//
 
   // 先算有多少時段 才知道要拿多少個景點 // 順便放好 起點 住宿 終點資訊
-  var periodarray = period.getperiod(req.body)
+  var periodArray = period.getperiod(req.body)
   var warningarray = new Array()
+  var AllTourPlaceIdlist = new Array() // 用來檢查所有景點不能重複
 
   try {
     // 找到每天起點、終點的資料
-    var startplacelist = new Array()
-    for (let k in periodarray) {
-      let startplace = await googlemap.findplace(periodarray[k].period.start.name)
-      if (startplace.candidates.length != 0) { //如果這天的起點找的到的話 正常
-        startplacelist.push(startplace.candidates[0])
-        periodarray[k].period.start.place_id = startplace.candidates[0].place_id
-        periodarray[k].period.start.lat = startplace.candidates[0].geometry.location.lat
-        periodarray[k].period.start.lng = startplace.candidates[0].geometry.location.lng
+    var startPlaceList = new Array()
+    for (let i in periodArray) {
+      let startplace = await googlemap.findPlace(periodArray[i].period.start.name)
+      if (startplace.candidates.length) { //如果這天的起點找的到的話 正常
+        startPlaceList.push(startplace.candidates[0])
+        periodArray[i].period.start.place_id = startplace.candidates[0].place_id
+        periodArray[i].period.start.lat = startplace.candidates[0].geometry.location.lat
+        periodArray[i].period.start.lng = startplace.candidates[0].geometry.location.lng
       }else{ // 找不到的話就拿他選擇的城市當起點
-        warningarray.push({type: 'startplace' , day: k ,status: startplace.status})
-        startplace = await googlemap.findplace(req.body.city[0])
-        startplacelist.push(startplace.candidates[0])
-        periodarray[k].period.start.replaceName = startplace.candidates[0].name
-        periodarray[k].period.start.place_id = startplace.candidates[0].place_id
-        periodarray[k].period.start.lat = startplace.candidates[0].geometry.location.lat
-        periodarray[k].period.start.lng = startplace.candidates[0].geometry.location.lng
+        warningarray.push({type: 'startplace' , day: i ,status: startplace.status})
+        startplace = await googlemap.findPlace(req.body.city[0])
+        startPlaceList.push(startplace.candidates[0])
+        periodArray[i].period.start.replaceName = startplace.candidates[0].name
+        periodArray[i].period.start.place_id = startplace.candidates[0].place_id
+        periodArray[i].period.start.lat = startplace.candidates[0].geometry.location.lat
+        periodArray[i].period.start.lng = startplace.candidates[0].geometry.location.lng
       }
-      let endplace = await googlemap.findplace(periodarray[k].period.end.name)
-      if (endplace.candidates.length != 0) {
-        periodarray[k].period.end.place_id = endplace.candidates[0].place_id
-        periodarray[k].period.end.lat = endplace.candidates[0].geometry.location.lat
-        periodarray[k].period.end.lng = endplace.candidates[0].geometry.location.lng
+      let endplace = await googlemap.findPlace(periodArray[i].period.end.name)
+      if (endplace.candidates.length) {
+        periodArray[i].period.end.place_id = endplace.candidates[0].place_id
+        periodArray[i].period.end.lat = endplace.candidates[0].geometry.location.lat
+        periodArray[i].period.end.lng = endplace.candidates[0].geometry.location.lng
       }else {
-        warningarray.push({type: 'endplace' , day: k ,status: endplace.status})
-        endplace = await googlemap.findplace(req.body.city[0])
-        periodarray[k].period.end.replaceName = endplace.candidates[0].name
-        periodarray[k].period.end.place_id = endplace.candidates[0].place_id
-        periodarray[k].period.end.lat = endplace.candidates[0].geometry.location.lat
-        periodarray[k].period.end.lng = endplace.candidates[0].geometry.location.lng
+        warningarray.push({type: 'endplace' , day: i ,status: endplace.status})
+        endplace = await googlemap.findPlace(req.body.city[0])
+        periodArray[i].period.end.replaceName = endplace.candidates[0].name
+        periodArray[i].period.end.place_id = endplace.candidates[0].place_id
+        periodArray[i].period.end.lat = endplace.candidates[0].geometry.location.lat
+        periodArray[i].period.end.lng = endplace.candidates[0].geometry.location.lng
       }
     }
-    var AllTourPlaceIdlist = new Array()
-
   //-------------------------------------------------------- must go --------------------------------------------------------//
 
-    var mustgolist = []
+    var mustgoList = new Array()
     for (let i in req.body.mustgo) {
-      let mustgoplace = await googlemap.findplace(req.body.mustgo[i])
-      if (mustgoplace.candidates.length) {
-        let mustgoplacedetail = await googlemap.placedetail(mustgoplace.candidates[0].place_id) // candidates[0] 選第一個
-        mustgolist.push(mustgoplacedetail.result)
+      let mustgoPlace = await googlemap.findPlace(req.body.mustgo[i])
+      if (mustgoPlace.candidates.length) {
+        let mustgoplacedetail = await googlemap.placeDetail(mustgoPlace.candidates[0].place_id) // candidates[0] 選第一個
+        mustgoList.push(mustgoplacedetail.result)
       }else {
-        warningarray.push({type: 'mustgo' , name: req.body.mustgo[i] ,status: mustgoplace.status})
+        warningarray.push({type: 'mustgo' , name: req.body.mustgo[i] ,status: 'ZERO_RESULTS'}) // 沒找到的話給警告
       }
     }
-    console.log('mustgolist finish !');
-    // 放進適合的天的placelist
+    // console.log('mustgoList finish !');
+    // 放進適合的日子的 placelist
     // 先找到每天起點的 place_id
-    var startplaceid = new Array()
-    for (let k in startplacelist) { startplaceid.push(`place_id:${startplacelist[k].place_id}`) }
+    let startPlaceId = new Array()
+    for (let i in startPlaceList) { startPlaceId.push(`place_id:${startPlaceList[i].place_id}`) }
 
-    for (let i in mustgolist) {
-      let getMoveCost = await googlemap.distanceMatrix(startplaceid , [`place_id:${mustgolist[i].place_id}`] , 'driving')
-      // 轉成 Matrix
-      let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'mostgo')
+    for (let i in mustgoList) {
+      let getMoveCost = await googlemap.distanceMatrix(startPlaceId , [`place_id:${mustgoList[i].place_id}`] , 'walking')
+      let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'mostgo') // 轉成 Matrix
       let theNearest = 0 , minWeight = -1 , mustgoOpeningCheck = false
-      for(let j = 0 ; j < moveCostMatrix.length ; j++){
+      for(let j = 0 ; j < moveCostMatrix.length ; j++) {
 
-        let thisMustgoMatrix = algorithm.openingMatrix( [mustgolist[i]] , periodarray[j].period.place )
+        let thisMustgoMatrix = algorithm.openingMatrix( [mustgoList[i]] , periodArray[j].period.place )
         for (let x = 0; x < thisMustgoMatrix.length; x++) {
           if (thisMustgoMatrix[x][0] && moveCostMatrix[j][0] != -1) {
             if (minWeight == -1 || moveCostMatrix[j][0] < minWeight) {
-              if ( mustgolist[i].types.includes('amusement_park') && periodarray[j].period.place.length < 3 ) {
+              if ( mustgoList[i].types.includes('amusement_park') && periodArray[j].period.place.length < 3 ) {
                 break
               }else {
                 minWeight = moveCostMatrix[j][0]
@@ -126,156 +124,151 @@ app.post('/newAutour' , async function (req,res){
       }
       if (mustgoOpeningCheck) {
         // 如果是 amusement_park 放兩個 如果評論 > 9560 放三個
-        if(mustgolist[i].types.includes('amusement_park')) {
+        if(mustgoList[i].types.includes('amusement_park')) {
           let items = 2
-          if (mustgolist[i].user_ratings_total >= 9560) { items = 3 }
-          else if (mustgolist[i].user_ratings_total < 500) { items = 1 }
+          if (mustgoList[i].user_ratings_total >= 9560) { items = 3 }
+          else if (mustgoList[i].user_ratings_total < 500) { items = 1 }
           for (let p = 0; p < items; p++) {
-             periodarray[theNearest].placelist.push({name : mustgolist[i].name ,
-                                                     place_id : mustgolist[i].place_id ,
-                                                     lat : mustgolist[i].geometry.location.lat ,
-                                                     lng : mustgolist[i].geometry.location.lng } )
+             periodArray[theNearest].placelist.push({name : mustgoList[i].name ,
+                                                     place_id : mustgoList[i].place_id ,
+                                                     lat : mustgoList[i].geometry.location.lat ,
+                                                     lng : mustgoList[i].geometry.location.lng } )
           }
         }else{
-          periodarray[theNearest].placelist.push({name : mustgolist[i].name ,
-                                                  place_id : mustgolist[i].place_id ,
-                                                  lat : mustgolist[i].geometry.location.lat ,
-                                                  lng : mustgolist[i].geometry.location.lng } )
+          periodArray[theNearest].placelist.push({name : mustgoList[i].name ,
+                                                  place_id : mustgoList[i].place_id ,
+                                                  lat : mustgoList[i].geometry.location.lat ,
+                                                  lng : mustgoList[i].geometry.location.lng } )
         }
-        AllTourPlaceIdlist.push(mustgolist[i].place_id)
+        AllTourPlaceIdlist.push(mustgoList[i].place_id)
       }else{
-        warningarray.push({type: 'mustgo' , name: mustgolist[i].name ,status: 'IS_NOT_OPEN'})
+        warningarray.push({type: 'mustgo' , name: mustgoList[i].name ,status: 'IS_NOT_OPEN'})
       }
-
     }
-    console.log('mustgolist push in periodarray.placelist !');
+    console.log('mustgoList push in periodArray.placelist !');
 
-  //-------------------------------------------------------- must go --------------------------------------------------------//
+  //-----------------------------------------------------END must go --------------------------------------------------------//
 
   // --------------------------------------------------排每天的景點進 placelist-----------------------------------------------//
 
-    for (let i in periodarray) {
+    for (let i in periodArray) {
       io.emit('server message', {day: Number(i)+1 , msg: `day ${Number(i)+1} start`})
       console.log(`\nday ${i} started`);
-      let remain = periodarray[i].period.place.length - periodarray[i].placelist.length // 今天還剩多少時段
-      let finalPlaceList = new Array()
-      //要先把這天的mustgo放進finalPlaceList
-      for (let t = 0; t < periodarray[i].placelist.length; t++) {
-        for (var u = 0; u < mustgolist.length; u++) {
-          if (mustgolist[u].place_id == periodarray[i].placelist[t].place_id) {
-            finalPlaceList.push(mustgolist[u])
+      let remain = periodArray[i].period.place.length - periodArray[i].placelist.length // 今天還剩多少時段
+      let finalPlaceList = new Array() // 拿來放這天會找到的所有景點
+      //先把這天的mustgo放進finalPlaceList
+      for (let t = 0; t < periodArray[i].placelist.length; t++) {
+        for (var u = 0; u < mustgoList.length; u++) {
+          if (periodArray[i].placelist[t].place_id == mustgoList[u].place_id ) {
+            finalPlaceList.push(mustgoList[u])
           }
         }
       }
-
       console.log(`day${i} remain ${remain} periods`);
 
-      // 還有剩才需要給偏好跟推薦
+      // 還有剩時段才需要給偏好跟推薦的景點
       if (remain > 0) {
-        //prefer go ( nearby start place so I need to get geocode first )
-        let nearbyplace = await googlemap.nearby(startplacelist[i].geometry.location.lat,
-          startplacelist[i].geometry.location.lng,
+        //prefer go ( nearBy start place so I need to get geocode first )
+        let nearByPlace = await googlemap.nearBy(startPlaceList[i].geometry.location.lat,
+          startPlaceList[i].geometry.location.lng,
           radius.getradius(req.body.transportation),
           req.body.prefertype,
-          periodarray[i].period.place.length )
-        nearbyplace = nearbyplace.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
-        for (let u in nearbyplace) {
-          let thisnearbyplacedetail = await googlemap.placedetail(nearbyplace[u].place_id)
-          nearbyplace[u] = thisnearbyplacedetail.result
+          periodArray[i].period.place.length )
+        nearByPlace = nearByPlace.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
+        for (let u in nearByPlace) {
+          let thisnearbyplacedetail = await googlemap.placeDetail(nearByPlace[u].place_id)
+          nearByPlace[u] = thisnearbyplacedetail.result
         }
-        console.log(`day${i} nearbyplace finish !`);
-        // console.log(`day${i} 找到 ${nearbyplace.length} 個 nearbyplace `);
+        console.log(`day${i} nearByPlace finish !`);
+        // console.log(`day${i} 找到 ${nearByPlace.length} 個 nearByPlace `);
 
         // 加上系統自己推薦 tourist_attraction
-        let moreplace = await googlemap.nearby(startplacelist[i].geometry.location.lat,
-          startplacelist[i].geometry.location.lng,
+        let morePlace = await googlemap.nearBy(startPlaceList[i].geometry.location.lat,
+          startPlaceList[i].geometry.location.lng,
           radius.getradius(req.body.transportation),
           ['tourist_attraction'],
-          periodarray[i].period.place.length )
-        moreplace = moreplace.filter((item, index, array)=>{return item.rating >= 0}); // 去掉空資料
-        for (let u in moreplace) {
-          let thismoreplacedetail = await googlemap.placedetail(moreplace[u].place_id)
-          moreplace[u] = thismoreplacedetail.result
+          periodArray[i].period.place.length )
+        morePlace = morePlace.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
+        for (let u in morePlace) {
+          let thismoreplacedetail = await googlemap.placeDetail(morePlace[u].place_id)
+          morePlace[u] = thismoreplacedetail.result
         }
-        console.log(`day${i} moreplace finish !`);
-        // console.log(`day${i} 找到 ${moreplace.length} 個 moreplace `);
+        console.log(`day${i} morePlace finish !`);
+        // console.log(`day${i} 找到 ${morePlace.length} 個 morePlace `);
 
         //給權重 取得綜合分數
-        weight.addscore(nearbyplace,0.8)
-        weight.addscore(moreplace,0.5)
+        weight.addscore(nearByPlace,0.8)
+        weight.addscore(morePlace,0.5)
 
-        // 合併 nearbyplace & moreplace 去掉重複
-        for (let u in nearbyplace) {
-          let check = false
+        // 合併 nearByPlace & morePlace 去掉重複
+        for (let u in nearByPlace) {
+          let duplicatedCheck = false
           for (let j in finalPlaceList) {
-            if (finalPlaceList[j].id == nearbyplace[u].id ) { check = true }
+            if (finalPlaceList[j].id == nearByPlace[u].id ) { duplicatedCheck = true }
           }
-          if (!check) { finalPlaceList.push(nearbyplace[u]) }
+          if (!duplicatedCheck) { finalPlaceList.push(nearByPlace[u]) }
         }
-        for (let u in moreplace) {
-          let check = false
+        for (let u in morePlace) {
+          let duplicatedCheck = false
           for (let j in finalPlaceList) {
-            if (finalPlaceList[j].id == moreplace[u].id ) { check = true }
+            if (finalPlaceList[j].id == morePlace[u].id ) { duplicatedCheck = true }
           }
-          if (!check) { finalPlaceList.push(moreplace[u]) }
+          if (!duplicatedCheck) { finalPlaceList.push(morePlace[u]) }
         }
 
         // sortby score
         sort.by(finalPlaceList , 'score')
 
         // console.log(`day${i} 最後有 ${finalPlaceList.length} 個 finalPlaceList `);
-        periodarray[i].placeREC = new Array()
-        let count = 0
+        periodArray[i].placeREC = new Array()
+        let count = 0 // 算要放幾個進去
 
-        for (var p in finalPlaceList) {
+        for (let p in finalPlaceList) {
 
-          let check = false , openingcheck = false
-          for (let k in AllTourPlaceIdlist)  { if (AllTourPlaceIdlist[k] == finalPlaceList[p].place_id ) { check = true } }
-          for (let j in periodarray[i].placelist) { if (periodarray[i].placelist[j].place_id == finalPlaceList[p].place_id ) { check = true } }
-          let onePlaceOpening = algorithm.openingMatrix([finalPlaceList[p]] , periodarray[i].period.place)
-          for (let t in onePlaceOpening) { if (onePlaceOpening[t][0]) { openingcheck = true } }
+          let check = false , openingCheck = false
+          for (let j in AllTourPlaceIdlist)  { if (AllTourPlaceIdlist[j] == finalPlaceList[p].place_id ) { check = true } }
+          for (let j in periodArray[i].placelist) { if (periodArray[i].placelist[j].place_id == finalPlaceList[p].place_id ) { check = true } }
+          let onePlaceOpening = algorithm.openingMatrix([finalPlaceList[p]] , periodArray[i].period.place)
+          for (let j in onePlaceOpening) { if (onePlaceOpening[t][0]) { openingCheck = true } }
 
-          if ( !check && openingcheck) {
-
+          if ( !check && openingCheck) {
             if (count < remain) {
-
               if( finalPlaceList[p].types.includes('amusement_park') ) {
-
-                let n = 0
+                let item = 0
                 if (finalPlaceList[p].user_ratings_total >= 9560 && remain-count >= 3) {
-                    n = 3
-                    AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
+                  item = 3
+                  AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
                 }else if (finalPlaceList[p].user_ratings_total < 9560 && finalPlaceList[p].user_ratings_total >= 500 && remain-count >= 2 ) {
-                    n = 2
-                    AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
+                  item = 2
+                  AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
                 }else if (finalPlaceList[p].user_ratings_total < 500 && remain-count >= 1) {
-                    n = 1
-                    AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
+                  item = 1
+                  AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
                 }else if (remain-count <= 0) {
-                    // 是遊樂園但是時間不構
-                    periodarray[i].placeREC.push({name:finalPlaceList[p].name ,
-                      place_id:finalPlaceList[p].place_id ,
-                      lat : finalPlaceList[p].geometry.location.lat,
-                      lng : finalPlaceList[p].geometry.location.lng });
-                    break
-                  }
-                for (let p = 0; p < n; p++) {
-                    periodarray[i].placelist.push({name:finalPlaceList[p].name ,
-                      place_id:finalPlaceList[p].place_id ,
-                      lat : finalPlaceList[p].geometry.location.lat,
-                      lng : finalPlaceList[p].geometry.location.lng });
-                    count++;
-                  }
+                  // 是遊樂園但是時間不夠
+                  periodArray[i].placeREC.push({name:finalPlaceList[p].name ,
+                    place_id:finalPlaceList[p].place_id ,
+                    lat : finalPlaceList[p].geometry.location.lat,
+                    lng : finalPlaceList[p].geometry.location.lng });
+                  break
+                }
+                for (let p = 0; p < item; p++) {
+                  periodArray[i].placelist.push({name:finalPlaceList[p].name ,
+                    place_id:finalPlaceList[p].place_id ,
+                    lat : finalPlaceList[p].geometry.location.lat,
+                    lng : finalPlaceList[p].geometry.location.lng });
+                  count++;
+                }
               }else{
                 AllTourPlaceIdlist.push(finalPlaceList[p].place_id)
-                periodarray[i].placelist.push({name:finalPlaceList[p].name ,
+                periodArray[i].placelist.push({name:finalPlaceList[p].name ,
                   place_id:finalPlaceList[p].place_id ,
                   lat : finalPlaceList[p].geometry.location.lat,
                   lng : finalPlaceList[p].geometry.location.lng });
                 count++;
               }
             }else if (count >= remain) {
-                periodarray[i].placeREC.push({name:finalPlaceList[p].name ,
+                periodArray[i].placeREC.push({name:finalPlaceList[p].name ,
                   place_id:finalPlaceList[p].place_id ,
                   lat : finalPlaceList[p].geometry.location.lat,
                   lng : finalPlaceList[p].geometry.location.lng });
@@ -291,35 +284,35 @@ app.post('/newAutour' , async function (req,res){
       var allpath
       var placeopeningMatrix
       var shortpath
-      var openingMatrixcheck = false
+      var openingMatrixCheck = false
       var swapcount = 0
-      var placelistcount = periodarray[i].placelist.length-1
+      var placelistcount = periodArray[i].placelist.length-1
 
-      while (!openingMatrixcheck) {
+      while (!openingMatrixCheck) {
 
-        var placelistdetail = new Array() // 等等用來看營業時間
-        let idarray = new Array()
-        idarray.push(`place_id:${periodarray[i].period.start.place_id}`)// push 起點
-        for (let y in periodarray[i].placelist) {
-          idarray.push(`place_id:${periodarray[i].placelist[y].place_id}`) // 把 placelist 裡每個景點的 place_id push 進 idarray
+        let placeListDetail = new Array() // 等等用來看營業時間
+        let idArray = new Array()
+        idArray.push(`place_id:${periodArray[i].period.start.place_id}`)// push 起點
+        for (let y in periodArray[i].placelist) {
+          idArray.push(`place_id:${periodArray[i].placelist[y].place_id}`) // 把 placelist 裡每個景點的 place_id push 進 idArray
           for (let x = 0; x < finalPlaceList.length; x++) {
-            if (finalPlaceList[x].place_id == periodarray[i].placelist[y].place_id) {
-              placelistdetail.push(finalPlaceList[x]) // 把 finalPlaceList 裡每個景點 push 進 placelistdetail
+            if (finalPlaceList[x].place_id == periodArray[i].placelist[y].place_id) {
+              placeListDetail.push(finalPlaceList[x]) // 把 finalPlaceList 裡每個景點 push 進 placeListDetail
               break
             }
           }
         }
-        idarray.push(`place_id:${periodarray[i].period.end.place_id}`) // push 終點
-        let getMoveCost = await googlemap.distanceMatrix(idarray , idarray , 'driving') // 拿到點與點的移動成本
+        idArray.push(`place_id:${periodArray[i].period.end.place_id}`) // push 終點
+        let getMoveCost = await googlemap.distanceMatrix(idArray , idArray , 'driving') // 拿到點與點的移動成本
         let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'nearby') //  轉成 Matrix
-        allpath = algorithm.find2pointAllPath(moveCostMatrix,0,idarray.length-1) // 拿到所有路徑
+        allpath = algorithm.find2PointAllPath(moveCostMatrix,0,idArray.length-1) // 拿到所有路徑
         sort.bysmall2big(allpath , "weight")
-        placeopeningMatrix = algorithm.openingMatrix( placelistdetail , periodarray[i].period.place ) // 二維陣列 每個時段*每個景點
+        placeopeningMatrix = algorithm.openingMatrix( placeListDetail , periodArray[i].period.place ) // 二維陣列 每個時段*每個景點
         console.log("Matrix\n", placeopeningMatrix);
         let shortpathobj = algorithm.findShortestPath(allpath, placeopeningMatrix)
         shortpath = shortpathobj.path
         if (placeopeningMatrix.length == 0) {
-          openingMatrixcheck = true
+          openingMatrixCheck = true
           console.log('No period , Do not need check opening');
           break
         }
@@ -328,43 +321,43 @@ app.post('/newAutour' , async function (req,res){
         if (shortpathobj.truecount < placeopeningMatrix.length) {
           console.log(`day ${i} have opening issue`);
           // 先檢查有沒有點換
-          if (periodarray[i].placeREC.length != 0) {
+          if (periodArray[i].placeREC.length != 0) {
             // 要選一個點替換掉
-            for (let y = periodarray[i].placelist.length-1 ; y >= 0 ; y--) {
-              if (swapcount == periodarray[i].placeREC.length+1) {
+            for (let y = periodArray[i].placelist.length-1 ; y >= 0 ; y--) {
+              if (swapcount == periodArray[i].placeREC.length+1) {
                 swapcount = 0
                 placelistcount--
               }else {
-                // 不能是mustgolist裡面的點
+                // 不能是mustgoList裡面的點
                 let ifinmustgolist = false
-                for (let p in mustgolist) {
-                  if (periodarray[i].placelist[placelistcount].place_id == mustgolist[p].place_id ) { ifinmustgolist = true }
+                for (let p in mustgoList) {
+                  if (periodArray[i].placelist[placelistcount].place_id == mustgoList[p].place_id ) { ifinmustgolist = true }
                 }
                 if (!ifinmustgolist) { //能換就換
 
                   //AllTourPlaceIdlist 要把原本的拿出來
-                  AllTourPlaceIdlist.splice(AllTourPlaceIdlist.indexOf(periodarray[i].placelist[placelistcount].place_id),1)
-                  periodarray[i].placeREC.push({
-                    name: periodarray[i].placelist[placelistcount].name,
-                    place_id: periodarray[i].placelist[placelistcount].place_id,
-                    lat: periodarray[i].placelist[placelistcount].lat,
-                    lng: periodarray[i].placelist[placelistcount].lng })
-                    let firstplaceREC = periodarray[i].placeREC.shift()
-                    periodarray[i].placelist[placelistcount] = firstplaceREC
+                  AllTourPlaceIdlist.splice(AllTourPlaceIdlist.indexOf(periodArray[i].placelist[placelistcount].place_id),1)
+                  periodArray[i].placeREC.push({
+                    name: periodArray[i].placelist[placelistcount].name,
+                    place_id: periodArray[i].placelist[placelistcount].place_id,
+                    lat: periodArray[i].placelist[placelistcount].lat,
+                    lng: periodArray[i].placelist[placelistcount].lng })
+                    let firstplaceREC = periodArray[i].placeREC.shift()
+                    periodArray[i].placelist[placelistcount] = firstplaceREC
                     AllTourPlaceIdlist.push(firstplaceREC.place_id)
                     swapcount++
                     break // 交換成功就再去外面試一次
                   }
                 if (y == 0) { // 從最後一個已經檢查到第一個 代表沒有點可以換(全部都是mustgo) 不要刪 給提示
                     warningarray.push({type: 'opening_issue' , day : i , status: 'All_mustgo'})
-                    openingMatrixcheck = true
+                    openingMatrixCheck = true
                   }
               }
             }
           }else {
             // 沒景點換 不要刪 給提示
             warningarray.push({type: 'opening_issue' , day : i , status: 'No_placeREC'})
-            openingMatrixcheck = true
+            openingMatrixCheck = true
             break
           }
         }else {
@@ -375,25 +368,25 @@ app.post('/newAutour' , async function (req,res){
       console.log(`day${i} shortpath`, shortpath);
 
       for (let k = 1 ; k < shortpath.length-1 ; k++) {
-        periodarray[i].period.place[k-1].name = periodarray[i].placelist[shortpath[k]-1].name
-        periodarray[i].period.place[k-1].lat = periodarray[i].placelist[shortpath[k]-1].lat
-        periodarray[i].period.place[k-1].lng = periodarray[i].placelist[shortpath[k]-1].lng
-        periodarray[i].period.place[k-1].place_id = periodarray[i].placelist[shortpath[k]-1].place_id
+        periodArray[i].period.place[k-1].name = periodArray[i].placelist[shortpath[k]-1].name
+        periodArray[i].period.place[k-1].lat = periodArray[i].placelist[shortpath[k]-1].lat
+        periodArray[i].period.place[k-1].lng = periodArray[i].placelist[shortpath[k]-1].lng
+        periodArray[i].period.place[k-1].place_id = periodArray[i].placelist[shortpath[k]-1].place_id
       }
 
       let lunchdetailarr = new Array()
       let dinnerdetailarr = new Array()
-      for (let q = 0; q < periodarray[i].period.place.length; q++) {
-        let utchour = new Date(periodarray[i].period.place[q].time).getUTCHours()
+      for (let q = 0; q < periodArray[i].period.place.length; q++) {
+        let utchour = new Date(periodArray[i].period.place[q].time).getUTCHours()
         // 找午餐
         if (utchour == 10 || utchour == 13 || utchour == 14) {
-          if (periodarray[i].period.lunch) {
-            let lunch = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'] , 4 )
+          if (periodArray[i].period.lunch) {
+            let lunch = await googlemap.nearBy(periodArray[i].period.place[q].lat, periodArray[i].period.place[q].lng, 1000, ['restaurant'] , 4 )
             lunch = lunch.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
             lunch = lunch.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1});
             for (let u in lunch) {
-              let lunchdetail = await googlemap.placedetail(lunch[u].place_id)
-              if (algorithm.openingMatrix([lunchdetail.result] , [periodarray[i].period.lunch])[0]) {  // 去掉中午沒開的
+              let lunchdetail = await googlemap.placeDetail(lunch[u].place_id)
+              if (algorithm.openingMatrix([lunchdetail.result] , [periodArray[i].period.lunch])[0]) {  // 去掉中午沒開的
                 lunchdetailarr.push(lunchdetail.result)
               }
             }
@@ -402,20 +395,20 @@ app.post('/newAutour' , async function (req,res){
 
         // 找晚餐
         if (utchour == 16 || utchour == 17 || utchour == 19 || utchour == 20) {
-          if (periodarray[i].period.dinner) {
-            let dinner = await googlemap.nearby(periodarray[i].period.place[q].lat, periodarray[i].period.place[q].lng, 1000, ['restaurant'], 4 )
+          if (periodArray[i].period.dinner) {
+            let dinner = await googlemap.nearBy(periodArray[i].period.place[q].lat, periodArray[i].period.place[q].lng, 1000, ['restaurant'], 4 )
             dinner = dinner.filter((item, index, array)=>{return item.rating > 0}); // 去掉空資料
             dinner = dinner.filter((item, index, array)=>{return item.types.indexOf('lodging') == -1})
             for (let o in dinner) {
-              let dinnerdetail = await googlemap.placedetail(dinner[o].place_id)
-              if (algorithm.openingMatrix([dinnerdetail.result] , [periodarray[i].period.dinner])[0]) { // 去掉晚餐沒開的
+              let dinnerdetail = await googlemap.placeDetail(dinner[o].place_id)
+              if (algorithm.openingMatrix([dinnerdetail.result] , [periodArray[i].period.dinner])[0]) { // 去掉晚餐沒開的
                 dinnerdetailarr.push(dinnerdetail.result)
               }
             }
           }
         }
 
-        if (q == periodarray[i].period.place.length-1) {
+        if (q == periodArray[i].period.place.length-1) {
           if (lunchdetailarr.length != 0) {
             sort.by(lunchdetailarr , 'user_ratings_total')
             let lunchCheck = false
@@ -426,17 +419,17 @@ app.post('/newAutour' , async function (req,res){
               }
               if (!check) {
                 lunchCheck = true
-                periodarray[i].period.lunch.name = lunchdetailarr[o].name
-                periodarray[i].period.lunch.place_id = lunchdetailarr[o].place_id
-                periodarray[i].period.lunch.lat = lunchdetailarr[o].geometry.location.lat
-                periodarray[i].period.lunch.lng = lunchdetailarr[o].geometry.location.lng
+                periodArray[i].period.lunch.name = lunchdetailarr[o].name
+                periodArray[i].period.lunch.place_id = lunchdetailarr[o].place_id
+                periodArray[i].period.lunch.lat = lunchdetailarr[o].geometry.location.lat
+                periodArray[i].period.lunch.lng = lunchdetailarr[o].geometry.location.lng
                 AllTourPlaceIdlist.push(lunchdetailarr[o].place_id)
               }
             }
             if (!lunchCheck) {
               warningarray.push({type: 'lunch' , day: i ,status:  "ZERO_RESULTS" })
             }
-            // periodarray[i].lunchREC = lunchdetailarr // 8 個左右
+            // periodArray[i].lunchREC = lunchdetailarr // 8 個左右
           }else {
             warningarray.push({type: 'lunch' , day: i ,status:  "ZERO_RESULTS" })
           }
@@ -450,17 +443,17 @@ app.post('/newAutour' , async function (req,res){
               }
               if (!check) {
                 dinnerCheck= true
-                periodarray[i].period.dinner.name = dinnerdetailarr[o].name
-                periodarray[i].period.dinner.place_id = dinnerdetailarr[o].place_id
-                periodarray[i].period.dinner.lat = dinnerdetailarr[o].geometry.location.lat
-                periodarray[i].period.dinner.lng = dinnerdetailarr[o].geometry.location.lng
+                periodArray[i].period.dinner.name = dinnerdetailarr[o].name
+                periodArray[i].period.dinner.place_id = dinnerdetailarr[o].place_id
+                periodArray[i].period.dinner.lat = dinnerdetailarr[o].geometry.location.lat
+                periodArray[i].period.dinner.lng = dinnerdetailarr[o].geometry.location.lng
                 AllTourPlaceIdlist.push(dinnerdetailarr[o].place_id)
               }
             }
             if (!dinnerCheck) {
               warningarray.push({type: 'dinner' , day: i ,status:  "ZERO_RESULTS" })
             }
-            // periodarray[i].dinnerREC = dinnerdetailarr // 8 個左右
+            // periodArray[i].dinnerREC = dinnerdetailarr // 8 個左右
           }else {
             warningarray.push({type: 'dinner' , day: i ,status:  "ZERO_RESULTS" })
           }
@@ -472,23 +465,18 @@ app.post('/newAutour' , async function (req,res){
       io.emit('server message', {day:Number(i)+1 , msg: `day ${Number(i)+1} finish`})
 
     }
-    console.log('periodarray finish !');
+    console.log('periodArray finish !');
 
-    var responseobj = {
-      periodarray: periodarray,
-      warningarray : warningarray
-    }
-    res.status(200).send(responseobj)
+    res.status(200).send( {periodArray: periodArray, warningarray : warningarray} )
   } catch (e) {
     console.log(e);
     res.status(400).send({error:e})
   }
-
 })
 
 app.post('/storeAutour' , async function (req,res){
   try {
-    var thisuser = await mysql.selectdatafromWhere('*' , 'user' , { id : req.body.userid })
+    var thisuser = await mysql.selectDataFromWhere('*' , 'user' , { id : req.body.userid })
     if(Object.keys(thisuser).length === 0){
       console.log('User Not found')
       res.status(400).send({ error: 'User Not found' })
@@ -503,101 +491,102 @@ app.post('/storeAutour' , async function (req,res){
         timetype : req.body.timetype,
         transportation : req.body.transportation
       }
-      await mysql.insertdataSet('tour',inserttourpost)
+      await mysql.insertDataSet('tour',inserttourpost)
       res.status(200).send({ success: true })
     }
   } catch (e) {
-    console.log(e);
-    res.status(400).send({ error: 'DB error' })
+    console.log(e.name, ':', e.message);
+    res.status(400).send({error: 'DB error'})
   }
 })
 
 app.get('/getAutour' , async function(req,res){
-
-  var tourdetail = await mysql.selectdatafromWhere('*', 'tour' , { id : req.query.id })
-  tourdetail = JSON.stringify(tourdetail)
-  tourdetail = JSON.parse(tourdetail)
-  res.status(200).send(tourdetail)
+  try {
+    var tourdetail = await mysql.selectDataFromWhere('*', 'tour' , { id : req.query.id })
+    tourdetail = JSON.stringify(tourdetail)
+    tourdetail = JSON.parse(tourdetail)
+    res.status(200).send(tourdetail)
+  } catch (e) {
+    console.log(e.name, ':', e.message);
+    res.status(400).send({error: 'DB error'})
+  }
 })
 
 app.delete('/deleteAutour' , async function(req,res){
   try {
-    let userdetail = await mysql.selectdatafromWhere('id', 'user' , {access_token : req.token} )
-    await mysql.deletefromwhere( 'tour' , {userid : userdetail[0].id , id : req.headers.id})
+    let userdetail = await mysql.selectDataFromWhere('id', 'user' , {access_token : req.token} )
+    await mysql.deleteFromWhere( 'tour' , {userid : userdetail[0].id , id : req.headers.id})
     res.status(200).send({success : true})
   } catch (e) {
-    console.log(e);
+    console.log(e.name, ':', e.message);
     res.status(400).send({success : false})
   }
 })
 
 app.put('/revisetitle' , async function(req,res){
   try {
-    await mysql.updatedatafromWhere('tour', {tourtitle : req.body.revisetitle} , {id : req.body.tourId} )
+    await mysql.updateDataFromWhere('tour', {tourtitle : req.body.revisetitle} , {id : req.body.tourId} )
     res.status(200).send({success:true})
   } catch (e) {
-    console.log(e);
+    console.log(e.name, ':', e.message);
     res.status(400).send({success:false})
   }
 })
 
 app.post('/user/login' , async function (req,res){
-
-  if (req.body.provider === 'native') {
-    if (req.body.email === '' || req.body.password === '') {
-      res.status(400).send({error : 'Email and password are required'})
-    } else {
-      var userdetails = await mysql.selectdatafromWhere('*', 'user', {email : req.body.email , password : req.body.password , provider : req.body.provider })
-      if (Object.keys(userdetails).length === 0) {
-        console.log('User Not found')
-        res.status(400).send({ error: 'Log In Error' })
+  switch (req.body.provider) {
+    case 'native':
+      if ( !req.body.email.length || !req.body.password.length) {
+        res.status(400).send({error : 'Email and password are required'})
       } else {
-        // Give a new access_token and new access_expired everytime the user Signin
-        let time = moment().valueOf()
-        // produce a new access_token by email + time Now
-        let nowTime = moment(time).format('YYYYMMDDHHmmss')
-        let token = md5(`${req.body.email}` + `${nowTime}`)
-        // get the time One hour later as new access_expired
-        let expiredtime = moment(time).add(6, 'h').format('YYYY-MM-DD HH:mm:ss') // 一小時過期
-        // let expiredtime = moment(time).add(30, "s").format('YYYY-MM-DD HH:mm:ss');//30s過期
-        var updateTokenExpired = await mysql.updatedatafromWhere('user', {provider : req.body.provider , access_token : token , access_expired : expiredtime }, { email : req.body.email , provider : req.body.provider } )
-        console.log('NEW Log In !! UPDATE provider and token and expired successfully ~ ')
-        let signInOutputUser = {
-          data : {
-            access_token: token,
-            access_expired: expiredtime,
-            user : {
-              id : userdetails[0].id ,
-              provider : userdetails[0].provider,
-              name :userdetails[0].name ,
-              email : userdetails[0].email,
-              picture :userdetails[0].picture
+        let userDetails = await mysql.selectDataFromWhere('*', 'user', {email : req.body.email , password : req.body.password , provider : req.body.provider })
+        if ( !Object.keys(userDetails).length ) {
+          console.log('User Not found')
+          res.status(400).send({ error: 'Please check your Email or Password' })
+        } else {
+          // Give a new access_token and new access_expired once the user Signin
+          const time = moment().valueOf()
+          // produce a new access_token by email + time
+          const token = md5(`${req.body.email}` + `${time}`)
+          // get the time One hour later as new access_expired
+          const expiredtime = moment(time).add(6, 'h').format('YYYY-MM-DD HH:mm:ss')
+          await mysql.updateDataFromWhere('user', {provider : req.body.provider , access_token : token , access_expired : expiredtime }, { email : req.body.email , provider : req.body.provider } )
+          console.log('NEW Log In !! UPDATE provider and token and expired successfully ~ ')
+          const signInOutputUser = {
+            data : {
+              access_token: token,
+              access_expired: expiredtime,
+              user : {
+                id : userDetails[0].id ,
+                provider : userDetails[0].provider,
+                name :userDetails[0].name ,
+                email : userDetails[0].email,
+                picture :userDetails[0].picture
+              }
             }
           }
+          res.send(signInOutputUser)
+          console.log('User is found')
         }
-        res.send(signInOutputUser)
-        console.log('User is found')
       }
-    }
-  } else if (req.body.provider === 'facebook') {
-    if (req.body.access_token == null) {
-      res.status(400).send({error : 'Request Error: access token is required.'})
-    } else {
+      break;
+    case 'facebook':
+      if ( !req.body.access_token ) {
+        res.status(400).send({error : 'Request Error: Access token is required.'})
+      } else {
       // if FB access_token exists  // get information from Facebook API
       request(`https://graph.facebook.com/v5.0/me?fields=email%2Cname%2Cpicture&access_token=${req.body.access_token}`, async (error, response, body) => {
         if (error) console.log(error)
-        var userdata = JSON.parse(body)
+        let userdata = JSON.parse(body)
         try {
-          if (userdata.error == null) {
-            let time = moment().valueOf()
-            // produce access_token by email + time Now
-            let nowTime = moment(time).format('YYYYMMDDHHmmss')
-            let token = md5(`${userdata.email}` + `${nowTime}`)
-
+          if (!userdata.error) {
+            const time = moment().valueOf()
+            // produce access_token by email + time
+            const token = md5(`${userdata.email}` + `${time}`)
             // get the time One hour later as access_expired
-            let expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss')
+            const expiredtime = moment(time).add(6, 'h').format('YYYY-MM-DD HH:mm:ss')
 
-            let fbsignInpost = {
+            const fbLogInPost = {
               provider: req.body.provider,
               name: userdata.name,
               email: userdata.email,
@@ -607,51 +596,52 @@ app.post('/user/login' , async function (req,res){
               three_rd_id: userdata.id,
               three_rd_access_token: req.body.access_token
             }
-
              // 如果FB的ID有重複 就更新使用者資料
-            let fbsignupdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
-            await mysql.insertdataSetUpdate( 'user' , fbsignInpost , fbsignupdate)
-            console.log('FB signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
-            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', { three_rd_id : userdata.id , provider : req.body.provider})
-            var outputUser = {
+            const fbLogInUpdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
+            await mysql.insertDataSetUpdate( 'user' , fbLogInPost , fbLogInUpdate)
+            console.log('FB Log In ! Insert into user successfully ! Ready to select ID from user')
+            const userdataFromMysql = await mysql.selectDataFromWhere('*', 'user', { three_rd_id : userdata.id , provider : req.body.provider})
+            const outputUser = {
               data : {
-                access_token : `${userdatafromMysql[0].access_token}` ,
-                access_expired : `${userdatafromMysql[0].access_expired}` ,
+                access_token : `${userdataFromMysql[0].access_token}` ,
+                access_expired : `${userdataFromMysql[0].access_expired}` ,
                 user : {
-                  id : userdatafromMysql[0].id,
-                  provider: userdatafromMysql[0].provider,
-                  name:  `${userdata.name}`,
-                  email: `${userdata.email}`,
-                  picture : `${userdata.picture.data.url}`
+                  id : userdataFromMysql[0].id,
+                  provider: userdataFromMysql[0].provider,
+                  name:  userdataFromMysql[0].name,
+                  email: userdataFromMysql[0].email,
+                  picture : userdataFromMysql[0].picture
                 }
               }
             }
             res.status(200).send(outputUser)
+          }else{
+            console.log('FB login Error : ' , userdata.error.message);
+            res.status(400).send({ error: 'Wrong Request' })
           }
         }catch (e) {
-          console.log(e);
+          console.log(e.name, ':', e.message);
           res.status(400).send({ error: 'Wrong Request' })
         }
       })
     }
-  } else if (req.body.provider === 'google'){
-    if (req.body.access_token == null) {
-      res.status(400).send({error : 'Request Error: access token is required.'})
-    } else {
+      break;
+    case 'google':
+      if ( !req.body.access_token ) {
+        res.status(400).send({error : 'Request Error: Access token is required.'})
+      } else {
       request(`https://oauth2.googleapis.com/tokeninfo?id_token=${req.body.access_token}` , async (error , response , body) => {
         if (error) console.log(error)
         var userdata = JSON.parse(body)
         try {
-          if (userdata.error == null) {
-            let time = moment().valueOf()
+          if (!userdata.error) {
+            const time = moment().valueOf()
             // produce access_token by email + time Now
-            let nowTime = moment(time).format('YYYYMMDDHHmmss')
-            let token = md5(`${userdata.email}` + `${nowTime}`)
+            const token = md5(`${userdata.email}` + `${time}`)
 
             // get the time One hour later as access_expired
-            let expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss')
-
-            let googlepost = {
+            const expiredtime = moment(time).add(6, 'h').format('YYYY-MM-DD HH:mm:ss')
+            const googlePost = {
               provider: req.body.provider,
               name: userdata.name,
               email: userdata.email,
@@ -663,100 +653,108 @@ app.post('/user/login' , async function (req,res){
             }
 
              // 如果FB的ID有重複 就更新使用者資料
-            let googleupdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
-            await mysql.insertdataSetUpdate( 'user' , googlepost , googleupdate)
-            console.log('Google signIN !! Insert into user_object successfully ! Ready to select ID from user_object')
-            let userdatafromMysql = await mysql.selectdatafromWhere('*', 'user', {email : userdata.email , provider : req.body.provider } )
-            var outputUser = {
+            const googleUpdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
+            await mysql.insertDataSetUpdate( 'user' , googlePost , googleUpdate)
+            console.log('Google Log In ! Insert into user successfully ! Ready to select ID from user')
+            const userdataFromMysql = await mysql.selectDataFromWhere('*', 'user', {email : userdata.email , provider : req.body.provider } )
+            const outputUser = {
               data : {
-                access_token : `${userdatafromMysql[0].access_token}` ,
-                access_expired : `${userdatafromMysql[0].access_expired}` ,
+                access_token : `${userdataFromMysql[0].access_token}` ,
+                access_expired : `${userdataFromMysql[0].access_expired}` ,
                 user : {
-                  id : userdatafromMysql[0].id,
-                  provider: userdatafromMysql[0].provider,
-                  name:  userdatafromMysql[0].name,
-                  email: userdatafromMysql[0].email,
-                  picture : userdatafromMysql[0].picture
+                  id : userdataFromMysql[0].id,
+                  provider: userdataFromMysql[0].provider,
+                  name:  userdataFromMysql[0].name,
+                  email: userdataFromMysql[0].email,
+                  picture : userdataFromMysql[0].picture
                 }
               }
             }
             res.status(200).send(outputUser)
+          }else {
+            console.log('Google login Error : ' , userdata.error.message);
+            res.status(400).send({ error: 'Wrong Request' })
           }
         }catch (e) {
-          console.log(e);
+          console.log(e.name, ':', e.message);
           res.status(400).send({ error: 'Wrong Request' })
         }
       })
     }
-  }else {
-  res.status(400).send({ error: 'Wrong Request' })
-}
+      break;
+    default:
+      res.status(400).send({ error: 'Wrong Request' })
+  }
 })
 
 app.post('/user/signup' , async function (req,res){
-  if (req.body.password === '' || req.body.name === '' || req.body.email === '') {
-    res.status(400).send({error:'Name, email and password are required.'})
-  } else {
-    // check Email exists or not
-    const checkEmail = await mysql.selectdatafromWhere('email', 'user', {email : req.body.email} )
-    if (Object.keys(checkEmail).length === 0) {
-      console.log('The email is valid , ready to insert into database')
+  try {
+    if (!req.body.password.length || !req.body.name.length || !req.body.email.length) {
+      res.status(400).send({error:'Name, Email and Password are required.'})
+    } else {
+      // check Email exists or not
+      const checkEmail = await mysql.selectDataFromWhere('email', 'user', {email : req.body.email} )
+      if (!Object.keys(checkEmail).length) {
+        console.log('The email is valid , ready to insert into database')
 
-      const time = moment().valueOf()
-      // produce access_token by email + time Now
-      const nowTime = moment(time).format('YYYYMMDDHHmmss')
-      const token = md5(`${req.body.email}` + `${nowTime}`)
-      // get the time One hour later as access_expired
-      const expiredtime = moment(time).add(1, 'h').format('YYYY-MM-DD HH:mm:ss')
+        const time = moment().valueOf()
+        // produce access_token by email + time
+        const token = md5(`${req.body.email}` + `${time}`)
+        // get the time One hour later as access_expired
+        const expiredtime = moment(time).add(6, 'h').format('YYYY-MM-DD HH:mm:ss')
 
-      const insertUserpost = {
-        provider: 'native',
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password,
-        access_token: token,
-        access_expired: expiredtime
-      }
-      var insertUser = await mysql.insertdataSet('user', insertUserpost)
-      console.log('insert into user successfully ! Ready to select ID from user')
-      var selectuser = await mysql.selectdatafromWhere('*', 'user', {email : req.body.email })
-      var outputUser = {
-        data : {
-          access_token: selectuser[0].access_token,
-          access_expired: selectuser[0].access_expired,
-          user : {
-            id : selectuser[0].id ,
-            provider : selectuser[0].provider,
-            name :selectuser[0].name ,
-            email : selectuser[0].email,
-            picture :selectuser[0].picture
+        const insertUserPost = {
+          provider: 'native',
+          name: req.body.name,
+          email: req.body.email,
+          password: req.body.password,
+          access_token: token,
+          access_expired: expiredtime
+        }
+        await mysql.insertDataSet('user', insertUserPost)
+        console.log('Insert into user successfully ! Ready to select ID from user')
+        const theNewUser = await mysql.selectDataFromWhere('*', 'user', {email : req.body.email })
+        const outputUser = {
+          data : {
+            access_token: theNewUser[0].access_token,
+            access_expired: theNewUser[0].access_expired,
+            user : {
+              id : theNewUser[0].id ,
+              provider : theNewUser[0].provider,
+              name :theNewUser[0].name ,
+              email : theNewUser[0].email,
+              picture :theNewUser[0].picture
+            }
           }
         }
+        res.send(outputUser)
+      } else {
+        console.log('error : Email Already Exists')
+        res.status(400).send({error : 'Email Already Exists'})
       }
-      res.send(outputUser)
-    } else if (Object.keys(checkEmail).length > 0) {
-      console.log('error : Email Already Exists')
-      res.status(400).send({error : 'Email Already Exists'})
     }
+  } catch (e) {
+    console.log(e.name, ':', e.message);
+    res.status(400).send({error : 'Something error'})
   }
 })
 
 app.get('/user/profile' , async function(req,res){
   if (!req.headers.authorization) {
-    res.status(403).send({ error: 'Wrong Request: authorization is required.' })
+    res.status(403).send({ error: 'Wrong Request: Authorization is required.' })
   }else{
     //先找使用者
-    var userdetail = await mysql.selectdatafromWhere('*' , 'user' , {access_token : req.token} )
-    if (Object.keys(userdetail).length === 0) {
+    const userdetail = await mysql.selectDataFromWhere('*' , 'user' , {access_token : req.token} )
+    if (!Object.keys(userdetail).length) {
       res.status(403).send( { error: 'Invalid Access Token' })
     }else{
-      var time = moment().valueOf()
-      var expiredtime = userdetail[0].access_expired
-      if (moment(expiredtime).isBefore(time) === false) {
-        var userTour = await mysql.selectdatafromWhere('id , tourtitle' , 'tour' , { userid : userdetail[0].id })
+      const time = moment().valueOf()
+      const expiredtime = userdetail[0].access_expired
+      if ( !moment(expiredtime).isBefore(time) ) {
+        let userTour = await mysql.selectDataFromWhere('id , tourtitle' , 'tour' , { userid : userdetail[0].id })
         userTour = JSON.stringify(userTour)
         userTour = JSON.parse(userTour)
-        var profileObj = {
+        const profileObj = {
           user :{
             id : userdetail[0].id,
             name :　userdetail[0].name,
@@ -774,26 +772,26 @@ app.get('/user/profile' , async function(req,res){
 })
 
 app.post('/google/getFastMatrix' , async function (req,res){
-
+// `day:${req.body.day}`,
   client.hexists(`${req.body.tourid}`, `day:${req.body.day}`, async function (err, reply) {
-      if (err) console.log(err);
-
-      if (reply == 1) {
+      if (err) {
+        console.log(err.name, ':', err.message)
+        res.status(400).send('error')
+      }else if (reply == 1) {
         client.hget(`${req.body.tourid}`, `day:${req.body.day}`, function (err, reply) {
           if (err) {
-            console.log(err)
+            console.log(err.name, ':', err.message)
             res.status(400).send('error')
           }else {
             // 變回JSON格式回傳
-            var data = JSON.parse(reply)
             console.log(`${req.body.tourid} day:${req.body.day} array from Redis`);
-            res.status(200).send(data)
+            res.status(200).send(JSON.parse(reply))
           }
         })
       }else{
         try {
-          var transMatrix = new Array() // transition 2D Array
-          var returnMatrix = new Array() // 用來回傳的 1D Array
+          let transMatrix = new Array() // transition 2D Array
+          let returnMatrix = new Array() // 用來回傳的 1D Array
           for (let i = 0; i < req.body.transportation.length; i++) {
 
             let matrix = await googlemap.distanceMatrix(req.body.id2Darray , req.body.id2Darray , req.body.transportation[i])
@@ -818,7 +816,6 @@ app.post('/google/getFastMatrix' , async function (req,res){
                   if (req.body.transportation[i] == 'walking' && moveCostMatrix[j][x].time <= 600) {
                     transMatrix[j][x] = moveCostMatrix[j][x]
                   }
-
                 }
               }
             }
@@ -834,10 +831,11 @@ app.post('/google/getFastMatrix' , async function (req,res){
           res.status(200).send(returnMatrix)
 
         } catch (e) {
-          console.log(e);
+          console.log(e.name, ':', e.message);
           res.status(400).send('error')
         }
       }
+
   })
 
 })

@@ -1,5 +1,5 @@
 var addscore = function (array , weight){
-  for (var i in array) {
+  for (let i in array) {
     array[i]["score"] = (array[i].user_ratings_total/1000 + array[i].rating) * weight
   }
 }
