@@ -19,12 +19,14 @@ function animateCSS(element, animationName, callback) {
     node.addEventListener('animationend', handleAnimationEnd)
 }
 
-var bouncepointid = []
-for (var i = 0; i < 5; i++) {
-  let point = document.querySelectorAll('.pointcity')[getRandom(20)-1]
-  point.style.display = "block"
-  bouncepointid.push(point.id)
-  animateCSS(`#${point.id}`,'bounceInDown')
+var bouncepointid = new Array()
+for (let i = 0; i < 5; i++) {
+  setTimeout(()=> {
+    let point = document.querySelectorAll('.pointcity')[getRandom(20)-1]
+    point.style.display = "block"
+    bouncepointid.push(point.id)
+    animateCSS(`#${point.id}`,'bounceInDown')
+  },3000)
 }
 document.querySelector(".letsGo").onclick = function(){startquestion()};
 

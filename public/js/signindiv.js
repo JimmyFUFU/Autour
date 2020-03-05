@@ -59,11 +59,11 @@ function loginAjax() {
     contentType: 'application/json',
     url: `${API_HOST}/user/login`,
     success: function(data) {
-      sessionStorage.setItem("access_token", data.data.access_token);
-      sessionStorage.setItem("name", data.data.user.name);
-      sessionStorage.setItem("id", data.data.user.id);
+      sessionStorage.setItem('access_token', data.data.access_token);
+      sessionStorage.setItem('name', data.data.user.name);
+      if (data.data.user.picture) {sessionStorage.setItem('picture', data.data.user.picture);}
       document.querySelector('.hitext strong').innerText = data.data.user.name
-      animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
+      animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = 'none' })
       window.location.reload();
     },
     error: function(data) {

@@ -496,7 +496,7 @@ app.post('/storeAutour' , async function (req,res){
     }
   } catch (e) {
     console.log(e.name, ':', e.message);
-    res.status(400).send({error: 'DB error'})
+    res.status(400).send({error: e.message})
   }
 })
 
@@ -508,7 +508,7 @@ app.get('/getAutour' , async function(req,res){
     res.status(200).send(tourdetail)
   } catch (e) {
     console.log(e.name, ':', e.message);
-    res.status(400).send({error: 'DB error'})
+    res.status(400).send({error: e.message})
   }
 })
 
@@ -519,7 +519,7 @@ app.delete('/deleteAutour' , async function(req,res){
     res.status(200).send({success : true})
   } catch (e) {
     console.log(e.name, ':', e.message);
-    res.status(400).send({success : false})
+    res.status(400).send({error:e.message})
   }
 })
 
@@ -529,7 +529,7 @@ app.put('/revisetitle' , async function(req,res){
     res.status(200).send({success:true})
   } catch (e) {
     console.log(e.name, ':', e.message);
-    res.status(400).send({success:false})
+    res.status(400).send({error:e.message})
   }
 })
 
@@ -776,7 +776,7 @@ app.post('/google/getFastMatrix' , async function (req,res){
   client.hexists(`${req.body.tourid}`, `day:${req.body.day}`, async function (err, reply) {
       if (err) {
         console.log(err.name, ':', err.message)
-        res.status(400).send('error')
+        res.status(400).send({error:err.message})
       }else if (reply == 1) {
         client.hget(`${req.body.tourid}`, `day:${req.body.day}`, function (err, reply) {
           if (err) {
