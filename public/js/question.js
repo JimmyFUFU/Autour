@@ -272,10 +272,10 @@ function submit() {
     type: 'POST',
     data: JSON.stringify(jsonobj),
     contentType: 'application/json',
-    url: `${API_HOST}/newAutour`,
+    url: `${API_HOST}/autour/newAutour`,
     success: function(data) {
-      localStorage.setItem('tour', JSON.stringify(data.periodarray));
-      localStorage.setItem('warning', JSON.stringify(data.warningarray));
+      localStorage.setItem('tour', JSON.stringify(data.periodArray));
+      localStorage.setItem('warning', JSON.stringify(data.warningArray));
       window.location.href=`${API_HOST}/tourdetail.html`;
     },
     error: function(data){

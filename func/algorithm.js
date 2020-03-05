@@ -1,6 +1,6 @@
 const sort = require('./sort.js')
 
-var find2PointAllPath = function(matrix , start ,end){
+const find2PointAllPath = function(matrix , start ,end){
 
   let minpath = new Array()
   let mainStack = new Array() // 主
@@ -17,7 +17,7 @@ var find2PointAllPath = function(matrix , start ,end){
   let count = 0
 
   while (mainStack.length) {
-    
+
     if (supStack[supStack.length-1] && supStack[supStack.length-1].length) {
       let subStackTop = supStack.pop()
       vertexArray = []
@@ -52,7 +52,7 @@ var find2PointAllPath = function(matrix , start ,end){
   return minpath
 }
 
-var toMatrix = function(obj ,placetype){
+const toMatrix = function(obj ,placetype){
   let moveCostMatrix = new Array()
   for (let i = 0; i < obj.rows.length; i++) {
     let array = new Array()
@@ -83,7 +83,7 @@ var toMatrix = function(obj ,placetype){
   return moveCostMatrix
 }
 
-var openingMatrix = function(placelistdetail , periodarray){
+const openingMatrix = function(placelistdetail , periodarray){
 
   var returnMatrix = new Array()
   for (let i in periodarray) {
@@ -137,7 +137,7 @@ var openingMatrix = function(placelistdetail , periodarray){
   return returnMatrix
 }
 
-var findShortestPath = function(allpath , placeopeningMatrix){
+const findShortestPath = function(allpath , placeopeningMatrix){
 
   for (let r in allpath) {
     let truecount = 0
@@ -151,7 +151,9 @@ var findShortestPath = function(allpath , placeopeningMatrix){
 }
 
 
-module.exports.find2PointAllPath = find2PointAllPath;
-module.exports.toMatrix = toMatrix;
-module.exports.openingMatrix = openingMatrix;
-module.exports.findShortestPath = findShortestPath;
+module.exports = {
+  find2PointAllPath,
+  toMatrix,
+  openingMatrix,
+  findShortestPath
+}

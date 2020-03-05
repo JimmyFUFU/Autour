@@ -1,4 +1,4 @@
-var getperiod = function (body){
+const getperiod = function (body){
   var periodarray = []
   let type = body.timetype
 
@@ -50,7 +50,7 @@ var getperiod = function (body){
 }
 
 function oneDayPeriod(today , endhour , type){
-  let returnobj = {place:[]} , hourarr =[]
+  let returnobj = {place: []} , hourarr = []
   let todayyear = today.getFullYear(),
   todaymonth = today.getMonth(),
   todaydate = today.getDate(),
@@ -66,7 +66,7 @@ function oneDayPeriod(today , endhour , type){
       default:
         return [{error:'get Period Error'}]
     }
-    for (var i in hourarr) {
+    for (let i in hourarr) {
       if (hourarr[i] < endhour && hourarr[i] >= todayhour) {
         if(hourarr[i] === 12) returnobj.lunch = {name:'',time: new Date(Date.UTC(todayyear, todaymonth, todaydate , hourarr[i]))}
         else if (hourarr[i] === 18) returnobj.dinner = {name:'',time: new Date(Date.UTC(todayyear, todaymonth, todaydate , hourarr[i]))}

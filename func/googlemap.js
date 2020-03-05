@@ -7,7 +7,7 @@ const googleMapsClient = require('@google/maps').createClient({
   Promise : Promise
 });
 
-var findPlace = function (placename) {
+const findPlace = function (placename) {
   return new Promise(function(resolve, reject) {
     googleMapsClient.findPlace({
       input: placename,
@@ -34,7 +34,7 @@ var findPlace = function (placename) {
   });
 }
 
-var placeDetail = function (placeid){
+const placeDetail = function (placeid){
   return new Promise(function(resolve, reject) {
     googleMapsClient.place({
       placeid: placeid,
@@ -51,7 +51,7 @@ var placeDetail = function (placeid){
   })
 }
 
-var nearBy = function (lat, lng, radius, type, items){
+const nearBy = function (lat, lng, radius, type, items){
   return new Promise(function(resolve, reject) {
     let typeList = new Array()
     for(let i in type){
@@ -89,7 +89,7 @@ var nearBy = function (lat, lng, radius, type, items){
     }
     // type 一次只能指定一個 要跑loop
     let nearbylist = new Array()
-    if(items <= 0 || typeList.length == 0) resolve(nearbylist)
+    if(items <= 0 || !typeList.length) resolve(nearbylist)
     else {
       // 某些type 不要太多 看 countitems ()
       let nearbyTotalItems = 0
@@ -111,7 +111,7 @@ var nearBy = function (lat, lng, radius, type, items){
                 else { nearbylist = [...nearbylist , ratingThanFour[j] ] }
               }
             }else {
-              console.log(`(${typeList[i]})No results or other google error`);
+              console.log(`${typeList[i]} : ${body.status}`);
               for (let j = 0; j < countitems(typeList[i] , items); j++) {nearbylist.push(empty)}
             }
           }
@@ -120,10 +120,10 @@ var nearBy = function (lat, lng, radius, type, items){
         })
       }
     }
-  });
+  })
 }
 
-var distanceMatrix = function (origin , destination , type){
+const distanceMatrix = function (origin , destination , type){
   return new Promise(function(resolve, reject) {
     googleMapsClient.distanceMatrix({
       origins: origin,
@@ -196,7 +196,9 @@ function countitems(typename , items) {
   }
 }
 
-module.exports.findPlace = findPlace
-module.exports.placeDetail = placeDetail
-module.exports.nearBy = nearBy
-module.exports.distanceMatrix = distanceMatrix
+module.exports = {
+  findPlace,
+  placeDetail,
+  nearBy,
+  distanceMatrix
+}

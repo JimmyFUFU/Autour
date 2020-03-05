@@ -115,7 +115,7 @@ function deletetourfunc(id) {
     type : 'DELETE',
     contentType : 'application/json' ,
     headers : { 'authorization' : `Bearer ${sessionStorage.access_token}` , 'id' : id},
-    url : `${location.origin}/deleteAutour`,
+    url : `${location.origin}/tour/deleteTour`,
     success :function(data){
       window.location.reload();
     },

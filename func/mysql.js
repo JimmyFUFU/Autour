@@ -1,7 +1,7 @@
 const mysql = require('mysql')
 const cst = require('../secret/constant.js')
 
-var pool = mysql.createPool({
+const pool = mysql.createPool({
   connectionLimit: 10,
   host: 'localhost',
   user: cst.MYSQLUSER,
@@ -9,8 +9,8 @@ var pool = mysql.createPool({
   database: cst.MYSQLDBNAME
 })
 
-var selectDataFrom = function (selectwhat, object) {
-  let sql = `select ${selectwhat} from ${object}`
+const selectDataFrom = function (selectColumn, table) {
+  let sql = `SELECT ${selectColumn} FROM ${table}`
   return new Promise(function (resolve, reject) {
     pool.query(sql, (err, results) => {
       if (err) reject(err)
@@ -19,39 +19,38 @@ var selectDataFrom = function (selectwhat, object) {
   })
 }
 
-var selectDataFromWhere = function (selectwhat, object, where) {
+const selectDataFromWhere = function (selectColumn, table, cond) {
   let sql
-  if (Object.keys(where).length > 1) {
-    sql = `select ${selectwhat} from ${object} where ${Object.keys(where)[0]} = ?`
-    for (let i = 1; i < Object.keys(where).length; i++) {
-      sql += ` AND ${Object.keys(where)[i]} = ?`
+  if (Object.keys(cond).length > 1) {
+    sql = `SELECT ${selectColumn} FROM ${table} WHERE ${Object.keys(cond)[0]} = ?`
+    for (let i = 1; i < Object.keys(cond).length; i++) {
+      sql += ` AND ${Object.keys(cond)[i]} = ?`
     }
-    where = Object.values(where)
+    cond = Object.values(cond)
   }else {
-    sql = `select ${selectwhat} from ${object} where ? `
+    sql = `SELECT ${selectColumn} FROM ${table} WHERE ? `
   }
-
   return new Promise(function (resolve, reject) {
-    pool.query(sql, where,  (err, results) => {
+    pool.query(sql, cond,  (err, results) => {
       if (err) reject(err)
       else resolve(results)
     })
   })
 }
 
-var updateDataFromWhere = function (object, set, where) {
+const updateDataFromWhere = function (table, set, cond) {
   let sql
   let paramArr = new Array()
-  if (Object.keys(where).length > 1) {
-    paramArr = [set , Object.values(where)[0] ]
-    sql = `UPDATE ${object} SET ? WHERE ${Object.keys(where)[0]} = ?`
-    for (let i = 1; i < Object.keys(where).length; i++) {
-      sql += ` AND ${Object.keys(where)[i]} = ?`
-      paramArr.push(Object.values(where)[i])
+  if (Object.keys(cond).length > 1) {
+    paramArr = [set , Object.values(cond)[0] ]
+    sql = `UPDATE ${table} SET ? WHERE ${Object.keys(cond)[0]} = ?`
+    for (let i = 1; i < Object.keys(cond).length; i++) {
+      sql += ` AND ${Object.keys(cond)[i]} = ?`
+      paramArr.push(Object.values(cond)[i])
     }
   }else {
-    paramArr = [set , where]
-    sql = `UPDATE ${object} SET ? WHERE ?`
+    paramArr = [set , cond]
+    sql = `UPDATE ${table} SET ? WHERE ?`
   }
   return new Promise(function (resolve, reject) {
     pool.query(sql, paramArr , (err, results) => {
@@ -61,8 +60,8 @@ var updateDataFromWhere = function (object, set, where) {
   })
 }
 
-var insertDataSet = function (object, set) {
-  var sql = `INSERT INTO ${object} SET ?`
+const insertDataSet = function (table, set) {
+  var sql = `INSERT INTO ${table} SET ?`
   return new Promise(function (resolve, reject) {
     pool.query(sql, set, (err, results) => {
       if (err) reject(err)
@@ -71,8 +70,8 @@ var insertDataSet = function (object, set) {
   })
 }
 
-var insertDataSetUpdate = function (object, set, update) {
-  var sql = `INSERT INTO ${object} SET ? ON DUPLICATE KEY UPDATE ${update} `
+const insertDataSetUpdate = function (table, set, update) {
+  var sql = `INSERT INTO ${table} SET ? ON DUPLICATE KEY UPDATE ${update} `
   return new Promise(function (resolve, reject) {
     pool.query(sql, set, (err, results) => {
       if (err) reject(err)
@@ -81,29 +80,30 @@ var insertDataSetUpdate = function (object, set, update) {
   })
 }
 
-var deleteFromWhere = function (object, where) {
+const deleteFromWhere = function (table, cond) {
   let sql
-  if (Object.keys(where).length > 1) {
-    sql = `DELETE FROM ${object} WHERE ${Object.keys(where)[0]} = ?`
-    for (let i = 1; i < Object.keys(where).length; i++) {
-      sql += ` AND ${Object.keys(where)[i]} = ?`
+  if (Object.keys(cond).length > 1) {
+    sql = `DELETE FROM ${table} WHERE ${Object.keys(cond)[0]} = ?`
+    for (let i = 1; i < Object.keys(cond).length; i++) {
+      sql += ` AND ${Object.keys(cond)[i]} = ?`
     }
-    where = Object.values(where)
+    cond = Object.values(cond)
   }else {
-    sql = `DELETE FROM ${object} WHERE ${where}`
+    sql = `DELETE FROM ${table} WHERE ${cond}`
   }
-
   return new Promise(function (resolve, reject) {
-    pool.query(sql ,where , (err, results) => {
+    pool.query(sql ,cond , (err, results) => {
       if (err) reject(err)
       else resolve(results)
     })
   })
 }
 
-module.exports.selectDataFrom = selectDataFrom
-module.exports.selectDataFromWhere = selectDataFromWhere
-module.exports.updateDataFromWhere = updateDataFromWhere
-module.exports.insertDataSet = insertDataSet
-module.exports.insertDataSetUpdate = insertDataSetUpdate;
-module.exports.deleteFromWhere = deleteFromWhere;
+module.exports = {
+  selectDataFrom,
+  selectDataFromWhere,
+  updateDataFromWhere,
+  insertDataSet,
+  insertDataSetUpdate,
+  deleteFromWhere
+}

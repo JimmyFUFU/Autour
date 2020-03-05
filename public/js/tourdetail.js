@@ -43,7 +43,7 @@ if(localStorage["tour"] || id){
     $.ajax({
       type : 'GET',
       contentType : 'application/json' ,
-      url : `${location.origin}/getAutour?id=${id}`,
+      url : `${location.origin}/tour/getTour?id=${id}`,
       success :function(data){
         if(!data[0].tourdetail) {
           console.log('tourdetail error');
@@ -447,7 +447,7 @@ function rendertourdetail(tourobj){
         }]
   })
 
-  for (var i = 0 ; i < tourobj.length ; i++){
+  for (let i = 0 ; i < tourobj.length ; i++){
 
     let idarray = new Array() //這時候順便蒐集各天的 idarray
 
@@ -774,7 +774,7 @@ function memberstore(){
   //判斷 title
   if (document.querySelector('.titleinput').value) {
     //直接存進資料庫
-    var jsonobj = {
+    const jsonobj = {
       userid : sessionStorage.id,
       tourtitle : document.querySelector('.titleinput').value,
       tour : localStorage.tour,
@@ -787,7 +787,7 @@ function memberstore(){
       type:'POST',
       data:JSON.stringify(jsonobj),
       contentType: 'application/json',
-      url : `${API_HOST}/storeAutour`,
+      url : `${API_HOST}/tour/stourTour`,
       success: function(data) {
         localStorage.clear()
         window.location.href=`${API_HOST}/profile.html`;
@@ -1079,10 +1079,10 @@ function getMarkerimg(item){
 }
 
 function change2input(thisobj) {
-  var oldtitle = thisobj.innerText;
-  var newobj = document.createElement('input');
-  newobj.type = 'text';
-  newobj.value = oldtitle;
+  let oldtitle = thisobj.innerText;
+  let newobj = document.createElement('input')
+  newobj.type = 'text'
+  newobj.value = oldtitle
   newobj.className = 'titleEdit'
   newobj.onblur = function() {
 
@@ -1109,7 +1109,7 @@ function revisetitle(titletext , tourid) {
     type:'PUT',
     data:JSON.stringify({revisetitle: titletext ,tourId: tourid ,access_token:sessionStorage.access_token}),
     contentType: 'application/json',
-    url : `${API_HOST}/revisetitle`,
+    url : `${API_HOST}/tour/reviseTourTitle`,
     success: function(data) {
       console.log('Success')
     },error: function(data) {

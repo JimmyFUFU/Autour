@@ -1,4 +1,4 @@
-var sortby = function (list , bywhat){
+const big2Small = function (list , bywhat){
   for (let i = list.length-1 ; i >= 0  ; i--) {
     for (let j = 0 ; j < i ; j++){
       if(list[j][bywhat] < list[j+1][bywhat]){
@@ -10,7 +10,7 @@ var sortby = function (list , bywhat){
   }
 }
 
-var bysmall2big = function (list , bywhat){
+const small2Big = function (list , bywhat){
   for (let i = list.length-1 ; i >= 0  ; i--) {
     for (let j = 0 ; j < i ; j++){
       if(list[j][bywhat] > list[j+1][bywhat]){
@@ -21,5 +21,7 @@ var bysmall2big = function (list , bywhat){
     }
   }
 }
-module.exports.by = sortby
-module.exports.bysmall2big = bysmall2big
+module.exports = {
+  big2Small,
+  small2Big
+}

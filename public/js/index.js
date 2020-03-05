@@ -21,19 +21,21 @@ function animateCSS(element, animationName, callback) {
 
 var bouncepointid = new Array()
 for (let i = 0; i < 5; i++) {
-  setTimeout(()=> {
+  (function(i) {
+    setTimeout(function() {
     let point = document.querySelectorAll('.pointcity')[getRandom(20)-1]
     point.style.display = "block"
     bouncepointid.push(point.id)
     animateCSS(`#${point.id}`,'bounceInDown')
-  },3000)
+    }, (i + 1) * 100);
+  })(i)
 }
 document.querySelector(".letsGo").onclick = function(){startquestion()};
 
 function startquestion() {
   // $("html, body").animate({scrollTop:$('.bigflex').offset().top-20},500)
-  $(".question").load("question.html");
-  bouncepointid.forEach((item, i) => {animateCSS(`#${item}`,'bounceOutUp' ,function(){document.querySelector(`#${item}`).style.display = "none"})});
+  $(".question").load("question.html")
+  bouncepointid.forEach((item, i) => {animateCSS(`#${item}`,'bounceOutUp' ,function(){document.querySelector(`#${item}`).style.display = "none"})})
   document.querySelector(".introduction").style.display = 'none'
   document.querySelector('.index').style.width = '35%'
   document.querySelector('.index').style.flexDirection = 'column'
