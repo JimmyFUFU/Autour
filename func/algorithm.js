@@ -21,7 +21,7 @@ class googleTime {
   }
 }
 
-const find2PointAllPath = function(matrix , start ,end){
+const find2PointAllPath = function(matrix, start, end){
 
   let minPath = new Array()
   let mainStack = new Array() // 主
@@ -103,7 +103,7 @@ const toMatrix = function(obj, placeType){
   return moveCostMatrix
 }
 
-const openingMatrix = function(placelistDetail , periodArray){
+const openingMatrix = function(placelistDetail, periodArray){
 
   let returnMatrix = new Array()
   for (let i in periodArray) {
@@ -154,7 +154,7 @@ const openingMatrix = function(placelistDetail , periodArray){
   return returnMatrix
 }
 
-const findShortestPath = function(allPath , placeOpeningMatrix){
+const findShortestPath = function(allPath, placeOpeningMatrix){
 
   for (let r in allPath) {
     let trueCount = 0
@@ -163,10 +163,9 @@ const findShortestPath = function(allPath , placeOpeningMatrix){
     }
     allPath[r].truecount = trueCount
   }
-  sort.by(allPath , 'trueCount')
+  sort.big2Small(allPath , 'trueCount')
   return allPath[0]
 }
-
 
 module.exports = {
   find2PointAllPath,

@@ -1,5 +1,5 @@
 const getperiod = function (body){
-  var periodarray = []
+  var periodarray = new Array()
   let type = body.timetype
 
   let startms = Date.parse(body.start.time)
@@ -17,7 +17,7 @@ const getperiod = function (body){
   endweek = end.getDay(),
   endhour = end.getHours()
 
-  var days = ((Date.parse(new Date(endyear, endmonth, enddate)) - Date.parse(new Date(startyear, startmonth, startdate)))/86400000)+1 ;
+  const days = ((Date.parse(new Date(endyear, endmonth, enddate)) - Date.parse(new Date(startyear, startmonth, startdate)))/86400000)+1 ;
   if (days == 1){
     periodarray.push( { year:startyear, month:startmonth+1 , date:startdate , week:startweek , period:oneDayPeriod(start , endhour , type) } )
     periodarray[0].period.start = { name : body.start.place , time : body.start.time }
