@@ -11,14 +11,15 @@ const profile = async function(req,res){
     res.status(403).send({ error: 'Wrong Request: Authorization is required.' })
   }else{
     //先找使用者
-    const userdetail = await mysql.selectDataFromWhere('*' , 'user' , {access_token : req.token} )
+    const sqlConnection = await mysql.connection()
+    const userdetail = await mysql.selectDataWithCond(sqlConnection, '*' , 'user' , {access_token : req.token} )
     if (!Object.keys(userdetail).length) {
       res.status(403).send( { error: 'Invalid Access Token' })
     }else{
       const time = moment().valueOf()
       const expiredtime = userdetail[0].access_expired
       if ( !moment(expiredtime).isBefore(time) ) {
-        let userTour = await mysql.selectDataFromWhere('id , tourtitle' , 'tour' , { userid : userdetail[0].id })
+        let userTour = await mysql.selectDataWithCond(sqlConnection, 'id , tourtitle' , 'tour' , { userid : userdetail[0].id })
         userTour = JSON.stringify(userTour)
         userTour = JSON.parse(userTour)
         const profileObj = {
@@ -35,16 +36,18 @@ const profile = async function(req,res){
         res.status(403).send({ error: 'The token is expired , Please log in again' })
       }
     }
+    sqlConnection.release()
   }
 }
 
 const login = async function (req,res){
+  const sqlConnection = await mysql.connection()
   switch (req.body.provider) {
     case 'native':
       if ( !req.body.email.length || !req.body.password.length) {
         res.status(400).send({error : 'Email and password are required'})
       } else {
-        let userDetails = await mysql.selectDataFromWhere('*', 'user', {email : req.body.email , password : req.body.password , provider : req.body.provider })
+        let userDetails = await mysql.selectDataWithCond(sqlConnection, '*', 'user', {email : req.body.email , password : req.body.password , provider : req.body.provider })
         if ( !Object.keys(userDetails).length ) {
           console.log('User Not found')
           res.status(400).send({ error: 'Please check your Email or Password' })
@@ -55,7 +58,7 @@ const login = async function (req,res){
           const token = md5(`${req.body.email}` + `${time}`)
           // get the time One hour later as new access_expired
           const expiredtime = moment(time).add(6, 'h').format('YYYY-MM-DD HH:mm:ss')
-          await mysql.updateDataFromWhere('user', {provider : req.body.provider , access_token : token , access_expired : expiredtime }, { email : req.body.email , provider : req.body.provider } )
+          await mysql.updateDataWithCond(sqlConnection, 'user', {provider : req.body.provider , access_token : token , access_expired : expiredtime }, { email : req.body.email , provider : req.body.provider } )
           console.log('NEW Log In !! UPDATE provider and token and expired successfully ~ ')
           const signInOutputUser = {
             data : {
@@ -103,9 +106,9 @@ const login = async function (req,res){
             }
              // 如果FB的ID有重複 就更新使用者資料
             const fbLogInUpdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
-            await mysql.insertDataSetUpdate( 'user' , fbLogInPost , fbLogInUpdate)
+            await mysql.insertDataSetUpdate(sqlConnection, 'user', fbLogInPost, fbLogInUpdate)
             console.log('FB Log In ! Insert into user successfully ! Ready to select ID from user')
-            const userdataFromMysql = await mysql.selectDataFromWhere('*', 'user', { three_rd_id : userdata.id , provider : req.body.provider})
+            const userdataFromMysql = await mysql.selectDataWithCond(sqlConnection, '*', 'user', { three_rd_id : userdata.id , provider : req.body.provider})
             const outputUser = {
               data : {
                 access_token : `${userdataFromMysql[0].access_token}` ,
@@ -137,7 +140,7 @@ const login = async function (req,res){
       } else {
       request(`https://oauth2.googleapis.com/tokeninfo?id_token=${req.body.access_token}` , async (error , response , body) => {
         if (error) console.log(error)
-        var userdata = JSON.parse(body)
+        let userdata = JSON.parse(body)
         try {
           if (!userdata.error) {
             const time = moment().valueOf()
@@ -156,12 +159,11 @@ const login = async function (req,res){
               three_rd_access_token: req.body.access_token,
               three_rd_id : req.body.google_Id
             }
-
-             // 如果FB的ID有重複 就更新使用者資料
+             // 如果 Google 的 ID 有重複 就更新使用者資料
             const googleUpdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
-            await mysql.insertDataSetUpdate( 'user' , googlePost , googleUpdate)
+            await mysql.insertDataSetUpdate(sqlConnection, 'user', googlePost, googleUpdate)
             console.log('Google Log In ! Insert into user successfully ! Ready to select ID from user')
-            const userdataFromMysql = await mysql.selectDataFromWhere('*', 'user', {email : userdata.email , provider : req.body.provider } )
+            const userdataFromMysql = await mysql.selectDataWithCond(sqlConnection, '*', 'user', {email : userdata.email , provider : req.body.provider } )
             const outputUser = {
               data : {
                 access_token : `${userdataFromMysql[0].access_token}` ,
@@ -190,18 +192,21 @@ const login = async function (req,res){
     default:
       res.status(400).send({ error: 'Wrong Request' })
   }
+  sqlConnection.release()
 }
 
 const signup = async function (req,res){
+  const sqlConnection = await mysql.connection()
   try {
-    if (!req.body.password.length || !req.body.name.length || !req.body.email.length) {
+    if (!req.body.name.length || !req.body.password.length || !req.body.email.length) {
       res.status(400).send({error:'Name, Email and Password are required.'})
     } else {
+      await sqlConnection.query("START TRANSACTION")
       // check Email exists or not
-      const checkEmail = await mysql.selectDataFromWhere('email', 'user', {email : req.body.email} )
-      if (!Object.keys(checkEmail).length) {
-        console.log('The email is valid , ready to insert into database')
+      const checkEmail = await mysql.selectDataWithCond(sqlConnection, 'email', 'user', {email : req.body.email} )
 
+      if (!Object.keys(checkEmail).length) {
+        // console.log('The email is valid , Ready to insert into database')
         const time = moment().valueOf()
         // produce access_token by email + time
         const token = md5(`${req.body.email}` + `${time}`)
@@ -216,9 +221,9 @@ const signup = async function (req,res){
           access_token: token,
           access_expired: expiredtime
         }
-        await mysql.insertDataSet('user', insertUserPost)
-        console.log('Insert into user successfully ! Ready to select ID from user')
-        const theNewUser = await mysql.selectDataFromWhere('*', 'user', {email : req.body.email })
+        await mysql.insertDataSet(sqlConnection, 'user', insertUserPost)
+        // console.log('Insert into user successfully ! Ready to select ID from user')
+        const theNewUser = await mysql.selectDataWithCond(sqlConnection, '*', 'user', {email : req.body.email })
         const outputUser = {
           data : {
             access_token: theNewUser[0].access_token,
@@ -232,6 +237,7 @@ const signup = async function (req,res){
             }
           }
         }
+        await sqlConnection.query("COMMIT")
         res.send(outputUser)
       } else {
         console.log('error : Email Already Exists')
@@ -239,8 +245,11 @@ const signup = async function (req,res){
       }
     }
   } catch (e) {
+    await sqlConnection.query("ROLLBACK");
     console.log(e.name, ':', e.message);
     res.status(400).send({error : 'Something error'})
+  } finally {
+    await sqlConnection.release()
   }
 }
 

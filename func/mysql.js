@@ -9,17 +9,39 @@ const pool = mysql.createPool({
   database: cst.MYSQLDBNAME
 })
 
-const selectDataFrom = function (selectColumn, table) {
-  let sql = `SELECT ${selectColumn} FROM ${table}`
-  return new Promise(function (resolve, reject) {
-    pool.query(sql, (err, results) => {
+const connection = () => {
+  return new Promise(function(resolve, reject) {
+    pool.getConnection( (err, connection) => {
       if (err) reject(err)
-      else resolve(results)
+      // console.log("MySQL pool connected: threadId " + connection.threadId)
+      const query = (sql, binding) => {
+        // console.log(sql);
+        return new Promise(function(resolve, reject) {
+          connection.query(sql, binding, (err, result) => {
+            if(err) reject(err)
+            else resolve(result)
+          })
+        })
+      }
+      const release = () => {
+        return new Promise(function(resolve, reject) {
+          if(err) reject(err)
+          // console.log("MySQL pool released: threadId " + connection.threadId);
+          resolve(connection.release())
+        })
+      }
+      resolve({ query, release })
     })
   })
 }
 
-const selectDataFromWhere = function (selectColumn, table, cond) {
+const selectData = async function (sqlConnection, selectColumn, table) {
+  let sql = `SELECT ${selectColumn} FROM ${table}`
+  let result = await sqlConnection.query(sql)
+  return result
+}
+
+const selectDataWithCond = async function (sqlConnection, selectColumn, table, cond) {
   let sql
   if (Object.keys(cond).length > 1) {
     sql = `SELECT ${selectColumn} FROM ${table} WHERE ${Object.keys(cond)[0]} = ?`
@@ -30,15 +52,11 @@ const selectDataFromWhere = function (selectColumn, table, cond) {
   }else {
     sql = `SELECT ${selectColumn} FROM ${table} WHERE ? `
   }
-  return new Promise(function (resolve, reject) {
-    pool.query(sql, cond,  (err, results) => {
-      if (err) reject(err)
-      else resolve(results)
-    })
-  })
+  let result = await sqlConnection.query(sql, cond)
+  return result
 }
 
-const updateDataFromWhere = function (table, set, cond) {
+const updateDataWithCond = async function (sqlConnection, table, set, cond) {
   let sql
   let paramArr = new Array()
   if (Object.keys(cond).length > 1) {
@@ -52,35 +70,23 @@ const updateDataFromWhere = function (table, set, cond) {
     paramArr = [set , cond]
     sql = `UPDATE ${table} SET ? WHERE ?`
   }
-  return new Promise(function (resolve, reject) {
-    pool.query(sql, paramArr , (err, results) => {
-      if (err) reject(err)
-      else resolve(results)
-    })
-  })
+  let result = await sqlConnection.query(sql, paramArr)
+  return result
 }
 
-const insertDataSet = function (table, set) {
+const insertDataSet = async function (sqlConnection, table, set) {
   var sql = `INSERT INTO ${table} SET ?`
-  return new Promise(function (resolve, reject) {
-    pool.query(sql, set, (err, results) => {
-      if (err) reject(err)
-      else resolve(results)
-    })
-  })
+  let result = await sqlConnection.query(sql, set)
+  return result
 }
 
-const insertDataSetUpdate = function (table, set, update) {
+const insertDataSetUpdate = async function (sqlConnection, table, set, update) {
   var sql = `INSERT INTO ${table} SET ? ON DUPLICATE KEY UPDATE ${update} `
-  return new Promise(function (resolve, reject) {
-    pool.query(sql, set, (err, results) => {
-      if (err) reject(err)
-      else resolve(results)
-    })
-  })
+  let result = await sqlConnection.query(sql, set)
+  return result
 }
 
-const deleteFromWhere = function (table, cond) {
+const deleteDataWithCond = async function (sqlConnection, table, cond) {
   let sql
   if (Object.keys(cond).length > 1) {
     sql = `DELETE FROM ${table} WHERE ${Object.keys(cond)[0]} = ?`
@@ -91,19 +97,16 @@ const deleteFromWhere = function (table, cond) {
   }else {
     sql = `DELETE FROM ${table} WHERE ${cond}`
   }
-  return new Promise(function (resolve, reject) {
-    pool.query(sql ,cond , (err, results) => {
-      if (err) reject(err)
-      else resolve(results)
-    })
-  })
+  let result = await sqlConnection.query(sql, cond)
+  return result
 }
 
 module.exports = {
-  selectDataFrom,
-  selectDataFromWhere,
-  updateDataFromWhere,
+  selectData,
+  selectDataWithCond,
+  updateDataWithCond,
   insertDataSet,
   insertDataSetUpdate,
-  deleteFromWhere
+  deleteDataWithCond,
+  connection
 }
