@@ -20,11 +20,13 @@ Website URL: https://fujimmy.com
 * Node.js / Express.js
 * SSL Certificate (Let's Encrypt)
 * Error Handling: Identify type of error and return error message to frontend with corresponding status
+
 **Front-End**
 * HTML
 * CSS
 * JavaScript
-** Database**
+
+**Database**
 * MySQL
 * Redis (Cache)
 
