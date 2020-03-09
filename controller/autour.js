@@ -114,6 +114,7 @@ const newAutour = async function (req,res){
  //-----------------------------------------------------END must go --------------------------------------------------------//
 
  // --------------------------------------------------排每天的景點進 placelist-----------------------------------------------//
+
     for (let i in periodArray) {
       io.emit('server message', {day: Number(i)+1 , msg: `day ${Number(i)+1} start`})
       console.log(`\nday ${i} started`);
@@ -192,7 +193,7 @@ const newAutour = async function (req,res){
           for (let j in periodArray[i].placelist) { if (periodArray[i].placelist[j].place_id == finalPlaceArray[p].place_id ) { duplicatedCheck = true } }
           let onePlaceOpening = algorithm.openingMatrix([finalPlaceArray[p]] , periodArray[i].period.place)
           for (let j in onePlaceOpening) { if (onePlaceOpening[j][0]) { openingCheck = true } }
-          if ( !duplicatedCheck && openingCheck) {
+          if (!duplicatedCheck && openingCheck) {
            if (placeCount < remainPeriod) {
              if( finalPlaceArray[p].types.includes('amusement_park') ) {
                let item = 0
@@ -228,7 +229,7 @@ const newAutour = async function (req,res){
                   lng : finalPlaceArray[p].geometry.location.lng });
                 placeCount++;
               }
-           }else if (placeCount >= remainPeriod) {
+           }else {
               periodArray[i].placeREC.push({name:finalPlaceArray[p].name ,
                 place_id:finalPlaceArray[p].place_id ,
                 lat : finalPlaceArray[p].geometry.location.lat,
@@ -423,7 +424,7 @@ const newAutour = async function (req,res){
       console.log(`day ${i} lunch & dinner are OK !`);
       console.log(`day ${i} finished`);
       io.emit('server message', {day: Number(i)+1 , msg: `day ${Number(i)+1} finish`})
-    } 
+    }
     console.log('periodArray finish !')
     res.status(200).send( {periodArray: periodArray, warningArray : warningArray} )
   } catch (e) {

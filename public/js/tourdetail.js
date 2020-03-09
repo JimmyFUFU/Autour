@@ -454,7 +454,7 @@ function rendertourdetail(tourobj){
     let oneday = document.createElement('div')
     oneday.className = 'oneday'
     oneday.id = i
-    oneday.onclick = function(){daymarker(this , tourobj , map)};
+    oneday.onclick = function(){daymarker(this, tourobj, map)};
 
     let thisdate = document.createElement('div')
     thisdate.className = 'thisdate'
@@ -471,7 +471,7 @@ function rendertourdetail(tourobj){
     startplaceimg.src = "../icon/point.png";
     startplace.appendChild(startplaceimg)
 
-    let startplacetime = new Date (tourobj[i].period.start.time)
+    let startplacetime = new Date(tourobj[i].period.start.time)
     if (startplacetime.getHours()) {
       let startplacep = document.createElement('p')
       if(startplacetime.getMinutes().toString().length == 1){ startplacep.innerText = `${startplacetime.getHours()}:0${startplacetime.getMinutes()}`}
@@ -488,7 +488,7 @@ function rendertourdetail(tourobj){
     //交通方式的 div
     let transDiv = document.createElement('div')
     transDiv.className = 'transDiv'
-    transDiv.onclick = function(){routeInmap(this ,map)}
+    transDiv.onclick = function(){routeInmap(this, map)}
 
     let transImg = document.createElement('div')
     transImg.className = 'transImg'

@@ -26,6 +26,17 @@ app.use('/autour' , autourRouter)
 app.use('/tour' , tourRouter)
 app.use('/google' , googleRouter)
 
+const {
+  find2PointAllPath,
+  toMatrix,
+  openingMatrix,
+  findShortestPath
+} = require('./func/algorithm.js')
+const sort = require('./func/sort.js')
+
+app.post('/test', (res, req) =>{
+})
+
 server.listen(cst.PORT , () =>{
   console.log(`App is running on port ${cst.PORT}!`)
 })

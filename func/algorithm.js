@@ -1,6 +1,6 @@
 const cst = require('../secret/constant.js')
 const sort = require('./sort.js')
-
+const util = require('util')
 function getNewDate (date, time) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), time.getHour(), time.getMinute() ));
 }
@@ -11,11 +11,9 @@ class googleTime {
   constructor(time) {
     this.time = time
   }
-
   getHour(){
     return Number(`${this.time[0]}${this.time[1]}`)
   }
-
   getMinute(){
     return Number(`${this.time[2]}${this.time[3]}`)
   }
@@ -163,7 +161,7 @@ const findShortestPath = function(allPath, placeOpeningMatrix){
     }
     allPath[r].truecount = trueCount
   }
-  sort.big2Small(allPath , 'trueCount')
+  sort.big2Small(allPath , 'truecount')
   return allPath[0]
 }
 
