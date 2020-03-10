@@ -142,7 +142,7 @@ const login = async function (req,res){
               three_rd_access_token: req.body.access_token
             }
              // 如果FB的ID有重複 就更新使用者資料
-            const fbLogInUpdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
+            const fbLogInUpdate = `name = VALUES(name),email = VALUES(email),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
             await mysql.insertDataSetUpdate(sqlConnection, 'user', fbLogInPost, fbLogInUpdate)
             console.log('FB Log In ! Insert into user successfully ! Ready to select ID from user')
             const userdataFromMysql = await mysql.selectDataWithCond(sqlConnection, '*', 'user', { three_rd_id : userdata.id , provider : req.body.provider})
@@ -197,7 +197,7 @@ const login = async function (req,res){
               three_rd_id : req.body.google_Id
             }
              // 如果 Google 的 ID 有重複 就更新使用者資料
-            const googleUpdate = `name = VALUES(name),email = VALUES(email),picture = VALUES(picture),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
+            const googleUpdate = `name = VALUES(name),email = VALUES(email),access_token = VALUES(access_token),access_expired = VALUES(access_expired),three_rd_access_token = VALUES(three_rd_access_token)`
             await mysql.insertDataSetUpdate(sqlConnection, 'user', googlePost, googleUpdate)
             console.log('Google Log In ! Insert into user successfully ! Ready to select ID from user')
             const userdataFromMysql = await mysql.selectDataWithCond(sqlConnection, '*', 'user', {email : userdata.email , provider : req.body.provider } )
