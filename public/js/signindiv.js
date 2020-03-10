@@ -90,7 +90,7 @@ function signupAjax() {
       success: function(data) {
         sessionStorage.setItem("access_token", data.data.access_token);
         sessionStorage.setItem("name", data.data.user.name);
-        sessionStorage.setItem("id", data.data.user.id);
+        if (data.data.user.picture) {sessionStorage.setItem('picture', data.data.user.picture);}
         document.querySelector('.hitext strong').innerText = data.data.user.name
         animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
         window.location.reload();
@@ -160,7 +160,7 @@ function fblogin(){
       success: function(data) {
         sessionStorage.setItem("access_token", data.data.access_token);
         sessionStorage.setItem("name", data.data.user.name);
-        sessionStorage.setItem("id", data.data.user.id);
+        if (data.data.user.picture) {sessionStorage.setItem('picture', data.data.user.picture);}
         document.querySelector('.hitext strong').innerText = data.data.user.name
         animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
         window.location.reload();
@@ -186,8 +186,8 @@ let google_res;
 function onSignIn() {
 	let auth2 = gapi.auth2.getAuthInstance();//取得GoogleAuth物件
 	auth2.signIn().then(function (GoogleUser) {
-		console.log("Google登入成功");
-		console.log('ID: ' + GoogleUser.getId()); // Do not send to your backend! Use an ID token instead.
+		// console.log("Google登入成功");
+		// console.log('ID: ' + GoogleUser.getId()); // Do not send to your backend! Use an ID token instead.
 		// The ID token you need to pass to your backend:
 		let id_token = GoogleUser.getAuthResponse().id_token;
 		const jsonobj = {
@@ -203,7 +203,7 @@ function onSignIn() {
       success: function(data) {
         sessionStorage.setItem("access_token", data.data.access_token);
         sessionStorage.setItem("name", data.data.user.name);
-        sessionStorage.setItem("id", data.data.user.id);
+        if (data.data.user.picture) {sessionStorage.setItem('picture', data.data.user.picture);}
         document.querySelector('.hitext strong').innerText = data.data.user.name
         animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
         window.location.reload();

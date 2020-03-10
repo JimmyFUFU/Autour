@@ -55,7 +55,6 @@ describe('Tour CRUD', () => {
 
   test('Read Data Test' , async () =>{
     const response = await mysqlFunc.selectData(sqlConnectionFake,'*' ,'tour')
-    console.log(response.length);
     expect(response.length).toBeGreaterThan(0);
   })
 

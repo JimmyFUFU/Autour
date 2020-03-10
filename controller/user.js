@@ -2,10 +2,46 @@ const moment = require('moment')
 const request = require('request')
 const mysql = require('../func/mysql.js')
 const crypto = require('crypto')
+const multer = require('multer')
+const multerS3 = require('multer-s3')
+const aws = require('aws-sdk')
+const cst = require('../secret/constant.js')
+
 // crypto MD5 Hex
 function md5 (text) {
   return crypto.createHash('md5').update(text).digest('hex')
 };
+const fileFilter = (req, file, cb) => {
+  // 只接受三種圖片格式
+  if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+    cb(new Error('Please upload an image'))
+  }
+  cb(null, true)
+}
+const s3 = new aws.S3({
+  secretAccessKey: cst.S3_SECRETACCESSKEY,
+  accessKeyId: cst.S3_ACCESSKEYID
+})
+aws.config.update({
+  region: 'ap-southeast-1'
+})
+const upload = multer({
+  fileFilter: fileFilter,
+  storage: multerS3({
+    s3: s3,
+    bucket: 'jimmyfufus3',
+    acl: 'public-read',
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: 'AutourUserAvatar' })
+    },
+    key: function (req, file, cb) {
+      cb(null, req.body.id + '_' + file.fieldname)
+    }
+  })
+})
+
+const uploadUserAvatar = upload.single('Avatar')
 
 const profile = async function(req,res){
   if (!req.headers.authorization) {
@@ -254,8 +290,20 @@ const signup = async function (req,res){
   }
 }
 
+const uploadAvatar = async function (req, res){
+  function getImageURL(){
+    return new Promise(function(resolve, reject) {
+      uploadUserAvatar(req, res, (err) => {
+        if (err) reject(err)
+        resolve(req.file.location)
+      })
+    })
+  }
+
+}
 module.exports = {
   profile,
   login,
-  signup
+  signup,
+  uploadAvatar
 }
