@@ -143,8 +143,7 @@ const newAutour = async function (req,res){
           let thisNearbyPlaceDetail = await googlemap.placeDetail(nearByPlace[u].place_id)
           nearByPlace[u] = thisNearbyPlaceDetail.result
         }
-        console.log(`day${i} nearByPlace finish !`);
-        // console.log(`day${i} 找到 ${nearByPlace.length} 個 nearByPlace `);
+        console.log(`day${i} 找到 ${nearByPlace.length} 個 nearByPlace `);
 
         // 加上系統自己推薦 tourist_attraction
         let morePlace = await googlemap.nearBy(startPlaceArray[i].geometry.location.lat,
@@ -157,8 +156,7 @@ const newAutour = async function (req,res){
           let thisMorePlaceDetail = await googlemap.placeDetail(morePlace[u].place_id)
           morePlace[u] = thisMorePlaceDetail.result
         }
-        console.log(`day${i} morePlace finish !`);
-        // console.log(`day${i} 找到 ${morePlace.length} 個 morePlace `);
+        console.log(`day${i} 找到 ${morePlace.length} 個 morePlace `);
 
         //給權重 取得綜合分數
         weight.addscore(nearByPlace,0.8)
@@ -192,39 +190,38 @@ const newAutour = async function (req,res){
           for (let j in allTourPlaceIdArray)  { if (allTourPlaceIdArray[j] == finalPlaceArray[p].place_id ) { duplicatedCheck = true } }
           for (let j in periodArray[i].placelist) { if (periodArray[i].placelist[j].place_id == finalPlaceArray[p].place_id ) { duplicatedCheck = true } }
           let onePlaceOpening = algorithm.openingMatrix([finalPlaceArray[p]] , periodArray[i].period.place)
-          for (let j in onePlaceOpening) { if (onePlaceOpening[j][0]) { openingCheck = true } }
+          for (let j in onePlaceOpening) { if (onePlaceOpening[j][0]) { openingCheck = true; break;} }
           if (!duplicatedCheck && openingCheck) {
            if (placeCount < remainPeriod) {
              if( finalPlaceArray[p].types.includes('amusement_park') ) {
-               let item = 0
-               if (finalPlaceArray[p].user_ratings_total >= 9560 && remainPeriod-placeCount >= 3) {
-                 item = 3
-                 allTourPlaceIdArray.push(finalPlaceArray[p].place_id)
-               }else if (finalPlaceArray[p].user_ratings_total < 9560 && finalPlaceArray[p].user_ratings_total >= 500 && remainPeriod-placeCount >= 2 ) {
-                 item = 2
-                 allTourPlaceIdArray.push(finalPlaceArray[p].place_id)
-               }else if (finalPlaceArray[p].user_ratings_total < 500 && remainPeriod-placeCount >= 1) {
-                 item = 1
-                 allTourPlaceIdArray.push(finalPlaceArray[p].place_id)
-               }else {
-                 // 是遊樂園但是時間不夠
-                 periodArray[i].placeREC.push({name:finalPlaceArray[p].name ,
-                   place_id:finalPlaceArray[p].place_id ,
-                   lat : finalPlaceArray[p].geometry.location.lat,
-                   lng : finalPlaceArray[p].geometry.location.lng });
-                 break
-               }
-               for (let p = 0; p < item; p++) {
-                 periodArray[i].placelist.push({name:finalPlaceArray[p].name ,
-                   place_id:finalPlaceArray[p].place_id ,
-                   lat : finalPlaceArray[p].geometry.location.lat,
-                   lng : finalPlaceArray[p].geometry.location.lng });
-                 placeCount++;
-               }
+                let item = 0
+                if (finalPlaceArray[p].user_ratings_total >= 9560 && remainPeriod-placeCount >= 3) {
+                   item = 3
+                   allTourPlaceIdArray.push(finalPlaceArray[p].place_id)
+                }else if (finalPlaceArray[p].user_ratings_total < 9560 && finalPlaceArray[p].user_ratings_total >= 500 && remainPeriod-placeCount >= 2 ) {
+                   item = 2
+                   allTourPlaceIdArray.push(finalPlaceArray[p].place_id)
+                }else if (finalPlaceArray[p].user_ratings_total < 500 && remainPeriod-placeCount >= 1) {
+                   item = 1
+                   allTourPlaceIdArray.push(finalPlaceArray[p].place_id)
+                }else {
+                   // 是遊樂園但是時間不夠
+                   periodArray[i].placeREC.push({name:finalPlaceArray[p].name ,
+                     place_id:finalPlaceArray[p].place_id ,
+                     lat : finalPlaceArray[p].geometry.location.lat,
+                     lng : finalPlaceArray[p].geometry.location.lng })
+                 }
+                for (let p = 0; p < item; p++) {
+                  periodArray[i].placelist.push({name:finalPlaceArray[p].name ,
+                     place_id:finalPlaceArray[p].place_id ,
+                     lat : finalPlaceArray[p].geometry.location.lat,
+                     lng : finalPlaceArray[p].geometry.location.lng });
+                  placeCount++;
+                }
              }else{
                 allTourPlaceIdArray.push(finalPlaceArray[p].place_id)
-                periodArray[i].placelist.push({name:finalPlaceArray[p].name ,
-                  place_id:finalPlaceArray[p].place_id ,
+                periodArray[i].placelist.push({name:finalPlaceArray[p].name,
+                  place_id:finalPlaceArray[p].place_id,
                   lat : finalPlaceArray[p].geometry.location.lat,
                   lng : finalPlaceArray[p].geometry.location.lng });
                 placeCount++;
@@ -270,7 +267,8 @@ const newAutour = async function (req,res){
       allPath = algorithm.find2PointAllPath(moveCostMatrix,0,idArray.length-1) // 拿到所有路徑
       sort.asc(allPath , 'weight')
       placeOpeningMatrix = algorithm.openingMatrix( placeListDetail , periodArray[i].period.place ) // 二維陣列 每個時段*每個景點
-      console.log('Matrix\n', placeOpeningMatrix);
+      console.log('Matrix\n')
+      console.table(placeOpeningMatrix)
       let shortPathObj = algorithm.findShortestPath(allPath, placeOpeningMatrix)
       shortPath = shortPathObj.path
       if (placeOpeningMatrix.length == 0) {
@@ -293,8 +291,8 @@ const newAutour = async function (req,res){
               // 不能是 mustgoArray 裡面的點
               let mustgoCheck = false
               for (let p in mustgoArray) {
-                  if (periodArray[i].placelist[placelistCount].place_id == mustgoArray[p].place_id ) { mustgoCheck = true }
-                }
+                if (periodArray[i].placelist[placelistCount].place_id == mustgoArray[p].place_id ) { mustgoCheck = true }
+              }
               if (!mustgoCheck) { //能換就換
 
                 //allTourPlaceIdArray 要把原本的拿出來
