@@ -53,7 +53,7 @@ Website URL: https://fujimmy.com
 * Algorithm : Traveling Salesman Problem ( brute force method )
 
 ## Architecture
-
+![Mermaid screenshot](./public/icon/Architecture.PNG)
 ## Database Schema
 ![Mermaid screenshot](./public/icon/AutourDB.png)
 ## Main Features
