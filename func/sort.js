@@ -1,4 +1,4 @@
-const big2Small = function (list , bywhat){
+const desc = function (list , bywhat){
   for (let i = list.length-1 ; i > 0  ; i--) {
     for (let j = 0 ; j < i ; j++){
       if(list[j][bywhat] < list[j+1][bywhat]){
@@ -8,7 +8,7 @@ const big2Small = function (list , bywhat){
   }
 }
 
-const small2Big = function (list , bywhat){
+const asc = function (list , bywhat){
   for (let i = list.length-1 ; i > 0  ; i--) {
     for (let j = 0 ; j < i ; j++){
       if(list[j][bywhat] > list[j+1][bywhat]){
@@ -18,6 +18,6 @@ const small2Big = function (list , bywhat){
   }
 }
 module.exports = {
-  big2Small,
-  small2Big
+  desc,
+  asc
 }

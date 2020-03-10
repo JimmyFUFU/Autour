@@ -161,7 +161,7 @@ const findShortestPath = function(allPath, placeOpeningMatrix){
     }
     allPath[r].truecount = trueCount
   }
-  sort.big2Small(allPath , 'truecount')
+  sort.desc(allPath , 'truecount')
   return allPath[0]
 }
 

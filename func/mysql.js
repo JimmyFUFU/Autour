@@ -95,7 +95,7 @@ const deleteDataWithCond = async function (sqlConnection, table, cond) {
     }
     cond = Object.values(cond)
   }else {
-    sql = `DELETE FROM ${table} WHERE ${cond}`
+    sql = `DELETE FROM ${table} WHERE ?`
   }
   let result = await sqlConnection.query(sql, cond)
   return result

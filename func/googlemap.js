@@ -105,7 +105,7 @@ const nearBy = function (lat, lng, radius, type, items){
             if(body.status === 'OK'){
               // 拿到要先找評分 4 (??) 分以上的 then sort by user_ratings_total  再拿前 n 個 (之後看天數決定)  S/O to 優質推薦
               let ratingThanFour = body.results.filter((item, index, array)=>{return item.rating >= 3.8});
-              sort.big2Small(ratingThanFour,'user_ratings_total')
+              sort.desc(ratingThanFour,'user_ratings_total')
               for (let j = 0; j < countitems(typeList[i] , items); j++) {
                 if (ratingThanFour[j] == undefined) nearbylist.push(empty)
                 else { nearbylist = [...nearbylist , ratingThanFour[j] ] }

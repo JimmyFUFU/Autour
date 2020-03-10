@@ -181,7 +181,7 @@ const newAutour = async function (req,res){
         }
 
         // sortby score
-        sort.big2Small(finalPlaceArray , 'score')
+        sort.desc(finalPlaceArray , 'score')
 
         periodArray[i].placeREC = new Array()
         let placeCount = 0 // 算要放幾個進去
@@ -268,7 +268,7 @@ const newAutour = async function (req,res){
       let getMoveCost = await googlemap.distanceMatrix(idArray , idArray , 'driving') // 拿到點與點的移動成本
       let moveCostMatrix = algorithm.toMatrix(getMoveCost , 'nearby') //  轉成 Matrix
       allPath = algorithm.find2PointAllPath(moveCostMatrix,0,idArray.length-1) // 拿到所有路徑
-      sort.small2Big(allPath , 'weight')
+      sort.asc(allPath , 'weight')
       placeOpeningMatrix = algorithm.openingMatrix( placeListDetail , periodArray[i].period.place ) // 二維陣列 每個時段*每個景點
       console.log('Matrix\n', placeOpeningMatrix);
       let shortPathObj = algorithm.findShortestPath(allPath, placeOpeningMatrix)
@@ -372,7 +372,7 @@ const newAutour = async function (req,res){
 
         if (q == periodArray[i].period.place.length-1) {
           if (lunchDetailArray.length) {
-            sort.big2Small(lunchDetailArray , 'user_ratings_total')
+            sort.desc(lunchDetailArray , 'user_ratings_total')
             let lunchCheck = false
             for (let o in lunchDetailArray) {
               let duplicatedCheck = false
@@ -396,7 +396,7 @@ const newAutour = async function (req,res){
             warningArray.push({type: 'lunch' , day: i ,status:  "ZERO_RESULTS" })
           }
           if (dinnerDetailArray.length) {
-            sort.big2Small(dinnerDetailArray , 'user_ratings_total')
+            sort.desc(dinnerDetailArray , 'user_ratings_total')
             let dinnerCheck = false
             for (let o in dinnerDetailArray) {
               let duplicatedCheck = false
