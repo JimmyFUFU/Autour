@@ -1,5 +1,6 @@
 const redis = require('redis');
 const googlemap = require('../func/googlemap.js')
+const algorithm = require('../func/algorithm.js')
 // connect Redis
 const client = redis.createClient() // this creates a new client for redis
 client.on('connect', () => {
