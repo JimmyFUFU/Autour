@@ -55,7 +55,7 @@ Website URL: https://fujimmy.com
 ## Architecture
 
 ## Database Schema
-
+![Mermaid screenshot](./public/icon/AutourDB.png)
 ## Main Features
 
 ## Features Demo
