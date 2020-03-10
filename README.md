@@ -50,6 +50,7 @@ Website URL: https://fujimmy.com
 **Additional**
 * MVC design pattern
 * Git / GitHub
+* Algorithm : Traveling Salesman Problem ( brute force method )
 
 ## Architecture
 
