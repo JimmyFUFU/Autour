@@ -1111,9 +1111,36 @@ function revisetitle(titletext , tourid) {
     contentType: 'application/json',
     url : `${API_HOST}/tour/reviseTourTitle`,
     success: function(data) {
-      console.log('Success')
+      renderalert('success', '成功更改旅程名稱！' )
     },error: function(data) {
-      console.log(data);
+      renderalert('error', '可能因為某些原因沒有成功哦！請稍後再試！' )
     }
   })
+}
+
+function renderalert(type, alertText){
+  switch (type) {
+    case 'success':
+      document.querySelector('#successAlert').style.display = 'flex'
+      document.querySelector('#successAlert .alertText').innerText = alertText
+      animateCSS('#successAlert','fadeIn')
+      setTimeout(()=> {
+        animateCSS('#successAlert','fadeOut', function(){
+          document.querySelector('#successAlert').style.display = 'none'
+          document.querySelector('#successAlert .alertText').innerText = ''
+        })
+      },4000)
+      break;
+    case 'error':
+      document.querySelector('#errorAlert').style.display = 'flex'
+      document.querySelector('#errorAlert .alertText').innerText = alertText
+      animateCSS('#errorAlert','fadeIn')
+      setTimeout(()=> {
+        animateCSS('#errorAlert','fadeOut', function(){
+          document.querySelector('#errorAlert').style.display = 'none'
+          document.querySelector('#errorAlert .alertText').innerText = ''
+        })
+      },4000)
+      break;
+  }
 }

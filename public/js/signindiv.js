@@ -206,7 +206,7 @@ function onSignIn() {
         if (data.data.user.picture) {sessionStorage.setItem('picture', data.data.user.picture);}
         document.querySelector('.hitext strong').innerText = data.data.user.name
         animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
-        window.location.reload();
+        window.location.reload()
       },
       error: function(data) {
         document.querySelector('.loginerror').innerText = data.responseJSON.error

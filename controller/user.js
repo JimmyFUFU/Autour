@@ -36,12 +36,12 @@ const upload = multer({
       cb(null, { fieldName: 'AutourUserAvatar' })
     },
     key: function (req, file, cb) {
-      cb(null, req.body.id + '_' + file.fieldname)
+      cb(null, file.fieldname+ '_' +Date.now())
     }
   })
 })
 
-const uploadUserAvatar = upload.single('Avatar')
+const uploadUserAvatar = upload.single('userAvatar')
 
 const profile = async function(req,res){
   if (!req.headers.authorization) {
@@ -277,13 +277,14 @@ const signup = async function (req,res){
         await sqlConnection.query("COMMIT")
         res.send(outputUser)
       } else {
+        await sqlConnection.query("ROLLBACK")
         console.log('error : Email Already Exists')
         res.status(400).send({error : 'Email Already Exists'})
       }
     }
   } catch (e) {
-    await sqlConnection.query("ROLLBACK");
-    console.log(e.name, ':', e.message);
+    await sqlConnection.query("ROLLBACK")
+    console.log(e.name, ':', e.message)
     res.status(400).send({error : 'Something error'})
   } finally {
     await sqlConnection.release()
@@ -291,6 +292,30 @@ const signup = async function (req,res){
 }
 
 const uploadAvatar = async function (req, res){
+  if (!req.headers.authorization) {
+    res.status(403).send({ error: 'Wrong Request: Authorization is required.' })
+  }else{
+    const sqlConnection = await mysql.connection()
+    try {
+      await sqlConnection.query("START TRANSACTION")
+      const userdetail = await mysql.selectDataWithCond(sqlConnection, '*' , 'user' , {access_token : req.token} )
+      if (!Object.keys(userdetail).length) {
+        await sqlConnection.query("ROLLBACK")
+        res.status(403).send( { error: 'Invalid Access Token' })
+      }else{
+        const avatarURL = await getImageURL()
+        await mysql.updateDataWithCond(sqlConnection, 'user', {picture: avatarURL} , {id: userdetail[0].id} )
+        await sqlConnection.query("COMMIT")
+        res.status(200).send({picture: avatarURL})
+      }
+    } catch (e) {
+      await sqlConnection.query("ROLLBACK")
+      console.log(e.name, ':', e.message)
+      res.status(400).send( { error: 'Wrong Request' })
+    } finally {
+      sqlConnection.release()
+    }
+  }
   function getImageURL(){
     return new Promise(function(resolve, reject) {
       uploadUserAvatar(req, res, (err) => {
@@ -299,8 +324,8 @@ const uploadAvatar = async function (req, res){
       })
     })
   }
-
 }
+
 module.exports = {
   profile,
   login,

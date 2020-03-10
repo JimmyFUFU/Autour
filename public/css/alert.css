@@ -1,0 +1,37 @@
+.alert {
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 400px;
+  height : 80px;
+  top: 5%;
+  right: 3%;
+  display: none;
+  border-radius: 5px;
+  font-family: Microsoft JhengHei , monospace ;
+  font-size: 20px;
+  text-align: center;
+}
+
+#successAlert{
+  color: #233D4D;
+  border : 2px solid rgba(46, 213, 115,1.0);
+  background-color:rgba(123, 237, 159,0.95);
+}
+
+.alertimg{
+  width: 48px;
+  margin-left: 10px;
+}
+
+.alertText {
+  margin-left: 5px;
+}
+
+#errorAlert{
+  color: #233D4D;
+  border : 2px solid rgba(255, 71, 87,1.0);
+  background-color:rgba(255, 107, 129,0.95);
+}

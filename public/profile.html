@@ -11,17 +11,16 @@
   <div class="profile">
     <div id="memberdiv">
       <div class="tourlist">
-
          <!-- <div class="onetour">
           <img src="icon/taiwan.png" alt="" class="tourimg">
           <div class="tourtitle"></div>
           <img src="icon/edit.png" alt="" class="revisetitle">
           <img src="icon/trash.png" alt="" class="deletetour">
         </div> -->
-
       </div>
       <div class="memberdetail">
-        <img class="memberprofile" src="icon/Deprofile.png" alt="Avatar">
+        <img class="memberprofile" src="icon/Deprofile.png" alt="Avatar" onclick="file.click()" title="想換頭貼嗎 ?">
+        <input type="file" id="file" name="Avatar" accept=".png, .jpg, .jpeg" style="display:none" onchange="upload(this)">
         <div class="memberid"></div>
         <div class="membername"></div>
         <div class="memberemail"></div>
@@ -29,7 +28,6 @@
       </div>
     </div>
     <div id="signindiv" class="animated bounceInDown"></div>
-
     <div id="confirmdelete" class="animated zoomIn">
       <p>確定要刪除 <strong></strong> 嗎 ?</p>
       <div class="confirmdeletebtndiv">
@@ -37,7 +35,14 @@
         <div class="yes">YES</div>
       </div>
     </div>
-
+  </div>
+  <div class="alert" id="successAlert">
+    <div class="alertText"></div>
+    <img class="alertimg" src="../icon/valid.png"></img>
+  </div>
+  <div class="alert" id="errorAlert">
+    <div class="alertText"></div>
+    <img class="alertimg" src="../icon/invalid.png"></img>
   </div>
   <footer class="footer"></footer>
 </body>

@@ -1,6 +1,6 @@
 @import "header.css";
 @import "footer.css";
-
+@import "alert.css";
 .bigflex {
   display: flex;
   flex-direction: row;
