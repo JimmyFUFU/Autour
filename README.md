@@ -53,15 +53,33 @@ Website URL: https://fujimmy.com
 * Algorithm : Traveling Salesman Problem ( brute force method )
 
 ## Architecture
-![Mermaid screenshot](./public/icon/Architecture.PNG)
+![Mermaid screenshot](./forREADME/Architecture.PNG)
+
 ## Database Schema
-![Mermaid screenshot](./public/icon/AutourDB.png)
+![Mermaid screenshot](./forREADME/AutourDB.png)
+
 ## Main Features
-
+* User can answer the question below :
+  * Which city are you going to?
+  * When will your travel start / end?
+  * Where will your travel start / end?
+  * Where are you staying at?
+  * Any place you must visit or don’t wanna miss?
+  * Your transportation?
+  * What kind of place do you prefer?
+* User will get :
+  * A complete travel schedule 
+  * A report for this schedule
+* Member System
+  * Supports Facebook Login
+  * Supports Google Login
+  * Update avatar
+  * Store / Delete tour
+  * Revise tour title
+  
 ## Features Demo
-
 ### Home Page
-
+![Mermaid screenshot](./forREADME/homepage.png)
 ### Question Page
 
 ### Tour Page
@@ -69,3 +87,4 @@ Website URL: https://fujimmy.com
 ### Profile Page
 
 ## Contact
+Email : ppp456rrr@gmail.com
