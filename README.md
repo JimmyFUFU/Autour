@@ -85,6 +85,6 @@ Website URL: https://fujimmy.com
 ### Tour Page
 
 ### Profile Page
-
+![Mermaid screenshot](./forREADME/Profile.gif)
 ## Contact
 Email : ppp456rrr@gmail.com
