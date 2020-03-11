@@ -79,7 +79,7 @@ Website URL: https://fujimmy.com
   
 ## Features Demo
 ### Home Page
-![Mermaid screenshot](./forREADME/homepage.png)
+![Mermaid screenshot](./forREADME/homepage.PNG)
 ### Question Page
 
 ### Tour Page
