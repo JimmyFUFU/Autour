@@ -214,7 +214,7 @@
 
 .index .introduction {
 	width: 400px;
-  height: 500px;
+  height: 450px;
 	font-family: monospace , Microsoft JhengHei;
 	box-shadow:3px 3px 12px gray;
 	transition : 0.3s;
@@ -223,9 +223,14 @@
 	width: 50%;
 	margin: 10% 25% 5% 25%;
 }
+#traveler {
+	width: 20%;
+	margin-top: 5% ;
+	margin-left: 74%;
+}
 .index .introductiontext {
 	text-align: center;
-	width: 70%;
+	width: 80%;
 	margin: 0 auto;
 	font-family: monospace , Microsoft JhengHei;
 	color: rgba(47, 53, 66,1.0);
