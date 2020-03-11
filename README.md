@@ -83,8 +83,11 @@ Website URL: https://fujimmy.com
 ### Question Page
 
 ### Tour Page
-
+* Generate a report first
+* 
 ### Profile Page
 ![Mermaid screenshot](./forREADME/Profile.gif)
+* User can review the tours and delete it
+* User can upload a new avatar  
 ## Contact
 Email : ppp456rrr@gmail.com
