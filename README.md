@@ -1,6 +1,6 @@
 # Autour
 
-Autour can arrange a whole travel schedule automatically ! As long as you enter some basic infomation of your travel , you'll get a complete travel schedule.
+Autour provides the best travel itinerary by generating the shortest route for your travel. Simply enter your destination and time for traveling and your perfect tour is just a click away!
 Website URL: https://fujimmy.com
 
 ## Table of Contents
