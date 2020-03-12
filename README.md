@@ -84,8 +84,9 @@ Website URL: https://fujimmy.com
 ![Mermaid screenshot](./forREADME/question.gif)
 ### Tour Page
 ![Mermaid screenshot](./forREADME/tour.gif)
-* Generate a report first
-* 
+* Generate a simple report first
+* Click a block of places , it will show the route on the map 
+* Click the transportation between any two places , it will show on the map
 ### Profile Page
 ![Mermaid screenshot](./forREADME/Profile.gif)
 * User can review the tours and delete it
