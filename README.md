@@ -1,6 +1,7 @@
 # Autour
 
 Autour provides the best travel itinerary by generating the shortest route for your travel. Simply enter your destination and time for traveling and your perfect tour is just a click away!
+
 Website URL: https://fujimmy.com
 
 ## Table of Contents
@@ -18,13 +19,14 @@ Website URL: https://fujimmy.com
 ## Technologies
 **Backend**
 * Node.js / Express.js
-* SSL Certificate (Let's Encrypt)
+* SSL Certificate (SSL For Free)
 * Error Handling: Identify type of error and return error message to frontend with corresponding status
 
 **Front-End**
 * HTML
 * CSS
 * JavaScript
+* AJAX
 
 **Database**
 * MySQL
@@ -32,6 +34,7 @@ Website URL: https://fujimmy.com
 
 **Cloud Service (AWS)**
 * EC2
+* S3
 
 **Networking**
 * HTTP & HTTPS
@@ -43,9 +46,13 @@ Website URL: https://fujimmy.com
 * Load Test: Artillery
 
 **3rd-party API**
-* Google Maps API 
 * Facebook Login API
 * Google Login API
+* Google Maps API 
+  * Maps JavaScript API
+  * Directions API
+  * Distance Matrix API
+  * Places API
 
 **Additional**
 * MVC design pattern
@@ -84,9 +91,9 @@ Website URL: https://fujimmy.com
 ![Mermaid screenshot](./forREADME/question.gif)
 ### Tour Page
 ![Mermaid screenshot](./forREADME/tour.gif)
-* Generate a simple report first
-* Click a block of places , it will show the route on the map 
-* Click the transportation between any two places , it will show on the map
+* Generate a simple report
+* Click a block of places, the route of the day will show on the map 
+* Click the transportation between any two places, the route will show on the map 
 ### Profile Page
 ![Mermaid screenshot](./forREADME/Profile.gif)
 * User can review the tours and delete it
