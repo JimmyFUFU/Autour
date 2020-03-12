@@ -81,8 +81,9 @@ Website URL: https://fujimmy.com
 ### Home Page
 ![Mermaid screenshot](./forREADME/homepage.PNG)
 ### Question Page
-
+![Mermaid screenshot](./forREADME/question.gif)
 ### Tour Page
+![Mermaid screenshot](./forREADME/tour.gif)
 * Generate a report first
 * 
 ### Profile Page
