@@ -101,6 +101,7 @@ function logout(){
   sessionStorage.removeItem("access_token");
   sessionStorage.removeItem("name");
   sessionStorage.removeItem("picture");
+  sessionStorage.removeItem("id");
   window.location.reload()
 }
 

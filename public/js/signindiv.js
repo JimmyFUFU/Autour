@@ -61,6 +61,7 @@ function loginAjax() {
     success: function(data) {
       sessionStorage.setItem('access_token', data.data.access_token);
       sessionStorage.setItem('name', data.data.user.name);
+      sessionStorage.setItem('id', data.data.user.id);
       if (data.data.user.picture) {sessionStorage.setItem('picture', data.data.user.picture);}
       document.querySelector('.hitext strong').innerText = data.data.user.name
       animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = 'none' })
@@ -90,6 +91,7 @@ function signupAjax() {
       success: function(data) {
         sessionStorage.setItem("access_token", data.data.access_token);
         sessionStorage.setItem("name", data.data.user.name);
+        sessionStorage.setItem('id', data.data.user.id);
         if (data.data.user.picture) {sessionStorage.setItem('picture', data.data.user.picture);}
         document.querySelector('.hitext strong').innerText = data.data.user.name
         animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
@@ -160,6 +162,7 @@ function fblogin(){
       success: function(data) {
         sessionStorage.setItem("access_token", data.data.access_token);
         sessionStorage.setItem("name", data.data.user.name);
+        sessionStorage.setItem('id', data.data.user.id);
         if (data.data.user.picture) {sessionStorage.setItem('picture', data.data.user.picture);}
         document.querySelector('.hitext strong').innerText = data.data.user.name
         animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
@@ -203,6 +206,7 @@ function onSignIn() {
       success: function(data) {
         sessionStorage.setItem("access_token", data.data.access_token);
         sessionStorage.setItem("name", data.data.user.name);
+        sessionStorage.setItem('id', data.data.user.id);
         if (data.data.user.picture) {sessionStorage.setItem('picture', data.data.user.picture);}
         document.querySelector('.hitext strong').innerText = data.data.user.name
         animateCSS('#signindiv', 'bounceOutUp' , function() {document.querySelector('#signindiv').style.display = "none" })
