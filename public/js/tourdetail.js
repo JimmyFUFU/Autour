@@ -43,7 +43,7 @@ if(localStorage["tour"] || id){
     $.ajax({
       type : 'GET',
       contentType : 'application/json' ,
-      url : `${location.origin}/tour/getTour?id=${id}`,
+      url : `${location.origin}/tour/tour?id=${id}`,
       success :function(data){
         if(!data[0].tourdetail) {
           console.log('tourdetail error');
@@ -739,7 +739,7 @@ function rendertrans(id2Darray , transportation , id){
       type: 'POST',
       data: JSON.stringify(jsonobj),
       contentType: 'application/json',
-      url : `${API_HOST}/google/getFastMatrix`,
+      url : `${API_HOST}/google/fastMatrix`,
       async: false
     })
     .done(function(data){
@@ -787,7 +787,7 @@ function memberstore(){
       type:'POST',
       data:JSON.stringify(jsonobj),
       contentType: 'application/json',
-      url : `${API_HOST}/tour/stourTour`,
+      url : `${API_HOST}/tour/tour`,
       success: function(data) {
         localStorage.clear()
         window.location.href=`${API_HOST}/profile.html`;
@@ -1109,7 +1109,7 @@ function revisetitle(titletext , tourid) {
     type:'PUT',
     data:JSON.stringify({revisetitle: titletext ,tourId: tourid ,access_token:sessionStorage.access_token}),
     contentType: 'application/json',
-    url : `${API_HOST}/tour/reviseTourTitle`,
+    url : `${API_HOST}/tour/tour`,
     success: function(data) {
       renderalert('success', '成功更改旅程名稱！' )
     },error: function(data) {

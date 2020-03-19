@@ -122,7 +122,7 @@ function deletetourfunc(id) {
     type : 'DELETE',
     contentType : 'application/json' ,
     headers : { 'authorization' : `Bearer ${sessionStorage.access_token}` , 'id' : id},
-    url : `${location.origin}/tour/deleteTour`,
+    url : `${location.origin}/tour/tour`,
     success :function(data){
       document.querySelector('.tourlist').innerHTML = ''
       document.getElementById('confirmdelete').style.display = 'none'

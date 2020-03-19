@@ -1,7 +1,6 @@
 const express = require('express')
 const bodyparser = require('body-parser')
 const bearerToken = require('express-bearer-token')
-// const util = require('util')
 
 const app = express()
 const server = require('http').Server(app)
@@ -25,17 +24,6 @@ app.use('/user' , userRouter)
 app.use('/autour' , autourRouter)
 app.use('/tour' , tourRouter)
 app.use('/google' , googleRouter)
-
-const {
-  find2PointAllPath,
-  toMatrix,
-  openingMatrix,
-  findShortestPath
-} = require('./func/algorithm.js')
-const sort = require('./func/sort.js')
-
-app.post('/test', (res, req) =>{
-})
 
 server.listen(cst.PORT , () =>{
   console.log(`App is running on port ${cst.PORT}!`)
