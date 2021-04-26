@@ -16,7 +16,7 @@ const {getIo} = require('./controller/autour.js')
 getIo(io)
 
 app.use('/', express.static('public'))
-app.use('/.well-known/acme-challenge', express.static('.well-known/acme-challenge'))
+app.use('/.well-known/pki-validation', express.static('.well-known/pki-validation'))
 app.use(bodyparser.json({limit: '20mb', extended: true}))
 app.use(bodyparser.urlencoded({limit: '20mb', extended: true}))
 app.use(bearerToken())
